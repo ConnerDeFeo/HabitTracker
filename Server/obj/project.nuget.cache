@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "C92+86C3HD8=",
+  "dgSpecHash": "FYQalPRDpW0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\MyMongoApp\\MyMongoApp.csproj",
+  "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\MyMongoApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cjack\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.3\\microsoft.aspnetcore.openapi.9.0.3.nupkg.sha512",
