@@ -15,7 +15,7 @@ public class MongoDbServiceTests
     public void TestDatabaseCreation()
     {
 
-        var mongoService = new MongoDbService(_mongoDbRunner.ConnectionString, "TestDb");
+        var mongoService = new MongoDBService(_mongoDbRunner.ConnectionString, "TestDb");
         var collection = mongoService.GetCollection<BsonDocument>("TestCollection");
 
         // Perform operations on the collection (insert, find, etc.)
@@ -24,6 +24,7 @@ public class MongoDbServiceTests
 
         Assert.NotNull(result);
         Assert.Equal("Test", result["Name"].AsString);
+        
     }
 
     public void Dispose()
