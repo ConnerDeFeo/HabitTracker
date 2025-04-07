@@ -1,3 +1,4 @@
+namespace Server.Services;
 using MongoDB.Driver;
 
     public class MongoDbService
