@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "6ZXD/ecP68g=",
+  "dgSpecHash": "3UKs6OSi/rE=",
   "success": true,
   "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cjack\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
-    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.3\\microsoft.aspnetcore.openapi.9.0.3.nupkg.sha512",
+    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.3\\microsoft.aspnetcore.openapi.8.0.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.0\\microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
-    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
+    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\mongo2go\\4.1.0\\mongo2go.4.1.0.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\mongodb.bson\\3.3.0\\mongodb.bson.3.3.0.nupkg.sha512",
