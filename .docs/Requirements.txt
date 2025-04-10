@@ -1,0 +1,8 @@
+Ideas:
+    -Users can create and account
+    -Login / Logout
+    -Add Habits
+    -Remove Habits
+    -Edit Habits
+    -Some sort of daily checklist
+    -See historical figures
