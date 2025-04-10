@@ -20,6 +20,6 @@ public class TestMongoDbService
     public void TestAddUser(){
         service.AddUser("ConnerDeFeo");
 
-        Assert.NotNull(service.GetUser("ConnerDeFeo"));
+        Assert.Equal("ConnerDeFeo",service.GetUser("ConnerDeFeo").Username);
     }
 }
