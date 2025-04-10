@@ -10,13 +10,13 @@ public class UserController(MongoDbService mongoService) : ControllerBase
     private readonly MongoDbService _mongoService = mongoService;
 
     [HttpPost]
-    public IActionResult PostUsers([FromBody] string user)
+    public IActionResult PostUsers([FromBody] string username)
     {
-        if (user == null)
+        if (username == null)
         {
             return BadRequest("User is required.");
         }
-        if(_mongoService.AddUser(user)){
+        if(_mongoService.AddUser(username)){
             return Ok(); 
         }
         return BadRequest("User already exists");
