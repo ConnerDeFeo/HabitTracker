@@ -1,15 +1,12 @@
+namespace Server.controller;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-using Server.Service;
+using Server.service;
 
 
 [Route("api/users")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController(MongoDbService mongoService) : ControllerBase
 {
-    private readonly MongoDbService _mongoService;
-    public UserController(MongoDbService mongoService)
-    {
-        _mongoService = mongoService;
-    }
+    private readonly MongoDbService _mongoService = mongoService;
 }

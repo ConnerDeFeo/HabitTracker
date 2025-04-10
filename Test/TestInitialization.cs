@@ -1,5 +1,5 @@
 ﻿namespace Test;
-using Server.Service;
+using Server.service;
 using Microsoft.Extensions.Configuration;
 
 public class TestInitialization

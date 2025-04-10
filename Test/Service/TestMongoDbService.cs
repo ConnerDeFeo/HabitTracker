@@ -1,5 +1,5 @@
-namespace Test.Service;
-using Server.Service;
+namespace Test.service;
+using Server.service;
 using Microsoft.Extensions.Configuration;
 
 public class TestMongoDbService

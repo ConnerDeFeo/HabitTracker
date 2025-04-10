@@ -1,4 +1,5 @@
-using Server.Service;
+namespace Server;
+using Server.service;
 public class Program
 {
     public static void Main(string[] args)

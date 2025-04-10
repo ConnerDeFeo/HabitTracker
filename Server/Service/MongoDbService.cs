@@ -1,7 +1,7 @@
-namespace Server.Service;
+namespace Server.service;
 using MongoDB.Driver;
 using MongoDB.Bson;
-using Server.Model;
+using Server.model;
 
 public class MongoDbService
 {
