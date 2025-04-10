@@ -13,11 +13,12 @@ public class MongoDbService
             client.DropDatabase("HabitTracker");
             _database = client.GetDatabase("HabitTracker");
         }
-        public void AddUser(string username)
+        public bool AddUser(string username)
         {
             var collection = _database.GetCollection<BsonDocument>("Users");
             var document = new BsonDocument { { "Username", username } };
             collection.InsertOne(document);
+            return true;
         }
 
         public User GetUser(string username){
