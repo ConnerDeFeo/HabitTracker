@@ -2,10 +2,10 @@
 using Server.Service;
 using Microsoft.Extensions.Configuration;
 
-public class TestBase
+public class TestInitialization
 {
     MongoDbService service;
-    public TestBase()
+    public TestInitialization()
     {
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
