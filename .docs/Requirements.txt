@@ -6,3 +6,5 @@ Ideas:
     -Edit Habits
     -Some sort of daily checklist
     -See historical figures
+    -Add friends, view habit completion
+    -Make comments on friends activity
