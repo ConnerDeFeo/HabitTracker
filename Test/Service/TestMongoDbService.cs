@@ -18,8 +18,11 @@ public class TestMongoDbService
 
     [Fact]
     public void TestAddUser(){
-        service.AddUser("ConnerDeFeo");
+        service.AddUser("ConnerDeFeo","Sup");
+        
+        var user = service.GetUser("ConnerDeFeo");
 
-        Assert.Equal("ConnerDeFeo",service.GetUser("ConnerDeFeo").Username);
+        Assert.Equal("ConnerDeFeo",user.Username);
+        Assert.Equal("Sup",user.Password);
     }
 }

@@ -1,5 +1,6 @@
 const API = {
     post: async (path, data) => {
+      console.log(JSON.stringify(data));
         return await fetch(path, {
           credentials: "include", 
           method: "POST",  

@@ -13,11 +13,17 @@ public class MongoDbService
             client.DropDatabase("HabitTracker");
             _database = client.GetDatabase("HabitTracker");
         }
-        public bool AddUser(string username)
+        public async Task<bool> AddUser(string username, string password)
         {
             var collection = _database.GetCollection<BsonDocument>("Users");
-            var document = new BsonDocument { { "Username", username } };
-            collection.InsertOne(document);
+
+            var document = new BsonDocument
+            {
+                { "Username", username },
+                { "Password", password }
+            };
+
+            await collection.InsertOneAsync(document);
             return true;
         }
 
