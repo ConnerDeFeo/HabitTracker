@@ -1,30 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route
 } from 'react-router-dom';
-import HabitService from './service/HabitService';
+import CreateAccount from './CreateAccount';
 
 
 function App() {
-  const [username,setUsername] = useState();
-
-  const handleSubmit = async () => {
-    
-    const response = await HabitService.PostUser(username);
-    console.log(response);
-    
-  };
 
   return (
     <Router>
       <Routes>
-        <Route path={"/Home"} element={
-          <>
-            <textarea onChange={(e)=>setUsername(e.target.value)}/>
-            <button onClick={handleSubmit}>Click me!</button>
-          </>}/>
+        <Route path={"/"} element={<CreateAccount/>}/>
       </Routes>
     </Router>
   );  
