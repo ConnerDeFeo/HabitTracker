@@ -13,6 +13,7 @@ function App() {
     <Router>
       <Routes>
         <Route path={"/"} element={<CreateAccount/>}/>
+        <Route path={"/Create"} element={<CreateAccount/>}/>
       </Routes>
     </Router>
   );  

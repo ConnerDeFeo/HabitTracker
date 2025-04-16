@@ -1,6 +1,5 @@
 namespace Server.controller;
 
-using BCrypt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Server.model;
@@ -16,13 +15,9 @@ public class UserController(MongoDbService mongoService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostUser([FromBody] User user)
     {
-        if (user.Username == null || user.Password ==null)
-        {
-            return BadRequest("User is required.");
-        }
-        if(await _mongoService.AddUser(user.Username,BCrypt.Net.BCrypt.HashPassword(user.Password))){
+        if(await _mongoService.AddUser(user.Username,user.Password)){
             return Ok(); 
         }
-        return BadRequest("User already exists");
+        return Conflict("User already exists");
     }
 }

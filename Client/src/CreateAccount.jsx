@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import HabitService from './service/HabitService';
+import UserService from './service/UserService';
 
 const CreateAccount = ()=>{
     const [username,setUsername] = useState();
@@ -7,9 +7,9 @@ const CreateAccount = ()=>{
 
     const handleSubmit = async () => {
         
-        const response = await HabitService.PostUser(username,password);
-        if(response.status!=200){
-            alert("Invalid username");
+        const response = await UserService.PostUser(username,password);
+        if(response.status==409){
+            alert("Username Taken");
         }
         
     };
