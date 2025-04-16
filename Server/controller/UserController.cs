@@ -21,10 +21,12 @@ public class UserController(UserService _userService) : ControllerBase
         return Conflict("User already exists");
     }
 
-    [HttpGet]
+    [Route("login")]
+    [HttpPost]
     public async Task<IActionResult> Login([FromBody] User user){
-        if(await _userService.Login(user.Username, user.Password)){
-            return Ok();
+        LoginResult result = await _userService.Login(user.Username,user.Password);
+        if(result.Success){
+            return Ok(result);
         }
         return Unauthorized();
     }
