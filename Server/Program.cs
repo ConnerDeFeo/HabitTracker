@@ -10,17 +10,14 @@ public class Program
         var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
-        // Register MongoClient
         builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
         {
             return new MongoClient(mongoConnectionString);
         });
 
-        // Register IMongoDatabase
         builder.Services.AddSingleton(serviceProvider =>
         {
-            var client = serviceProvider.GetRequiredService<IMongoClient>();
-            return client.GetDatabase(mongoDatabaseName);
+            return serviceProvider.GetRequiredService<IMongoClient>().GetDatabase(mongoDatabaseName);
         });
 
         builder.Services.AddCors(options =>
@@ -28,7 +25,7 @@ public class Program
             options.AddPolicy("AllowReactApp",
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173")  // Frontend URL
+                    policy.WithOrigins(builder.Configuration["Client"]!)  // Frontend URL
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
