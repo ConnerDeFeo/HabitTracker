@@ -19,25 +19,25 @@ public class TestMongoDbService
 
     [Fact]
     public async Task TestAddUser(){
-        await service.AddUser("ConnerDeFeo","Sup");
+        await service.CreateUser("ConnerDeFeo","Sup");
         
-        var user = service.GetUser("ConnerDeFeo");
+        var user = await service.GetUser("ConnerDeFeo");
 
         Assert.Equal("ConnerDeFeo",user.Username);
-        Assert.Equal("Sup",user.Password);
+        Assert.True(PasswordHasher.VerifyPassword("Sup",user.Password));
 
-        bool user2 = await service.AddUser("ConnerDeFeo","Sup");
+        bool user2 = await service.CreateUser("ConnerDeFeo","Sup");
 
         Assert.False(user2);
     }
 
     [Fact]
     public async Task TestAddUserFalse(){
-        await service.AddUser("ConnerDeFeo","Sup");
+        await service.CreateUser("ConnerDeFeo","Sup");
         
-        var user = service.GetUser("ConnerDeFeo");
+        var user = await service.GetUser("ConnerDeFeo");
 
-        bool user2 = await service.AddUser("ConnerDeFeo","Sup");
+        bool user2 = await service.CreateUser("ConnerDeFeo","Sup");
 
         Assert.False(user2);
     }
