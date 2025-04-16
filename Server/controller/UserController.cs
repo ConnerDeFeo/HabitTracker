@@ -27,6 +27,5 @@ public class UserController(UserService _userService) : ControllerBase
             return Ok();
         }
         return Unauthorized();
-
     }
 }

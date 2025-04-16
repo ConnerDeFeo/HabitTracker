@@ -2,6 +2,7 @@ namespace Server.service;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Server.model;
+using System.Security.Cryptography;
 
 public class UserService(IMongoDatabase _database)
 {
@@ -29,11 +30,12 @@ public class UserService(IMongoDatabase _database)
         return true;
     }
 
-    public async Task<bool> Login(string username, string password){
+    public async Task<LoginResult> Login(string username, string password){
         User user = await GetUser(username);
-        if(user!=null){
-            return PasswordHasher.VerifyPassword(password, user.Password);
+        if(user!=null && PasswordHasher.VerifyPassword(password, user.Password)){
+            byte[] key = RandomNumberGenerator.GetBytes(32);
+            return new LoginResult{Success = true, Token=Convert.ToBase64String(key)};
         }
-        return false;
+        return new LoginResult{Success = false};
     }
 }
