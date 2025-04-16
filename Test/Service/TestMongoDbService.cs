@@ -1,6 +1,7 @@
 namespace Test.service;
 using Server.service;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 public class TestMongoDbService
 {
@@ -17,12 +18,27 @@ public class TestMongoDbService
     }
 
     [Fact]
-    public void TestAddUser(){
-        service.AddUser("ConnerDeFeo","Sup");
+    public async Task TestAddUser(){
+        await service.AddUser("ConnerDeFeo","Sup");
         
         var user = service.GetUser("ConnerDeFeo");
 
         Assert.Equal("ConnerDeFeo",user.Username);
         Assert.Equal("Sup",user.Password);
+
+        bool user2 = await service.AddUser("ConnerDeFeo","Sup");
+
+        Assert.False(user2);
+    }
+
+    [Fact]
+    public async Task TestAddUserFalse(){
+        await service.AddUser("ConnerDeFeo","Sup");
+        
+        var user = service.GetUser("ConnerDeFeo");
+
+        bool user2 = await service.AddUser("ConnerDeFeo","Sup");
+
+        Assert.False(user2);
     }
 }

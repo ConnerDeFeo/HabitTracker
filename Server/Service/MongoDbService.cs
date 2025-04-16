@@ -17,13 +17,16 @@ public class MongoDbService
         {
             var collection = _database.GetCollection<BsonDocument>("Users");
 
-            var document = new BsonDocument
+            //if user exists, return false
+            if(await collection.Find(Builders<BsonDocument>.Filter.Eq("Username", username)).FirstOrDefaultAsync()!=null){
+                return false;
+            }
+
+            await collection.InsertOneAsync(new BsonDocument
             {
                 { "Username", username },
                 { "Password", password }
-            };
-
-            await collection.InsertOneAsync(document);
+            });
             return true;
         }
 
