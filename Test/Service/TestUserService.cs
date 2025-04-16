@@ -1,20 +1,15 @@
 namespace Test.service;
+using MongoDB.Driver;
 using Server.service;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
-public class TestMongoDbService
-{
-    MongoDbService service;
-    public TestMongoDbService(){
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:MongoDb", "mongodb://localhost:27017" },
-                { "HabitTracker", "TestDatabase" }
-            })
-            .Build();
-        service = new MongoDbService(config);
+public class TestUserService{
+    UserService service;
+    public TestUserService(){
+        var client = new MongoClient("mongodb://localhost:27017");
+        var database = client.GetDatabase("TestDatabase");
+        service = new UserService(database);
     }
 
     [Fact]

@@ -3,18 +3,11 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using Server.model;
 
-public class MongoDbService
+public class UserService(IMongoDatabase _database)
 {
-    private readonly IMongoDatabase _database;
+    private readonly IMongoDatabase _database = _database;
 
-        public MongoDbService(IConfiguration config)
-        {
-            var client = new MongoClient(config.GetConnectionString("MongoDb"));
-            client.DropDatabase("HabitTracker");
-            _database = client.GetDatabase("HabitTracker");
-        }
-
-        public async Task<User> GetUser(string username){
+    public async Task<User> GetUser(string username){
             var filter = Builders<User>.Filter.Eq(u => u.Username, username);
 
             return await _database.GetCollection<User>("Users").Find(filter).FirstOrDefaultAsync();
@@ -33,7 +26,7 @@ public class MongoDbService
                 { "Username", username },
                 { "Password", PasswordHasher.HashPassword(password) }
             });
-            return false;
+            return true;
         }
 
         public async Task<bool> Login(string username, string password){

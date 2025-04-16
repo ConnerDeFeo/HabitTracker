@@ -8,14 +8,14 @@ using Server.service;
 
 [Route("users")]
 [ApiController]
-public class UserController(MongoDbService mongoService) : ControllerBase
+public class UserController(UserService _userService) : ControllerBase
 {
-    private readonly MongoDbService _mongoService = mongoService;
+    private readonly UserService _userService = _userService;
 
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {
-        if(await _mongoService.CreateUser(user.Username,user.Password)){
+        if(await _userService.CreateUser(user.Username,user.Password)){
             return Ok(); 
         }
         return Conflict("User already exists");
@@ -23,7 +23,7 @@ public class UserController(MongoDbService mongoService) : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> Login([FromBody] User user){
-        if(await _mongoService.Login(user.Username, user.Password)){
+        if(await _userService.Login(user.Username, user.Password)){
             return Ok();
         }
         return Unauthorized();
