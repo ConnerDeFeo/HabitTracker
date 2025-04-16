@@ -6,12 +6,12 @@ using System.Security.Cryptography;
 
 public class UserService(IMongoDatabase _database)
 {
-    private readonly IMongoDatabase _database = _database;
+    private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
 
     public async Task<User> GetUser(string username){
             var filter = Builders<User>.Filter.Eq(u => u.Username, username);
 
-            return await _database.GetCollection<User>("Users").Find(filter).FirstOrDefaultAsync();
+            return await _users.Find(filter).FirstOrDefaultAsync();
 
         }
     public async Task<bool> CreateUser(string username, string password){
@@ -20,13 +20,13 @@ public class UserService(IMongoDatabase _database)
             return false;
         }
 
-        var collection = _database.GetCollection<BsonDocument>("Users");
-
-        await collection.InsertOneAsync(new BsonDocument
+        var user = new User
         {
-            { "Username", username },
-            { "Password", PasswordHasher.HashPassword(password) }
-        });
+            Username = username,
+            Password = PasswordHasher.HashPassword(password)
+        };
+
+        await _users.InsertOneAsync(user);
         return true;
     }
 

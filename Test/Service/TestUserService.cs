@@ -1,6 +1,7 @@
 namespace Test.service;
 using MongoDB.Driver;
 using Server.service;
+using Server.model;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ public class TestUserService{
     [Fact]
     public async Task TestAddUser(){
         await service.CreateUser("ConnerDeFeo","Sup");
-        
+
         var user = await service.GetUser("ConnerDeFeo");
 
         Assert.Equal("ConnerDeFeo",user.Username);
@@ -30,11 +31,27 @@ public class TestUserService{
     [Fact]
     public async Task TestAddUserFalse(){
         await service.CreateUser("ConnerDeFeo","Sup");
-        
-        var user = await service.GetUser("ConnerDeFeo");
 
         bool user2 = await service.CreateUser("ConnerDeFeo","Sup");
 
         Assert.False(user2);
+    }
+
+    [Fact]
+    public async Task TestLogin(){
+        await service.CreateUser("ConnerDeFeo","Sup");
+
+        LoginResult result = await service.Login("ConnerDeFeo","Sup");
+        Assert.True(result.Success);
+        Assert.NotNull(result.Token);
+    }
+
+    [Fact]
+    public async Task TestLoginFaliure(){
+        await service.CreateUser("ConnerDeFeo","Sup");
+
+        LoginResult result = await service.Login("ConnerDeFeo","Suk");
+        Assert.False(result.Success);
+        Assert.Null(result.Token);
     }
 }

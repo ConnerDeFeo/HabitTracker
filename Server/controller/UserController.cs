@@ -21,8 +21,7 @@ public class UserController(UserService _userService) : ControllerBase
         return Conflict("User already exists");
     }
 
-    [Route("login")]
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] User user){
         LoginResult result = await _userService.Login(user.Username,user.Password);
         if(result.Success){
