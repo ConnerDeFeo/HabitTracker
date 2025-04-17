@@ -34,6 +34,10 @@ public class UserService(IMongoDatabase _database)
         User user = await GetUser(username);
         if(user!=null && PasswordHasher.VerifyPassword(password, user.Password)){
             byte[] key = RandomNumberGenerator.GetBytes(32);
+            string token = Convert.ToBase64String(key);
+
+            await _users.UpdateOneAsync(u => u.Username == username, Builders<User>.Update.Set(u => u.SessionKey, token));
+            
             return new LoginResult{Success = true, Token=Convert.ToBase64String(key)};
         }
         return new LoginResult{Success = false};

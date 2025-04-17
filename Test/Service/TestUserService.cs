@@ -44,6 +44,9 @@ public class TestUserService{
         LoginResult result = await service.Login("ConnerDeFeo","Sup");
         Assert.True(result.Success);
         Assert.NotNull(result.Token);
+
+        var user = await service.GetUser("ConnerDeFeo");
+        Assert.NotNull(user.SessionKey);
     }
 
     [Fact]
