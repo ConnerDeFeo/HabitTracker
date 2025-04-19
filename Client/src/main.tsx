@@ -10,6 +10,7 @@ import CreateAccount from './CreateAccount';
 import Login from './Login';
 import Navbar from './components/Navbar';
 import './index.css';
+import Footer from './components/Footer';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -21,5 +22,6 @@ createRoot(document.getElementById('root')!).render(
           <Route path='Login' element={<Login/>}/>
         </Routes>
       </Router>
+      <Footer/>
   </StrictMode>,
 )
