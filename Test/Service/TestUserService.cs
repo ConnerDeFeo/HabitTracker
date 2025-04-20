@@ -16,32 +16,32 @@ public class TestUserService{
 
     [Fact]
     public async Task TestAddUser(){
-        await service.CreateUser("ConnerDeFeo","Sup");
+        await service.CreateUser("ConnerDeFeo","12345678");
 
         User user = await service.GetUser("ConnerDeFeo");
 
         Assert.Equal("ConnerDeFeo",user.Username);
-        Assert.True(PasswordHasher.VerifyPassword("Sup",user.Password));
+        Assert.True(PasswordHasher.VerifyPassword("12345678",user.Password));
 
-        LoginResult result = await service.CreateUser("ConnerDeFeo","Sup");
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
         Assert.False(result.Success);
     }
 
     [Fact]
     public async Task TestAddUserFalse(){
-        await service.CreateUser("ConnerDeFeo","Sup");
+        await service.CreateUser("ConnerDeFeo","12345678");
 
-        LoginResult result = await service.CreateUser("ConnerDeFeo","Sup");
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
         Assert.False(result.Success);
     }
 
     [Fact]
     public async Task TestLogin(){
-        await service.CreateUser("ConnerDeFeo","Sup");
+        await service.CreateUser("ConnerDeFeo","12345678");
 
-        LoginResult result = await service.Login("ConnerDeFeo","Sup");
+        LoginResult result = await service.Login("ConnerDeFeo","12345678");
         Assert.True(result.Success);
         Assert.NotNull(result.Token);
 
@@ -51,7 +51,7 @@ public class TestUserService{
 
     [Fact]
     public async Task TestLoginFaliure(){
-        await service.CreateUser("ConnerDeFeo","Sup");
+        await service.CreateUser("ConnerDeFeo","12345678");
 
         LoginResult result = await service.Login("ConnerDeFeo","Suk");
         Assert.False(result.Success);
