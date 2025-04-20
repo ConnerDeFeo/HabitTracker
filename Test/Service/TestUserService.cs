@@ -18,23 +18,23 @@ public class TestUserService{
     public async Task TestAddUser(){
         await service.CreateUser("ConnerDeFeo","Sup");
 
-        var user = await service.GetUser("ConnerDeFeo");
+        User user = await service.GetUser("ConnerDeFeo");
 
         Assert.Equal("ConnerDeFeo",user.Username);
         Assert.True(PasswordHasher.VerifyPassword("Sup",user.Password));
 
-        bool user2 = await service.CreateUser("ConnerDeFeo","Sup");
+        LoginResult result = await service.CreateUser("ConnerDeFeo","Sup");
 
-        Assert.False(user2);
+        Assert.False(result.Success);
     }
 
     [Fact]
     public async Task TestAddUserFalse(){
         await service.CreateUser("ConnerDeFeo","Sup");
 
-        bool user2 = await service.CreateUser("ConnerDeFeo","Sup");
+        LoginResult result = await service.CreateUser("ConnerDeFeo","Sup");
 
-        Assert.False(user2);
+        Assert.False(result.Success);
     }
 
     [Fact]

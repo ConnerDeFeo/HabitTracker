@@ -33,7 +33,7 @@ const CreateAccount = ()=>{
             if(response.status!=200){
                 setMessage("Username Taken");
             }else{
-                localStorage.setItem("sessionKey","testigKey");
+                localStorage.setItem("sessionKey","testingKey");
                 navigate('/');
             }
         }

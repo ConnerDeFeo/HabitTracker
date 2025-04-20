@@ -14,20 +14,26 @@ public class UserService(IMongoDatabase _database)
             return await _users.Find(filter).FirstOrDefaultAsync();
 
         }
-    public async Task<bool> CreateUser(string username, string password){
+    
+    public async Task<LoginResult> CreateUser(string username, string password){
 
-        if(username==null || password==null || await GetUser(username)!=null){
-            return false;
+        if(username==null || username=="" || password==null || password.Length<8 || await GetUser(username)!=null){
+            return new LoginResult{Success = false};
         }
+
+        byte[] key = RandomNumberGenerator.GetBytes(32);
+        string token = Convert.ToBase64String(key);
 
         var user = new User
         {
             Username = username,
-            Password = PasswordHasher.HashPassword(password)
+            Password = PasswordHasher.HashPassword(password),
+            SessionKey=token,
+        
         };
 
         await _users.InsertOneAsync(user);
-        return true;
+        return new LoginResult{Success = true, Token=token};
     }
 
     public async Task<LoginResult> Login(string username, string password){
@@ -38,7 +44,7 @@ public class UserService(IMongoDatabase _database)
 
             await _users.UpdateOneAsync(u => u.Username == username, Builders<User>.Update.Set(u => u.SessionKey, token));
             
-            return new LoginResult{Success = true, Token=Convert.ToBase64String(key)};
+            return new LoginResult{Success = true, Token=token};
         }
         return new LoginResult{Success = false};
     }
