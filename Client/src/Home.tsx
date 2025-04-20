@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import Container from './components/Container';
 
-const HomePage = ()=>{
+const Home = ()=>{
     const fontStyling = 'font-hand text-center text-5xl crossOut inline-block px-5 mx-auto';
     return(
         <Container content={
@@ -14,4 +14,4 @@ const HomePage = ()=>{
     );
 }
 
-export default HomePage;
+export default Home;
