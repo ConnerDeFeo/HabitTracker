@@ -1,5 +1,4 @@
 namespace Server.service;
-using MongoDB.Driver;
 using Server.model;
 
 public interface IUserService{

@@ -4,6 +4,9 @@ using System.Security.Cryptography;
 
 public static class PasswordHasher
 {
+
+    /*generates a hashed password that can only be decodeded using verifypassword,
+    two passwords hashed by this will not be the same.*/
     public static string HashPassword(string password)
     {
         byte[] salt = RandomNumberGenerator.GetBytes(16);
@@ -18,6 +21,8 @@ public static class PasswordHasher
         return Convert.ToBase64String(hashBytes);
     }
 
+    /*Not sure how this works but decrypts the password? wtf does Rfc2898DeriveBytes stand for.
+    credits to microsoft for making this algorithim public*/
     public static bool VerifyPassword(string password, string storedHash)
     {
         byte[] hashBytes = Convert.FromBase64String(storedHash);
