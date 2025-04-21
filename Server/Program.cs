@@ -1,6 +1,7 @@
 namespace Server;
 using MongoDB.Driver;
 using Server.service;
+using Server.service.concrete;
 public class Program
 {
     public static void Main(string[] args)
@@ -33,7 +34,7 @@ public class Program
         });
 
         builder.Services.AddControllers();
-        builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<IUserService, MongoUserService>();
 
         var app = builder.Build();
 

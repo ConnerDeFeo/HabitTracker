@@ -8,9 +8,9 @@ using Server.service;
 
 [Route("users")]
 [ApiController]
-public class UserController(UserService _userService) : ControllerBase
+public class UserController(IUserService _userService) : ControllerBase
 {
-    private readonly UserService _userService = _userService;
+    private readonly IUserService _userService = _userService;
 
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
@@ -19,7 +19,7 @@ public class UserController(UserService _userService) : ControllerBase
         if(result.Success){
             return Ok(result); 
         }
-        return Conflict("User already exists");
+        return Conflict(new LoginResult{Success=false});
     }
 
     [HttpPost("login")]
@@ -28,6 +28,6 @@ public class UserController(UserService _userService) : ControllerBase
         if(result.Success){
             return Ok(result);
         }
-        return Unauthorized();
+        return Unauthorized(new LoginResult{Success=false});
     }
 }

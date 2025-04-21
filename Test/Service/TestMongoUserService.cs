@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 public class TestMongoUserService{
     IUserService service;
     public TestMongoUserService(){
-        var client = new MongoClient("mongodb://localhost:27017");
-        client.DropDatabase("HabitTracker");
-        var database = client.GetDatabase("HabitTracker");
+        var Client = new MongoClient("mongodb://localhost:27017");
+        Client.DropDatabase("HabitTracker");
+        var database = Client.GetDatabase("HabitTracker");
         service = new MongoUserService(database);
     }
 
@@ -24,31 +24,31 @@ public class TestMongoUserService{
         Assert.Equal("ConnerDeFeo",user.Username);
         Assert.True(PasswordHasher.VerifyPassword("12345678",user.Password));
 
-        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
+        LoginResult Result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        Assert.False(result.Success);
+        Assert.False(Result.Success);
     }
 
     [Fact]
     public async Task TestAddUserFalse(){
         await service.CreateUser("ConnerDeFeo","12345678");
 
-        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
+        LoginResult Result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        Assert.False(result.Success);
+        Assert.False(Result.Success);
 
-        result = await service.CreateUser("Jack","1234567");
+        Result = await service.CreateUser("Jack","1234567");
 
-        Assert.False(result.Success);
+        Assert.False(Result.Success);
     }
 
     [Fact]
     public async Task TestLogin(){
         await service.CreateUser("ConnerDeFeo","12345678");
 
-        LoginResult result = await service.Login("ConnerDeFeo","12345678");
-        Assert.True(result.Success);
-        Assert.NotNull(result.Token);
+        LoginResult Result = await service.Login("ConnerDeFeo","12345678");
+        Assert.True(Result.Success);
+        Assert.NotNull(Result.Token);
 
         var user = await service.GetUser("ConnerDeFeo");
         Assert.NotNull(user.SessionKey);
