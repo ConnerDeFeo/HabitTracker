@@ -35,6 +35,10 @@ public class TestUserService{
         LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
         Assert.False(result.Success);
+
+        result = await service.CreateUser("Jack","1234567");
+
+        Assert.False(result.Success);
     }
 
     [Fact]
