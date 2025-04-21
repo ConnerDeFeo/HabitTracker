@@ -1,17 +1,18 @@
 namespace Test.service;
 using MongoDB.Driver;
 using Server.service;
+using Server.service.concrete;
 using Server.model;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
-public class TestUserService{
-    UserService service;
-    public TestUserService(){
+public class TestMongoUserService{
+    IUserService service;
+    public TestMongoUserService(){
         var client = new MongoClient("mongodb://localhost:27017");
         client.DropDatabase("HabitTracker");
         var database = client.GetDatabase("HabitTracker");
-        service = new UserService(database);
+        service = new MongoUserService(database);
     }
 
     [Fact]
