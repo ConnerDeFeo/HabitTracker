@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Container from './components/Container';
+import Container from '../components/Container';
 
 const Home = ()=>{
     const fontStyling = 'font-hand text-center text-5xl crossOut inline-block px-5 mx-auto';

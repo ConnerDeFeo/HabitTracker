@@ -3,12 +3,13 @@ import {
     Routes,
     Route
 } from 'react-router-dom';
-import HomePage from './Home';
-import CreateAccount from './CreateAccount';
-import Login from './Login';
+import HomePage from './pages/Home';
+import CreateAccount from './pages/CreateAccount';
+import Login from './pages/Login';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Habits from './Habits';
+import Habits from './pages/Habits';
+import Profile from './pages/Profile';
 
 const HabitTracker = ()=>{
 
@@ -16,9 +17,10 @@ const HabitTracker = ()=>{
         <Router>
             <Navbar/>
             <Routes>
-                <Route path='/' element={localStorage.getItem("sessionKey")=="" ? <HomePage/> : <Habits/>}/>
+                <Route path='' element={localStorage.getItem("sessionKey")=="" ? <HomePage/> : <Habits/>}/>
                 <Route path='CreateAccount' element={<CreateAccount/>}/>
                 <Route path='Login' element={<Login/>}/>
+                <Route path='Profile' element={<Profile/>}/>
             </Routes>
             <Footer/>
         </Router>

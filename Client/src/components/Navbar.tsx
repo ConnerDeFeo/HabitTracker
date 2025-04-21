@@ -8,7 +8,7 @@ const Navbar = ()=>{
             <div onClick={()=>navigate("/")} className="cursor-pointer">
                 <h1 className="font-hand text-5xl">Habit Tracker</h1>
             </div>
-            <img src="./UserIcon.png" className="h-15 w-15"/>
+            <img src="./UserIcon.png" className="h-18 w-18 cursor-pointer" onClick={()=>navigate("/Profile")}/>
         </div>
     );
 } 

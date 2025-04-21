@@ -1,8 +1,8 @@
 import { useState } from "react";
-import TextArea from "./components/TextArea";
-import Container from "./components/Container";
-import UserService from "./service/UserService";
-import Waiting from "./components/Waiting";
+import TextArea from "../components/TextArea";
+import Container from "../components/Container";
+import UserService from "../service/UserService";
+import Waiting from "../components/Waiting";
 import { useNavigate } from "react-router-dom";
 
 const CreateAccount = ()=>{
@@ -33,7 +33,8 @@ const CreateAccount = ()=>{
             if(response.status!=200){
                 setMessage("Username Taken");
             }else{
-                localStorage.setItem("sessionKey","testingKey");
+                //store session token so that user does not have to log in
+                await response.json().then(data=> {localStorage.setItem("sessionKey", data.token);});
                 navigate('/');
             }
         }
