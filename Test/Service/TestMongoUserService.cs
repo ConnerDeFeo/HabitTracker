@@ -16,13 +16,21 @@ public class TestMongoUserService{
     }
 
     [Fact]
+    public async Task TestGetUserPublic(){
+        await service.CreateUser("ConnerDeFeo","12345678");
+
+        User user = await service.GetUserPublic("ConnerDeFeo");
+
+        Assert.Equal("",user.Password); //should not be returning password
+    }
+
+    [Fact]
     public async Task TestAddUser(){
         await service.CreateUser("ConnerDeFeo","12345678");
 
-        User user = await service.GetUser("ConnerDeFeo");
+        User user = await service.GetUserPublic("ConnerDeFeo");
 
         Assert.Equal("ConnerDeFeo",user.Username);
-        Assert.True(PasswordHasher.VerifyPassword("12345678",user.Password));
 
         LoginResult Result = await service.CreateUser("ConnerDeFeo","12345678");
 
@@ -50,7 +58,7 @@ public class TestMongoUserService{
         Assert.True(Result.Success);
         Assert.NotNull(Result.Token);
 
-        var user = await service.GetUser("ConnerDeFeo");
+        var user = await service.GetUserPublic("ConnerDeFeo");
         Assert.NotNull(user.SessionKey);
     }
 

@@ -7,12 +7,18 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
 
-    public async Task<User> GetUser(string username){
-            var filter = Builders<User>.Filter.Eq(u => u.Username, username);
+    private async Task<User> GetUser(string username){
+        var Filter = Builders<User>.Filter.Eq(u => u.Username, username);
 
-            return await _users.Find(filter).FirstOrDefaultAsync();
+        return await _users.Find(Filter).FirstOrDefaultAsync();
+    }
 
-        }
+    public async Task<User> GetUserPublic(string username){
+        var Filter = Builders<User>.Filter.Eq(u => u.Username, username);
+        var Projection = Builders<User>.Projection.Exclude(u => u.Password);
+
+        return await _users.Find(Filter).Project<User>(Projection).FirstOrDefaultAsync();
+    }
     
     public async Task<LoginResult> CreateUser(string username, string password){
 
