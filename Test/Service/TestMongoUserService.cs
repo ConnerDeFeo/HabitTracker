@@ -16,23 +16,23 @@ public class TestMongoUserService{
     }
 
     [Fact]
-    public async Task TestGetUserPublic(){
-        await service.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestGetUser(){
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        User user = await service.GetUserPublic("ConnerDeFeo");
+        User user = await service.GetUser(result.SessionKey);
 
         Assert.Equal("",user.Password); //should not be returning password
 
-        User invalid = await service.GetUserPublic("HEHEHEHA");
+        User invalid = await service.GetUser("HEHEHEHA");
 
         Assert.Null(invalid);
     }
 
     [Fact]
     public async Task TestAddUser(){
-        await service.CreateUser("ConnerDeFeo","12345678");
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        User user = await service.GetUserPublic("ConnerDeFeo");
+        User user = await service.GetUser(result.SessionKey);
 
         Assert.Equal("ConnerDeFeo",user.Username);
 
@@ -56,14 +56,15 @@ public class TestMongoUserService{
 
     [Fact]
     public async Task TestLogin(){
-        await service.CreateUser("ConnerDeFeo","12345678");
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
+        User user = await service.GetUser(result.SessionKey);
+
+        Assert.NotNull(user.SessionKey);
 
         LoginResult Result = await service.Login("ConnerDeFeo","12345678");
         Assert.True(Result.Success);
-        Assert.NotNull(Result.Token);
+        Assert.NotNull(Result.SessionKey);
 
-        var user = await service.GetUserPublic("ConnerDeFeo");
-        Assert.NotNull(user.SessionKey);
     }
 
     [Fact]
@@ -72,6 +73,6 @@ public class TestMongoUserService{
 
         LoginResult result = await service.Login("ConnerDeFeo","Suk");
         Assert.False(result.Success);
-        Assert.Null(result.Token);
+        Assert.Equal("",result.SessionKey);
     }
 }

@@ -10,8 +10,18 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Habits from './pages/Habits';
 import Profile from './pages/Profile';
+import { useEffect } from 'react';
+import UserService from './service/UserService';
 
 const HabitTracker = ()=>{
+
+    useEffect(()=>{
+        const fetchUser = async()=>{
+            
+        }
+
+        fetchUser();
+    },[])
 
     return(
         <Router>

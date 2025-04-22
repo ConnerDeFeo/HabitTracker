@@ -15,7 +15,7 @@ public class UserController(IUserService _userService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUser([FromHeader] string username)
     {
-        User result = await _userService.GetUserPublic(username);
+        User result = await _userService.GetUser(username);
         if(result!=null){
             return Ok(result);
         }

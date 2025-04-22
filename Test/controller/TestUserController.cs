@@ -15,7 +15,7 @@ public class TestUserController{
 
         MockUserService
         .Setup(us => us.CreateUser("ConnerDeFeo","12345678"))
-        .Returns(Task.FromResult(new LoginResult{Success=true, Token="TestToken"}));
+        .Returns(Task.FromResult(new LoginResult{Success=true, SessionKey="TestSessionKey"}));
 
         MockUserService
         .Setup(us => us.CreateUser("ConnerDeFeo","1234567"))
@@ -23,75 +23,75 @@ public class TestUserController{
 
         MockUserService
         .Setup(us => us.Login("ConnerDeFeo","12345678"))
-        .Returns(Task.FromResult(new LoginResult{Success=true, Token="TestToken"}));
+        .Returns(Task.FromResult(new LoginResult{Success=true, SessionKey="TestSessionKey"}));
 
         MockUserService
         .Setup(us => us.Login("ConnerDeFeo","1234567"))
         .Returns(Task.FromResult(new LoginResult{Success=false}));
 
         MockUserService
-        .Setup(us => us.GetUserPublic("ConnerDeFeo"))
-        .Returns(Task.FromResult(new User{Username="ConnerDeFeo",SessionKey="TestToken",Password=""}));
+        .Setup(us => us.GetUser("TestSessionKey"))
+        .Returns(Task.FromResult(new User{Username="ConnerDeFeo",SessionKey="TestSessionKey",Password=""}));
 
         Controller = new UserController(MockUserService.Object);
     }
 
     [Fact]
     public async Task TestGetUser(){
-        IActionResult result = await Controller.GetUser("ConnerDeFeo");
-        var OkResult = Assert.IsType<OkObjectResult>(result);
+        IActionResult Result = await Controller.GetUser("TestSessionKey");
+        var OkResult = Assert.IsType<OkObjectResult>(Result);
         var UserResult = Assert.IsType<User>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
         Assert.Equal("ConnerDeFeo",UserResult.Username);
-        Assert.Equal("TestToken", UserResult.SessionKey);
+        Assert.Equal("TestSessionKey", UserResult.SessionKey);
         Assert.Equal("",UserResult.Password);
     }
 
     [Fact]
     public async Task TestGetUserFailure(){
-        IActionResult result = await Controller.GetUser("CD");
-        var ConflictResult = Assert.IsType<ConflictResult>(result);
+        IActionResult Result = await Controller.GetUser("TestSessionKeyInvalid");
+        var ConflictResult = Assert.IsType<ConflictResult>(Result);
         Assert.Equal(409,ConflictResult.StatusCode);
     }
 
     [Fact]
     public async Task TestCreateUser(){
-        IActionResult result = await Controller.CreateUser(new User{Username="ConnerDeFeo", Password="12345678"});
-        var OkResult = Assert.IsType<OkObjectResult>(result);
+        IActionResult Result = await Controller.CreateUser(new User{Username="ConnerDeFeo", Password="12345678"});
+        var OkResult = Assert.IsType<OkObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
         Assert.True(LoginResult.Success);
-        Assert.Equal("TestToken",LoginResult.Token);
+        Assert.Equal("TestSessionKey",LoginResult.SessionKey);
     }
 
     [Fact]
     public async Task TestCreateUserFail(){
-        IActionResult result = await Controller.CreateUser(new User{Username="ConnerDeFeo", Password="1234567"});
-        var ConflictResult = Assert.IsType<ConflictObjectResult>(result);
+        IActionResult Result = await Controller.CreateUser(new User{Username="ConnerDeFeo", Password="1234567"});
+        var ConflictResult = Assert.IsType<ConflictObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(ConflictResult.Value);
         Assert.Equal(409,ConflictResult.StatusCode);
         Assert.False(LoginResult.Success);
-        Assert.Null(LoginResult.Token);
+        Assert.Equal("",LoginResult.SessionKey);
     }
 
     [Fact]
     public async Task TestLogin(){
-        IActionResult result = await Controller.Login(new User{Username="ConnerDeFeo", Password="12345678"});
-        var OkResult = Assert.IsType<OkObjectResult>(result);
+        IActionResult Result = await Controller.Login(new User{Username="ConnerDeFeo", Password="12345678"});
+        var OkResult = Assert.IsType<OkObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
         Assert.True(LoginResult.Success);
-        Assert.Equal("TestToken",LoginResult.Token);
+        Assert.Equal("TestSessionKey",LoginResult.SessionKey);
     }
 
     [Fact]
     public async Task TestLoginFail(){
-        IActionResult result = await Controller.Login(new User{Username="ConnerDeFeo", Password="1234567"});
-        var UnauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+        IActionResult Result = await Controller.Login(new User{Username="ConnerDeFeo", Password="1234567"});
+        var UnauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(UnauthorizedResult.Value);
         Assert.Equal(401,UnauthorizedResult.StatusCode);
         Assert.False(LoginResult.Success);
-        Assert.Null(LoginResult.Token);
+        Assert.Equal("",LoginResult.SessionKey);
     }
 
 }
