@@ -12,6 +12,16 @@ public class UserController(IUserService _userService) : ControllerBase
 {
     private readonly IUserService _userService = _userService;
 
+    [HttpGet]
+    public async Task<IActionResult> GetUser([FromHeader] string username)
+    {
+        User result = await _userService.GetUserPublic(username);
+        if(result!=null){
+            return Ok(result);
+        }
+        return Conflict();
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {

@@ -29,7 +29,29 @@ public class TestUserController{
         .Setup(us => us.Login("ConnerDeFeo","1234567"))
         .Returns(Task.FromResult(new LoginResult{Success=false}));
 
+        MockUserService
+        .Setup(us => us.GetUserPublic("ConnerDeFeo"))
+        .Returns(Task.FromResult(new User{Username="ConnerDeFeo",SessionKey="TestToken",Password=""}));
+
         Controller = new UserController(MockUserService.Object);
+    }
+
+    [Fact]
+    public async Task TestGetUser(){
+        IActionResult result = await Controller.GetUser("ConnerDeFeo");
+        var OkResult = Assert.IsType<OkObjectResult>(result);
+        var UserResult = Assert.IsType<User>(OkResult.Value);
+        Assert.Equal(200,OkResult.StatusCode);
+        Assert.Equal("ConnerDeFeo",UserResult.Username);
+        Assert.Equal("TestToken", UserResult.SessionKey);
+        Assert.Equal("",UserResult.Password);
+    }
+
+    [Fact]
+    public async Task TestGetUserFailure(){
+        IActionResult result = await Controller.GetUser("CD");
+        var ConflictResult = Assert.IsType<ConflictResult>(result);
+        Assert.Equal(409,ConflictResult.StatusCode);
     }
 
     [Fact]

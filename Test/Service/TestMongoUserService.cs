@@ -22,6 +22,10 @@ public class TestMongoUserService{
         User user = await service.GetUserPublic("ConnerDeFeo");
 
         Assert.Equal("",user.Password); //should not be returning password
+
+        User invalid = await service.GetUserPublic("HEHEHEHA");
+
+        Assert.Null(invalid);
     }
 
     [Fact]
