@@ -13,13 +13,13 @@ public class UserController(IUserService _userService) : ControllerBase
     private readonly IUserService _userService = _userService;
 
     [HttpGet]
-    public async Task<IActionResult> GetUser([FromHeader] string username)
+    public async Task<IActionResult> GetUser([FromHeader] string sessionKey)
     {
-        User result = await _userService.GetUser(username);
+        User? result = await _userService.GetUser(sessionKey);
         if(result!=null){
             return Ok(result);
         }
-        return Conflict();
+        return Unauthorized();
     }
 
     [HttpPost]
@@ -39,5 +39,14 @@ public class UserController(IUserService _userService) : ControllerBase
             return Ok(result);
         }
         return Unauthorized(new LoginResult{Success=false});
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] User user){
+        bool result = await _userService.Logout(user.Username,user.SessionKey);
+        if(result){
+            return Ok();
+        }
+        return Unauthorized();
     }
 }

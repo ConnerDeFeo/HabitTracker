@@ -19,11 +19,11 @@ public class TestMongoUserService{
     public async Task TestGetUser(){
         LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        User user = await service.GetUser(result.SessionKey);
+        User? user = await service.GetUser(result.SessionKey);
 
-        Assert.Equal("",user.Password); //should not be returning password
+        Assert.Equal("",user!.Password); //should not be returning password
 
-        User invalid = await service.GetUser("HEHEHEHA");
+        User? invalid = await service.GetUser("HEHEHEHA");
 
         Assert.Null(invalid);
     }
@@ -32,9 +32,9 @@ public class TestMongoUserService{
     public async Task TestAddUser(){
         LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        User user = await service.GetUser(result.SessionKey);
+        User? user = await service.GetUser(result.SessionKey);
 
-        Assert.Equal("ConnerDeFeo",user.Username);
+        Assert.Equal("ConnerDeFeo",user!.Username);
 
         LoginResult Result = await service.CreateUser("ConnerDeFeo","12345678");
 
@@ -57,9 +57,9 @@ public class TestMongoUserService{
     [Fact]
     public async Task TestLogin(){
         LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
-        User user = await service.GetUser(result.SessionKey);
+        User? user = await service.GetUser(result.SessionKey);
 
-        Assert.NotNull(user.SessionKey);
+        Assert.NotNull(user!.SessionKey);
 
         LoginResult Result = await service.Login("ConnerDeFeo","12345678");
         Assert.True(Result.Success);
@@ -74,5 +74,23 @@ public class TestMongoUserService{
         LoginResult result = await service.Login("ConnerDeFeo","Suk");
         Assert.False(result.Success);
         Assert.Equal("",result.SessionKey);
+    }
+
+    [Fact]
+    public async Task TestLogout(){
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
+
+        bool logedOut = await service.Logout("ConnerDeFeo", result.SessionKey);
+
+        Assert.True(logedOut);
+    }
+
+    [Fact]
+    public async Task TestLogoutFaliure(){
+        LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
+
+        bool logedIn = await service.Logout("ConnerDeFeo", "");
+
+        Assert.False(logedIn);
     }
 }
