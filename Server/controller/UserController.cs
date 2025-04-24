@@ -13,11 +13,12 @@ public class UserController(IUserService _userService) : ControllerBase
     private readonly IUserService _userService = _userService;
 
     [HttpGet]
-    public async Task<IActionResult> GetUser([FromHeader] string sessionKey)
+    public async Task<IActionResult> GetUser()
     {
-        User? result = await _userService.GetUser(sessionKey);
-        if(result!=null){
-            return Ok(result);
+        var cookie = Request.Cookies["sessionKey"];
+        if(cookie!=null){
+            User? result = await _userService.GetUser(cookie);
+            if(result!=null) return Ok(result);
         }
         return Unauthorized();
     }

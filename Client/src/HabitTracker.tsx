@@ -10,16 +10,21 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Habits from './pages/Habits';
 import Profile from './pages/Profile';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import UserService from './service/UserService';
 
 const HabitTracker = ()=>{
 
+    const [sessionUsername,setSessionUserName] = useState("");
+
     useEffect(()=>{
         const fetchUser = async()=>{
-            
+            const response = await UserService.GetUser();
+            if(response.status==200){
+                const user = await response.json();
+                setSessionUserName(user.username);
+            }
         }
-
         fetchUser();
     },[])
 
@@ -27,10 +32,10 @@ const HabitTracker = ()=>{
         <Router>
             <Navbar/>
             <Routes>
-                <Route path='' element={localStorage.getItem("sessionKey")=="" ? <HomePage/> : <Habits/>}/>
-                <Route path='CreateAccount' element={<CreateAccount/>}/>
+                <Route path='' element={sessionUsername=="" ? <Habits/> : <HomePage/>}/>
+                <Route path='CreateAccount' element={<CreateAccount setSessionUsername={setSessionUserName}/>}/>s
                 <Route path='Login' element={<Login/>}/>
-                <Route path='Profile' element={<Profile/>}/>
+                <Route path='Profile' element={<Profile sessionUsername={sessionUsername}/>}/>
             </Routes>
             <Footer/>
         </Router>

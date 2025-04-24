@@ -78,7 +78,11 @@ public class TestUserController{
 
     [Fact]
     public async Task TestGetUser(){
-        IActionResult Result = await controller.GetUser("TestSessionKey");
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Cookie"] = "SessionKey=TestSessionKey";
+        controller.ControllerContext.HttpContext = httpContext;
+
+        IActionResult Result = await controller.GetUser();
         var OkResult = Assert.IsType<OkObjectResult>(Result);
         var UserResult = Assert.IsType<User>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
@@ -89,7 +93,11 @@ public class TestUserController{
 
     [Fact]
     public async Task TestGetUserFail(){
-        IActionResult Result = await controller.GetUser("TestSessionKeyInvalid");
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Cookie"] = "SessionKey=TestSessionKeyInvalid";
+        controller.ControllerContext.HttpContext = httpContext;
+
+        IActionResult Result = await controller.GetUser();
         var UnauthorizedResult = Assert.IsType<UnauthorizedResult>(Result);
         Assert.Equal(401,UnauthorizedResult.StatusCode);
     }

@@ -4,8 +4,10 @@ import Container from "../components/Container";
 import UserService from "../service/UserService";
 import Waiting from "../components/Waiting";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
-const CreateAccount = ()=>{
+const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void})=>{
+    const {setSessionUsername} = props;
 
     const navigate = useNavigate();
 
@@ -34,7 +36,9 @@ const CreateAccount = ()=>{
                 setMessage("Username Taken");
             }else{
                 //store session token so that user does not have to log in
-                await response.json().then(data=> {localStorage.setItem("sessionKey", data.token);});
+                const data = await response.json();
+                document.cookie = "sessionKey="+data.sessionKey
+                setSessionUsername(data.username);
                 navigate('/');
             }
         }
@@ -48,9 +52,7 @@ const CreateAccount = ()=>{
                     <TextArea title={"Username"} value={username} updateValue={setUsername} />
                     <TextArea title={"Password"} value={password} updateValue={setPassword} />
                     <TextArea title={"Confirm Password"} value={confirmPassword} updateValue={setConfirmPassword} />
-                    <button onClick={onSubmit}
-                    className="color-black border border-black w-[20%] ml-auto font-hand text-4xl bg-black text-white rounded-2xl cursor-pointer"
-                    >Create</button>
+                    <Button label="Create" onClick={onSubmit}/>
                     {waiting && <Waiting/>}
                 </div>
             }
