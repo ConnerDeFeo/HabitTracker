@@ -1,5 +1,9 @@
 namespace Test.controller;
 using Microsoft.AspNetCore.Mvc;
+using Xunit;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Server.service;
 using Server.controller;
 using Server.model;
@@ -8,15 +12,15 @@ using Moq;
 
 public class TestUserController{
 
-    UserController Controller;
+    UserController controller;
 
     public TestUserController(){
         var MockUserService = new Mock<IUserService>();
 
         MockUserService
         .Setup(us => us.CreateUser(It.IsAny<string>(), It.IsAny<string>()))
-        .Returns<string,string>((Username,Password)=>{
-            if (Username.Equals("ConnerDeFeo") && Password.Equals("12345678"))
+        .Returns<string,string>((username,password)=>{
+            if (username.Equals("ConnerDeFeo") && password.Equals("12345678"))
                 {
                     return Task.FromResult(new LoginResult { Success = true, SessionKey = "TestSessionKey" });
                 }
@@ -29,9 +33,9 @@ public class TestUserController{
 
         MockUserService
             .Setup(us => us.Login(It.IsAny<string>(), It.IsAny<string>()))
-            .Returns<string, string>((Username, Password) =>
+            .Returns<string, string>((username, password) =>
             {
-                if (Username.Equals("ConnerDeFeo") && Password.Equals("12345678"))
+                if (username.Equals("ConnerDeFeo") && password.Equals("12345678"))
                 {
                     return Task.FromResult(new LoginResult { Success = true, SessionKey = "TestSessionKey" });
                 }
@@ -43,9 +47,9 @@ public class TestUserController{
 
         MockUserService
             .Setup(us => us.GetUser(It.IsAny<string>()))
-            .Returns<string>((SessionKey) =>
+            .Returns<string>((sessionKey) =>
             {
-                if (SessionKey.Equals("TestSessionKey"))
+                if (sessionKey.Equals("TestSessionKey"))
                 {
                     return Task.FromResult<User?>(new User { Username="ConnerDeFeo", SessionKey = "TestSessionKey" });
                 }
@@ -56,10 +60,10 @@ public class TestUserController{
             });
 
         MockUserService
-            .Setup(us => us.Logout(It.IsAny<string>(), It.IsAny<string>()))
-            .Returns<string, string>((Username, SessionKey) =>
+            .Setup(us => us.Logout(It.IsAny<string>()))
+            .Returns<string>((sessionKey) =>
             {
-                if (Username.Equals("ConnerDeFeo") && SessionKey.Equals("TestSessionKey"))
+                if (sessionKey.Equals("TestSessionKey"))
                 {
                     return Task.FromResult(true);
                 }
@@ -69,12 +73,12 @@ public class TestUserController{
                 }
             });
 
-        Controller = new UserController(MockUserService.Object);
+        controller = new UserController(MockUserService.Object);
     }
 
     [Fact]
     public async Task TestGetUser(){
-        IActionResult Result = await Controller.GetUser("TestSessionKey");
+        IActionResult Result = await controller.GetUser("TestSessionKey");
         var OkResult = Assert.IsType<OkObjectResult>(Result);
         var UserResult = Assert.IsType<User>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
@@ -85,14 +89,14 @@ public class TestUserController{
 
     [Fact]
     public async Task TestGetUserFail(){
-        IActionResult Result = await Controller.GetUser("TestSessionKeyInvalid");
+        IActionResult Result = await controller.GetUser("TestSessionKeyInvalid");
         var UnauthorizedResult = Assert.IsType<UnauthorizedResult>(Result);
         Assert.Equal(401,UnauthorizedResult.StatusCode);
     }
 
     [Fact]
     public async Task TestCreateUser(){
-        IActionResult Result = await Controller.CreateUser(new User{Username="ConnerDeFeo", Password="12345678"});
+        IActionResult Result = await controller.CreateUser(new User{Username="ConnerDeFeo", Password="12345678"});
         var OkResult = Assert.IsType<OkObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
@@ -102,7 +106,7 @@ public class TestUserController{
 
     [Fact]
     public async Task TestCreateUserFail(){
-        IActionResult Result = await Controller.CreateUser(new User{Username="ConnerDeFeo", Password="1234567"});
+        IActionResult Result = await controller.CreateUser(new User{Username="ConnerDeFeo", Password="1234567"});
         var ConflictResult = Assert.IsType<ConflictObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(ConflictResult.Value);
         Assert.Equal(409,ConflictResult.StatusCode);
@@ -112,7 +116,7 @@ public class TestUserController{
 
     [Fact]
     public async Task TestLogin(){
-        IActionResult Result = await Controller.Login(new User{Username="ConnerDeFeo", Password="12345678"});
+        IActionResult Result = await controller.Login(new User{Username="ConnerDeFeo", Password="12345678"});
         var OkResult = Assert.IsType<OkObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
@@ -122,7 +126,7 @@ public class TestUserController{
 
     [Fact]
     public async Task TestLoginFail(){
-        IActionResult Result = await Controller.Login(new User{Username="ConnerDeFeo", Password="1234567"});
+        IActionResult Result = await controller.Login(new User{Username="ConnerDeFeo", Password="1234567"});
         var UnauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(Result);
         var LoginResult = Assert.IsType<LoginResult>(UnauthorizedResult.Value);
         Assert.Equal(401,UnauthorizedResult.StatusCode);
@@ -132,16 +136,26 @@ public class TestUserController{
 
     [Fact]
     public async Task TestLogout(){
-        IActionResult Result = await Controller.Logout(new User{Username="ConnerDeFeo", SessionKey="TestSessionKey"});
-        var OkResult = Assert.IsType<OkResult>(Result);
-        Assert.Equal(200,OkResult.StatusCode);
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Cookie"] = "SessionKey=TestSessionKey";
+        controller.ControllerContext.HttpContext = httpContext;
+
+        IActionResult result = await controller.Logout();
+
+        var okResult = Assert.IsType<OkResult>(result);
+        Assert.Equal(200, okResult.StatusCode);
     }
 
     [Fact]
     public async Task TestLogoutFail(){
-        IActionResult Result = await Controller.Logout(new User{Username="ConnerDeFeo", SessionKey="TestSessionKeyInvalid"});
-        var UnauthorizedResult = Assert.IsType<UnauthorizedResult>(Result);
-        Assert.Equal(401,UnauthorizedResult.StatusCode);
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Cookie"] = "SessionKey=TestSessionKeyInvalid";
+        controller.ControllerContext.HttpContext = httpContext;
+
+        IActionResult result = await controller.Logout();
+
+        var unauthorizedResult = Assert.IsType<UnauthorizedResult>(result);
+        Assert.Equal(401, unauthorizedResult.StatusCode);
     }
 
 }

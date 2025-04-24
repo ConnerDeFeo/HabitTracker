@@ -6,5 +6,5 @@ public interface IUserService{
     Task<LoginResult> CreateUser(string username, string password);
     Task<LoginResult> Login(string username, string password);
 
-    Task<bool> Logout(string username, string sessionKey);
+    Task<bool> Logout(string sessionKey);
 }

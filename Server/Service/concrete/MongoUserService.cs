@@ -53,10 +53,10 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         return new LoginResult{Success = false};
     }
 
-    public async Task<bool> Logout(string username, string sessionKey){
-        User User = await GetUserSensitive(username);
+    public async Task<bool> Logout(string sessionKey){
+        User? User = await GetUser(sessionKey);
         if(User!=null && User.SessionKey.Equals(sessionKey)){
-            await _users.UpdateOneAsync(u=>u.Username.Equals(username),Builders<User>.Update.Set(u=>u.SessionKey, ""));
+            await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),Builders<User>.Update.Set(u=>u.SessionKey, ""));
             return true;
         }
         return false;

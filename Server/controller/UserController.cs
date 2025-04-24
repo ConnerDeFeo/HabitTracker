@@ -42,9 +42,9 @@ public class UserController(IUserService _userService) : ControllerBase
     }
 
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] User user){
-        bool result = await _userService.Logout(user.Username,user.SessionKey);
-        if(result){
+    public async Task<IActionResult> Logout(){
+        var cookie = Request.Cookies["sessionKey"];
+        if(cookie!=null && await _userService.Logout(cookie)){
             return Ok();
         }
         return Unauthorized();

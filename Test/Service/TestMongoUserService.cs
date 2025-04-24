@@ -80,7 +80,7 @@ public class TestMongoUserService{
     public async Task TestLogout(){
         LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        bool logedOut = await service.Logout("ConnerDeFeo", result.SessionKey);
+        bool logedOut = await service.Logout(result.SessionKey);
 
         Assert.True(logedOut);
     }
@@ -89,7 +89,7 @@ public class TestMongoUserService{
     public async Task TestLogoutFaliure(){
         LoginResult result = await service.CreateUser("ConnerDeFeo","12345678");
 
-        bool logedIn = await service.Logout("ConnerDeFeo", "");
+        bool logedIn = await service.Logout("");
 
         Assert.False(logedIn);
     }
