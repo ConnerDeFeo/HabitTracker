@@ -1,10 +1,10 @@
 import { useState } from "react";
-import TextArea from "../components/TextArea";
 import Container from "../components/Container";
 import UserService from "../service/UserService";
 import Waiting from "../components/Waiting";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import Input from "../components/Input";
 
 const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void})=>{
     const {setSessionUsername} = props;
@@ -49,9 +49,9 @@ const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void
             content={
                 <div className={"flex flex-col justify-center w-[40rem] mx-auto gap-8 mt-18"}>
                     <div className="text-center text-red-600 text-2xl">{message}</div>
-                    <TextArea title={"Username"} value={username} updateValue={setUsername} />
-                    <TextArea title={"Password"} value={password} updateValue={setPassword} />
-                    <TextArea title={"Confirm Password"} value={confirmPassword} updateValue={setConfirmPassword} />
+                    <Input title={"Username"} value={username} updateValue={setUsername} />
+                    <Input title={"Password"} value={password} updateValue={setPassword} type="password"/>
+                    <Input title={"Confirm Password"} value={confirmPassword} updateValue={setConfirmPassword} type="password"/>
                     <Button label="Create" onClick={onSubmit}/>
                     {waiting && <Waiting/>}
                 </div>

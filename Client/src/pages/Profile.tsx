@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Container from "../components/Container";
 import UserService from "../service/UserService";
 
-const Profile =(props:{sessionUsername: string, setSessionUsername: (username:string)=>void})=>{
+const Profile =(props:{sessionUsername: string; setSessionUsername: (username:string)=>void})=>{
     const navigate = useNavigate();
     const {sessionUsername,setSessionUsername} = props;
 
