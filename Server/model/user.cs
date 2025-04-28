@@ -13,4 +13,6 @@ public class User
     public string Password { get; set; } = string.Empty;
 
     public string SessionKey {get; set;} =string.Empty;
+
+    public List<Habit> Habits {get;set;} = [];
 }

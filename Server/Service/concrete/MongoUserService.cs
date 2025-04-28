@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
-
+    
     private async Task<User> GetUserSensitive(string username){
         var Filter = Builders<User>.Filter.Eq(u => u.Username, username);
 
@@ -61,5 +61,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         }
         return false;
     }
+
 
 }

@@ -44,6 +44,7 @@ public class Program
 
         //Regenerate UserService each time a request is made
         builder.Services.AddScoped<IUserService, MongoUserService>();
+        builder.Services.AddScoped<IHabitService, MongoHabitService>();
 
         //Mix everything and haza we have a server
         var app = builder.Build();

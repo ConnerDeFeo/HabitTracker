@@ -1,6 +1,7 @@
 Ideas:
     -Users can create and account
     -Login / Logout
+    -Different types of habits (time based, objective based
     -Add Habits
     -Remove Habits
     -Edit Habits
