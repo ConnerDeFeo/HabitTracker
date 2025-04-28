@@ -15,7 +15,7 @@ const Profile =(props:{sessionUsername: string; setSessionUsername: (username:st
 
     return(
         <Container content={
-            <div className="grid mx-auto text-6xl border border-black gap-5">
+            <div className="grid mx-auto text-6xl gap-5">
                 <p>Username: {sessionUsername}</p>
                 <Button label="Logout" onClick={logout}/>
             </div>

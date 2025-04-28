@@ -34,7 +34,7 @@ const HabitTracker = ()=>{
             <Routes>
                 <Route path='' element={sessionUsername=="" ? <HomePage/> : <Habits/>}/>
                 <Route path='CreateAccount' element={<CreateAccount setSessionUsername={setSessionUserName}/>}/>
-                <Route path='Login' element={<Login/>}/>
+                <Route path='Login' element={<Login setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Profile' element={<Profile sessionUsername={sessionUsername} setSessionUsername={setSessionUserName}/>}/>
             </Routes>
             <Footer/>

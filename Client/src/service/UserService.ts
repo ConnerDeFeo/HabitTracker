@@ -11,7 +11,10 @@ const UserService ={
     },
     Logout: async ()=>{
         return await API.post(url+"logout",{});
-    }
+    },
+    Login: async (username: string, password:string)=>{
+        return await API.post(url+"login",{Username: username, Password: password});
+    },
 }
 
 export default UserService;
