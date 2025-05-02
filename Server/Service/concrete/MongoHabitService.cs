@@ -5,7 +5,8 @@ using Server.model;
 
 
 /// <summary>
-/// Concrete
+/// Concrete implementations of the Habit service class allowing functionality
+/// with a mongo database.
 /// </summary>
 /// <param name="_database"></param>
 public class MongoHabitService(IMongoDatabase _database) : IHabitService{
