@@ -11,8 +11,10 @@ const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void
 
     const navigate = useNavigate();
 
+    //Determines if the loading screen shows
     const [waiting, setWaiting] = useState(false);
 
+    //Invisible character holding the place of where all messages are displayed
     const [message,setMessage] = useState("\u00A0");
 
     const [username,setUsername] = useState("");
@@ -35,8 +37,8 @@ const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void
             if(response.status!=200){
                 setMessage("Username Taken");
             }else{
-                //store session token so that user does not have to log in
                 const data = await response.json();
+                //store session token so that user does not have to log in
                 document.cookie = "sessionKey="+data.sessionKey;
                 setSessionUsername(username);
                 navigate('/');

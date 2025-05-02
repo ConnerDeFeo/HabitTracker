@@ -12,8 +12,10 @@ const Login = (props: {setSessionUsername: (username:string)=>void})=>{
 
     const {setSessionUsername} = props;
 
+    //Determines if loading screen pops up
     const [waiting,setWaiting] = useState(false);
 
+    //Invisible character holding the place of where all messages are displayed
     const [message,setMessage] = useState("\u00A0");
 
     const [username,setUsername] = useState("");

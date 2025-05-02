@@ -17,6 +17,10 @@ const HabitTracker = ()=>{
 
     const [sessionUsername,setSessionUserName] = useState("");
 
+    /**
+     * Fetches user on load of application so that al relevant data can
+     * immediately be updated
+     */
     useEffect(()=>{
         const fetchUser = async()=>{
             const response = await UserService.GetUser();
