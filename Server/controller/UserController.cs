@@ -5,24 +5,41 @@ using Microsoft.AspNetCore.Mvc;
 using Server.model;
 using Server.service;
 
-
+/// <summary>
+/// Handles user requests dealing with user profiles specifically.
+/// This does not include and data regarding habits. All logic is delegated
+/// to the userService class and this class simply routes and returns
+/// communications between the front and back end service classes.
+/// </summary>
+/// <param name="_userService"></param>
 [Route("users")]
 [ApiController]
 public class UserController(IUserService _userService) : ControllerBase
 {
     private readonly IUserService _userService = _userService;
 
+    /// <summary>
+    /// Gets a user based on session key that was received
+    /// </summary>
+    /// <returns>User (200) if found, 401 else</returns>
     [HttpGet]
     public async Task<IActionResult> GetUser()
     {
         var cookie = Request.Cookies["sessionKey"];
         if(cookie!=null){
-            User? result = await _userService.GetUser(cookie);
+            UserDto? result = await _userService.GetUser(cookie);
             if(result!=null) return Ok(result);
         }
         return Unauthorized();
     }
 
+    /// <summary>
+    /// Creates a user given a username and password.
+    /// Username must be unique.
+    /// </summary>
+    /// <param name="user">User object containing Password and Username</param>
+    /// <returns>Login result with succes=true and a sessionKey (200) if username is unique,
+    /// 409 with no sessionKey and login=false else</returns>
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {
@@ -33,6 +50,12 @@ public class UserController(IUserService _userService) : ControllerBase
         return Conflict(new LoginResult{Success=false});
     }
 
+    /// <summary>
+    /// Logs in user if username and password valid 
+    /// </summary>
+    /// <param name="user">User object containing Username and Password</param>
+    /// <returns>200 loginResult with sessionKey and succes=true if valid password and username,
+    /// 401 loginResult with no sessionKey and succes=false else</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] User user){
         LoginResult result = await _userService.Login(user.Username,user.Password);
@@ -42,6 +65,10 @@ public class UserController(IUserService _userService) : ControllerBase
         return Unauthorized(new LoginResult{Success=false});
     }
 
+    /// <summary>
+    /// Logs user out based on session key
+    /// </summary>
+    /// <returns>200 if succesful logout, 401 else</returns>
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(){
         var cookie = Request.Cookies["sessionKey"];

@@ -8,7 +8,8 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
 
     public async Task<List<Habit>?> GetHabits(string sessionKey){
-        User user = await _users.Find(u=>u.SessionKey == sessionKey).FirstOrDefaultAsync();
+        var Filter = Builders<User>.Filter.Eq(u => u.SessionKey, sessionKey);
+        User user = await _users.Find(Filter).FirstOrDefaultAsync();
         if(user!=null){
             return user.Habits;
         }
