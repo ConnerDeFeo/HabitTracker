@@ -33,13 +33,6 @@ public class UserController(IUserService _userService) : ControllerBase
         return Unauthorized();
     }
 
-    /// <summary>
-    /// Creates a user given a username and password.
-    /// Username must be unique.
-    /// </summary>
-    /// <param name="user">User object containing Password and Username</param>
-    /// <returns>Login result with succes=true and a sessionKey (200) if username is unique,
-    /// 409 with no sessionKey and login=false else</returns>
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {
@@ -50,12 +43,6 @@ public class UserController(IUserService _userService) : ControllerBase
         return Conflict(new LoginResult{Success=false});
     }
 
-    /// <summary>
-    /// Logs in user if username and password valid 
-    /// </summary>
-    /// <param name="user">User object containing Username and Password</param>
-    /// <returns>200 loginResult with sessionKey and succes=true if valid password and username,
-    /// 401 loginResult with no sessionKey and succes=false else</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] User user){
         LoginResult result = await _userService.Login(user.Username,user.Password);

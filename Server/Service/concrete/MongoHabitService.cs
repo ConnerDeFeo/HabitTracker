@@ -3,6 +3,11 @@ using Server.service;
 using MongoDB.Driver;
 using Server.model;
 
+
+/// <summary>
+/// Concrete
+/// </summary>
+/// <param name="_database"></param>
 public class MongoHabitService(IMongoDatabase _database) : IHabitService{
 
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");

@@ -2,6 +2,11 @@ namespace Server.model;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
+/// <summary>
+/// Main user class representing the user objects.
+/// This is the highest level of data availible with
+/// all other forms nested in this class in some way.
+/// </summary>
 public class User
 {
     [BsonId]
