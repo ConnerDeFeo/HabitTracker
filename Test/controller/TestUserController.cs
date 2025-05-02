@@ -51,11 +51,11 @@ public class TestUserController{
             {
                 if (sessionKey.Equals("TestSessionKey"))
                 {
-                    return Task.FromResult<User?>(new User { Username="ConnerDeFeo", SessionKey = "TestSessionKey" });
+                    return Task.FromResult<UserDto?>(new UserDto { Username="ConnerDeFeo" });
                 }
                 else
                 {
-                    return Task.FromResult<User?>(null);
+                    return Task.FromResult<UserDto?>(null);
                 }
             });
 
@@ -84,11 +84,9 @@ public class TestUserController{
 
         IActionResult Result = await controller.GetUser();
         var OkResult = Assert.IsType<OkObjectResult>(Result);
-        var UserResult = Assert.IsType<User>(OkResult.Value);
+        var UserResult = Assert.IsType<UserDto>(OkResult.Value);
         Assert.Equal(200,OkResult.StatusCode);
         Assert.Equal("ConnerDeFeo",UserResult.Username);
-        Assert.Equal("TestSessionKey", UserResult.SessionKey);
-        Assert.Equal("",UserResult.Password);
     }
 
     [Fact]

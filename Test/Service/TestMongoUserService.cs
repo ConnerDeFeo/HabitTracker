@@ -19,14 +19,14 @@ public class TestMongoUserService{
     public async Task TestGetUser(){
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
 
-        User? user = await userService.GetUser(result.SessionKey);
+        UserDto? user = await userService.GetUser(result.SessionKey);
 
-        Assert.Equal("",user!.Password);
+        Assert.Equal("ConnerDeFeo",user!.Username);
     }
 
     [Fact]
     public async Task TestGetUserInvalid(){
-        User? invalid = await userService.GetUser("HEHEHEHA");
+        UserDto? invalid = await userService.GetUser("HEHEHEHA");
 
         Assert.Null(invalid);
     }
@@ -35,7 +35,7 @@ public class TestMongoUserService{
     public async Task TestAddUser(){
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
 
-        User? user = await userService.GetUser(result.SessionKey);
+        UserDto? user = await userService.GetUser(result.SessionKey);
 
         Assert.Equal("ConnerDeFeo",user!.Username);
 
@@ -60,9 +60,6 @@ public class TestMongoUserService{
     [Fact]
     public async Task TestLogin(){
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
-        User? user = await userService.GetUser(result.SessionKey);
-
-        Assert.NotNull(user!.SessionKey);
 
         LoginResult Result = await userService.Login("ConnerDeFeo","12345678");
         Assert.True(Result.Success);

@@ -25,7 +25,7 @@ public class TestMongoHabitService{
 
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey);
 
-        User? user = await userService.GetUser(result.SessionKey);
-        Assert.NotNull(user?.Habits);
+        Assert.NotNull(habits);
+        Assert.Empty(habits);
     }
 }
