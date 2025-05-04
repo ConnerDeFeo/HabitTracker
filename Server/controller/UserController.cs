@@ -25,9 +25,9 @@ public class UserController(IUserService _userService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUser()
     {
-        var cookie = Request.Cookies["sessionKey"];
-        if(cookie!=null){
-            UserDto? result = await _userService.GetUser(cookie);
+        var sesionKey = Request.Cookies["sessionKey"];
+        if(sesionKey!=null){
+            UserDto? result = await _userService.GetUser(sesionKey);
             if(result!=null) return Ok(result);
         }
         return Unauthorized();
@@ -58,8 +58,8 @@ public class UserController(IUserService _userService) : ControllerBase
     /// <returns>200 if succesful logout, 401 else</returns>
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(){
-        var cookie = Request.Cookies["sessionKey"];
-        if(cookie!=null && await _userService.Logout(cookie)){
+        var sesionKey = Request.Cookies["sessionKey"];
+        if(sesionKey!=null && await _userService.Logout(sesionKey)){
             return Ok();
         }
         return Unauthorized();
