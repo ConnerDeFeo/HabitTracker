@@ -30,6 +30,15 @@ public class TestMongoHabitService{
     }
 
     [Fact]
+    public async Task TestGetHabitsInvalid(){
+        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+
+        List<Habit>? habits = await habitService.GetHabits("INVALID");
+
+        Assert.Null(habits);
+    }
+
+    [Fact]
     public async Task TestCreateHabit(){
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
         string sessionKey = result.SessionKey;
@@ -39,5 +48,7 @@ public class TestMongoHabitService{
 
         Assert.NotEmpty(inMemoryHabits!);
         Assert.NotEmpty(habits!);
+        Assert.Equal("TestHabit",habits![0].Name);
     }
+
 }
