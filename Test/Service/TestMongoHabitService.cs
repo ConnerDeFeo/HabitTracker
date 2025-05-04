@@ -13,8 +13,8 @@ public class TestMongoHabitService{
 
     public TestMongoHabitService(){
         var Client = new MongoClient("mongodb://localhost:27017");
-        Client.DropDatabase("HabitTracker");
-        var database = Client.GetDatabase("HabitTracker");
+        Client.DropDatabase("TestMongoHabitService");
+        var database = Client.GetDatabase("TestMongoHabitService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
     }
@@ -27,5 +27,18 @@ public class TestMongoHabitService{
 
         Assert.NotNull(habits);
         Assert.Empty(habits);
+    }
+
+    [Fact]
+    public async Task TestCreateHabit(){
+        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+        string sessionKey = result.SessionKey;
+
+        bool created = await habitService.CreateHabit(sessionKey, "TestHabit");
+        Assert.True(created);
+
+        List<Habit>? habits = await habitService.GetHabits(sessionKey);
+
+        Assert.NotEmpty(habits!);
     }
 }

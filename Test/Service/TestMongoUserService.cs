@@ -10,8 +10,8 @@ public class TestMongoUserService{
     IUserService userService;
     public TestMongoUserService(){
         var Client = new MongoClient("mongodb://localhost:27017");
-        Client.DropDatabase("HabitTracker");
-        var database = Client.GetDatabase("HabitTracker");
+        Client.DropDatabase("TestMongoUserService");
+        var database = Client.GetDatabase("TestMongoUserService");
         userService = new MongoUserService(database);
     }
 
