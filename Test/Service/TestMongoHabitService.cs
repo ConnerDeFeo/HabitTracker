@@ -34,11 +34,10 @@ public class TestMongoHabitService{
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
         string sessionKey = result.SessionKey;
 
-        bool created = await habitService.CreateHabit(sessionKey, "TestHabit");
-        Assert.True(created);
+        List<Habit>? inMemoryHabits = await habitService.CreateHabit(sessionKey, "TestHabit");
+        List<Habit>? habits = await habitService.CreateHabit(sessionKey, "TestHabit");
 
-        List<Habit>? habits = await habitService.GetHabits(sessionKey);
-
+        Assert.NotEmpty(inMemoryHabits!);
         Assert.NotEmpty(habits!);
     }
 }
