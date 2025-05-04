@@ -6,6 +6,8 @@ const HabitService ={
     GetHabits: async ()=>{
         return await API.get(url);
     },
+    CreateHabit: async (habitName:string)=>{
+    },
 }
 
 export default HabitService;

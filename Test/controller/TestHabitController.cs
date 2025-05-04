@@ -17,11 +17,11 @@ public class TestHabitController
 
 
         MockHabitService
-        .Setup(hs => hs.CreateHabit(It.IsAny<string>(), It.IsAny<string>()))
-        .Returns<string,string>((sessionKey,habit)=>{
+        .Setup(hs => hs.CreateHabit(It.IsAny<string>(), It.IsAny<Habit>()))
+        .Returns<string,Habit>((sessionKey,habit)=>{
             if (sessionKey.Equals("TestSessionKey"))
                 {
-                    return Task.FromResult<List<Habit>?>(new List<Habit>{new Habit{Name="TestHabit"}});
+                    return Task.FromResult<List<Habit>?>(new List<Habit>{habit});
                 }
                 else
                 {
@@ -76,5 +76,13 @@ public class TestHabitController
 
         IActionResult result = await habitController.GetHabits();
         Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public async Task CreateHabit(){
+        setValidSessionKey();
+
+        IActionResult result = await habitController.CreateHabit(new Habit{Name="TestHabit"});
+        Assert.IsType<OkObjectResult>(result);
     }
 }

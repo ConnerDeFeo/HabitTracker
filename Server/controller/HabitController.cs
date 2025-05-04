@@ -22,4 +22,14 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         return Unauthorized();
 
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateHabit([FromBody] Habit habit){
+        var sesionKey = Request.Cookies["sessionKey"];
+        if(sesionKey!=null){
+            List<Habit>? habits = await _habitService.CreateHabit(sesionKey,habit);
+            if(habits!=null) return Ok(habits);
+        }
+        return Unauthorized();
+    }
 }
