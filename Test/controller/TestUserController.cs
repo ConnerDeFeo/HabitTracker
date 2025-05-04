@@ -2,8 +2,6 @@ namespace Test.controller;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Server.service;
 using Server.controller;
 using Server.model;
