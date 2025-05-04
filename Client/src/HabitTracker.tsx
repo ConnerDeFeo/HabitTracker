@@ -18,7 +18,7 @@ const HabitTracker = ()=>{
     const [sessionUsername,setSessionUserName] = useState("");
 
     /**
-     * Fetches user on load of application so that al relevant data can
+     * Fetches user on load of application so that all relevant data can
      * immediately be updated
      */
     useEffect(()=>{

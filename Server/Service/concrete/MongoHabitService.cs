@@ -13,21 +13,26 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
 
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
 
-    public async Task<List<Habit>?> GetHabits(string sessionKey){
+    private async Task<User> GetUserBySessionKey(string sessionKey){
         var Filter = Builders<User>.Filter.Eq(u => u.SessionKey, sessionKey);
-        User user = await _users.Find(Filter).FirstOrDefaultAsync();
+        return await _users.Find(Filter).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<Habit>?> GetHabits(string sessionKey){
+        User user = await GetUserBySessionKey(sessionKey);
         if(user!=null){
             return user.Habits;
         }
         return null;
     }
 
-    public async Task<Habit?> CreateHabit(string sessionKey,string habitName){
-        User user = await _users.Find(u=>u.SessionKey == sessionKey).FirstOrDefaultAsync();
+    public async Task<List<Habit>?> CreateHabit(string sessionKey,string habitName){
+        User user = await GetUserBySessionKey(sessionKey);
         if(user!=null){
             Habit habit = new() {Name=habitName};
             user.Habits.Add(habit);
-            return habit;
+            await _users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.SessionKey, sessionKey),Builders<User>.Update.Push(u=>u.Habits,habit));
+            return user.Habits;
         }
         return null;
     }
