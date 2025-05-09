@@ -1,5 +1,6 @@
 type Habit ={
-    Name:string;
+    id: string,
+    name:string;
 };
 
 export default Habit;

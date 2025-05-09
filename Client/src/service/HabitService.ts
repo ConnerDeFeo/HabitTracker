@@ -7,6 +7,7 @@ const HabitService ={
         return await API.get(url);
     },
     CreateHabit: async (habitName:string)=>{
+        return await API.post(url,{Name:habitName});
     },
 }
 

@@ -2,6 +2,7 @@ namespace Server.service.concrete;
 using Server.service;
 using MongoDB.Driver;
 using Server.model;
+using MongoDB.Bson;
 
 
 /// <summary>
@@ -29,6 +30,8 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
     public async Task<List<Habit>?> CreateHabit(string sessionKey,Habit habit){
         User user = await GetUserBySessionKey(sessionKey);
         if(user!=null){
+            //generate a id mannually so they front-end can use it to render properly
+            habit.Id = ObjectId.GenerateNewId().ToString();
             user.Habits.Add(habit);
             await _users.UpdateOneAsync(Builders<User>.Filter.Eq(u => u.SessionKey, sessionKey),Builders<User>.Update.Push(u=>u.Habits,habit));
             return user.Habits;
