@@ -8,4 +8,8 @@ namespace Server.service;
 public interface IHabitService{
     Task<List<Habit>?> GetHabits(string sessionKey);
     Task<List<Habit>?> CreateHabit(string sessionKey, Habit habit);
+
+    Task<List<Habit>?> DeleteHabit(string sessionKey, Habit habit);
+
+    Task<List<Habit>?> EditHabit(string sessionKey,Habit habit);
 }

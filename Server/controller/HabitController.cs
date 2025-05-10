@@ -32,4 +32,25 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         }
         return Unauthorized();
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteHabit([FromBody] Habit habit){
+        var sesionKey = Request.Cookies["sessionKey"];
+        if(sesionKey!=null){
+            List<Habit>? habits = await _habitService.DeleteHabit(sesionKey,habit);
+            if(habits!=null) return Ok(habits);
+        }
+        return Unauthorized();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> EditHabit([FromBody] Habit habit){
+        var sesionKey = Request.Cookies["sessionKey"];
+        if(sesionKey!=null){
+            List<Habit>? habits = await _habitService.EditHabit(sesionKey,habit);
+            if(habits!=null) return Ok(habits);
+        }
+        return Unauthorized();
+    }
+
 }
