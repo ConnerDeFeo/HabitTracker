@@ -44,45 +44,119 @@ public class TestHabitController
             }
         );
         habitController = new HabitController(MockHabitService.Object);
+
+        MockHabitService
+        .Setup(hs => hs.DeleteHabit(It.IsAny<string>(), It.IsAny<Habit>()))
+        .Returns<string,Habit>((sessionKey,habit)=>{
+            if (sessionKey.Equals("TestSessionKey"))
+                {
+                    if(habit.Equals(new Habit{Name="Test", Id="1234"})) return Task.FromResult<List<Habit>?>(new List<Habit>{});
+                    else return Task.FromResult<List<Habit>?>(null);
+                }
+                else
+                {
+                    return Task.FromResult<List<Habit>?>(null);
+                }
+            }
+        );
+
+        MockHabitService
+        .Setup(hs => hs.EditHabit(It.IsAny<string>(), It.IsAny<Habit>()))
+        .Returns<string,Habit>((sessionKey,habit)=>{
+            if (sessionKey.Equals("TestSessionKey"))
+                {
+                   if(habit.Equals(new Habit{Name="TestHabit", Id="1234"})) return Task.FromResult<List<Habit>?>(new List<Habit>{habit});
+                    else return Task.FromResult<List<Habit>?>(null);
+                }
+                else
+                {
+                    return Task.FromResult<List<Habit>?>(null);
+                }
+            }
+        );
     }
 
-    private void setValidSessionKey(){
+    private void SetValidSessionKey(){
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers["Cookie"] = "SessionKey=TestSessionKey";
         habitController.ControllerContext.HttpContext = httpContext;
     }
 
-    private void setInvalidSessionKey(){
+    private void SetInvalidSessionKey(){
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers["Cookie"] = "SessionKey=TestSessionKeyInvalid";
         habitController.ControllerContext.HttpContext = httpContext;
     }
 
     [Fact]
-    public async Task GetHabits(){
-        setValidSessionKey();
+    public async Task TestGetHabits(){
+        SetValidSessionKey();
 
         IActionResult result = await habitController.GetHabits();
         var okResult = Assert.IsType<OkObjectResult>(result);
         var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
-        Assert.Equal(200,okResult.StatusCode);
         Assert.NotEmpty(habitResult);
         Assert.Equal("TestHabit",habitResult[0].Name);
     }
 
     [Fact]
-    public async Task GetHabitsInvalid(){
-        setInvalidSessionKey();
+    public async Task TestGetHabitsInvalid(){
+        SetInvalidSessionKey();
 
         IActionResult result = await habitController.GetHabits();
         Assert.IsType<UnauthorizedResult>(result);
     }
 
     [Fact]
-    public async Task CreateHabit(){
-        setValidSessionKey();
+    public async Task TestCreateHabit(){
+        SetValidSessionKey();
 
         IActionResult result = await habitController.CreateHabit(new Habit{Name="TestHabit"});
-        Assert.IsType<OkObjectResult>(result);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
+        Assert.NotEmpty(habitResult);
+        Assert.Equal("TestHabit",habitResult[0].Name);
     }
+
+    [Fact]
+    public async Task TestDeleteHabit(){
+        SetValidSessionKey();
+
+        IActionResult result = await habitController.DeleteHabit(new Habit{Name="TestHabit", Id="1234"});
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
+        Assert.Empty(habitResult);
+    }
+    [Fact]
+    public async Task TestDeleteHabitInvalid(){
+        SetInvalidSessionKey();
+
+        IActionResult result = await habitController.DeleteHabit(new Habit{Name="TestHabit", Id="1234"});
+        Assert.IsType<UnauthorizedResult>(result);
+
+        SetValidSessionKey();
+        result = await habitController.DeleteHabit(new Habit{Name="TestHabit", Id="InvalidId"});
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+    [Fact]
+    public async Task TestEditHabit(){
+        SetValidSessionKey();
+
+        IActionResult result = await habitController.EditHabit(new Habit{Name="TestHabit", Id="1234"});
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
+        Assert.Equal("TestHabit",habitResult[0].Name);
+    }
+    [Fact]
+    public async Task TestEditHabitInvalid(){
+        SetInvalidSessionKey();
+
+        IActionResult result = await habitController.EditHabit(new Habit{Name="TestHabit", Id="1234"});
+        Assert.IsType<UnauthorizedResult>(result);
+
+        SetValidSessionKey();
+        result = await habitController.EditHabit(new Habit{Name="TestHabit", Id="InvalidId"});
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
 }
