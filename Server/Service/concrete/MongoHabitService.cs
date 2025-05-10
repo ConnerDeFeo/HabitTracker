@@ -14,9 +14,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
 
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly FilterDefinitionBuilder<User> filter = Builders<User>.Filter;
-
     private readonly UpdateDefinitionBuilder<User> update = Builders<User>.Update;
-
     private readonly FindOneAndUpdateOptions<User> options = new()
     {
         ReturnDocument = ReturnDocument.After
@@ -62,7 +60,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
             filter.Eq(u=>u.SessionKey,sessionKey),
             filter.ElemMatch(u => u.Habits, h => h.Id == habit.Id)
         );
-        var updateHabit = update.Set(u=>u.Habits[-1].Name,habit.Name);
+        var updateHabit = update.Set("Habits.$.Name",habit.Name);
 
         User user = await _users.FindOneAndUpdateAsync(findUser,updateHabit);
         if(user!=null){
