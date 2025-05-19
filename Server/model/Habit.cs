@@ -14,6 +14,10 @@ public class Habit
     
     public string Name{get;set;} = string.Empty;
 
+    public HabitType? Type{get;set;}
+
+    public bool IsActive{get;set;} = true;
+
     public override bool Equals(object? obj){
         if(obj!=null && obj is Habit other){
             return other.Id==Id;

@@ -12,4 +12,6 @@ public interface IHabitService{
     Task<List<Habit>?> DeleteHabit(string sessionKey, Habit habit);
 
     Task<List<Habit>?> EditHabit(string sessionKey,Habit habit);
+
+    Task<bool> CompleteHabit(string sessionKey, Habit habit);
 }

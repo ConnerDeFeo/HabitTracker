@@ -21,6 +21,8 @@ public class User
 
     public List<Habit> Habits {get;set;} = [];
 
+    public Dictionary<string, Dictionary<string, bool>> HabitsCompletedByDate { get; set; } = [];
+
     public void AddHabit(Habit habit){
         Habits.Add(habit);
     }

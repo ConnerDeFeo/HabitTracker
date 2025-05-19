@@ -30,12 +30,12 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
     }
 
     public async Task<List<Habit>?> CreateHabit(string sessionKey,Habit habit){
+        //Generates set object key so that front end can use it
+        habit.Id = ObjectId.GenerateNewId().ToString();
         var findUser = filter.Eq(u=>u.SessionKey, sessionKey);
         var createHabit = update.Push(u=>u.Habits,habit);
         User user = await _users.FindOneAndUpdateAsync(findUser,createHabit,options);
         if(user!=null){
-            //generate a id mannually so they front-end can use it to render properly
-            habit.Id = ObjectId.GenerateNewId().ToString();
             user.AddHabit(habit);
             return user.Habits;
         }
@@ -44,7 +44,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
 
     public async Task<List<Habit>?> DeleteHabit(string sessionKey, Habit habit)
     {
-        var findUser = filter.Eq(u=>u.SessionKey, sessionKey);
+        var findUser = filter.And(
+            filter.Eq(u=>u.SessionKey, sessionKey),
+            filter.ElemMatch(u => u.Habits, h => h.Id == habit.Id)
+        );
         var deleteHabit = update.PullFilter(u=>u.Habits,h=>h.Id==habit.Id);
         User user = await _users.FindOneAndUpdateAsync(findUser,deleteHabit,options);
         if(user!=null){
@@ -69,4 +72,26 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService{
         }
         return null;
     }
+
+    /// <summary>
+    /// Sets habit completed for a given date to true
+    /// </summary>
+    /// <param name="sessionKey">Sessionkey of the user</param>
+    /// <param name="habit">habit that is going to be completed</param>
+    /// <returns>true if habit exitst and completed, false else</returns>
+    public async Task<bool> CompleteHabit(string sessionKey, Habit habit){
+        string date = DateTime.Today.ToString("yyyy-MM-dd");
+
+        var findUser = filter.And(
+            filter.Eq(u=>u.SessionKey, sessionKey),
+            filter.ElemMatch(u => u.Habits, h => h.Id == habit.Id)
+        );
+        var updateCompletedHabits = update.Set($"CompletedHabitsByDate.{date}.{habit.Id}",true);
+
+        User user = await _users.FindOneAndUpdateAsync(findUser, updateCompletedHabits,options);
+        return user != null && 
+           user.HabitsCompletedByDate.TryGetValue(date, out var habitsForDate) && 
+           habitsForDate[habit.Id!];
+        }
+
 }
