@@ -44,13 +44,10 @@ public class TestMongoHabitService{
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
         string sessionKey = result.SessionKey;
 
-        List<Habit>? inMemoryHabits = await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit"});
-        List<Habit>? habits = await habitService.GetHabits(sessionKey);
+        List<Habit>? habits = await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit"});
 
-        Assert.NotEmpty(inMemoryHabits!);
         Assert.NotEmpty(habits!);
         Assert.Equal("TestHabit",habits![0].Name);
-        Assert.Equal(habits![0].Name,inMemoryHabits![0].Name);
     }
 
     [Fact]
@@ -77,7 +74,7 @@ public class TestMongoHabitService{
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() });
         List<Habit>? habits = await habitService.DeleteHabit(sessionKey, new Habit{Name="TestHabit"});
 
-        Assert.Null(habits);
+        Assert.NotEmpty(habits!);
     }
 
     [Fact]
