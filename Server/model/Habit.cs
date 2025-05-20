@@ -18,10 +18,11 @@ public class Habit
 
     public bool IsActive{get;set;} = true;
 
-    public override bool Equals(object? obj){
-        if(obj!=null && obj is Habit other){
-            return other.Id==Id;
-        }
+    public override bool Equals(object? obj)
+    {
+        if (obj != null && obj is Habit other)
+            return other.Id == Id;
+        
         return false;
     }
 

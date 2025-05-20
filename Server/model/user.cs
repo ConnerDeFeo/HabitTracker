@@ -17,26 +17,8 @@ public class User
 
     public string Password { get; set; } = string.Empty;
 
-    public string SessionKey {get; set;} =string.Empty;
+    public string SessionKey { get; set; } =string.Empty;
 
-    public List<Habit> Habits {get;set;} = [];
+    public List<Habit> Habits { get; set; } = [];
 
-    public Dictionary<string, Dictionary<string, bool>> HabitsCompletedByDate { get; set; } = [];
-
-    public void AddHabit(Habit habit){
-        Habits.Add(habit);
-    }
-
-    public void RemoveHabit(Habit habit){
-        Habits.Remove(habit);
-    }
-
-    public void EditHabit(Habit habit){
-        for(int i=0;i<Habits.Count;i++){
-            if(Habits[i].Equals(habit)){
-                Habits[i]=habit;
-                break;
-            }
-        }
-    }
 }

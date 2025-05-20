@@ -14,5 +14,4 @@ public interface IHabitService
 
     Task<List<Habit>?> EditHabit(string sessionKey, Habit habit);
 
-    Task<bool> ChangeHabitCompletion(string sessionKey, Habit habit, bool completed);
 }
