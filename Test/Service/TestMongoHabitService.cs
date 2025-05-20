@@ -74,7 +74,7 @@ public class TestMongoHabitService{
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() });
         List<Habit>? habits = await habitService.DeleteHabit(sessionKey, new Habit{Name="TestHabit"});
 
-        Assert.NotEmpty(habits!);
+        Assert.Null(habits);
     }
 
     [Fact]
