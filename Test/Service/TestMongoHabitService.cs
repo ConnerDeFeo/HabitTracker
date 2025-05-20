@@ -77,21 +77,20 @@ public class TestMongoHabitService{
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() });
         List<Habit>? habits = await habitService.DeleteHabit(sessionKey, new Habit{Name="TestHabit"});
 
-        Assert.NotEmpty(habits!);
+        Assert.Null(habits);
     }
 
     [Fact]
     public async Task TestEditHabit(){
         LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
         string sessionKey = result.SessionKey;
-        string id=ObjectId.GenerateNewId().ToString();
 
-        await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit",Id=id});
-        await habitService.CreateHabit(sessionKey, new Habit{Name="1"});
+        List<Habit>? habitsBefore = await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit"});
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "1" });
         await habitService.CreateHabit(sessionKey, new Habit{Name="2"});
-        List<Habit>? habits = await habitService.EditHabit(sessionKey, new Habit{Name="TestHabitUpdated", Id=id});
+        List<Habit>? habitsAfter = await habitService.EditHabit(sessionKey, new Habit{Name="TestHabitUpdated", Id = habitsBefore![0].Id});
 
-        Habit habit = habits![0];
+        Habit habit = habitsAfter![0];
 
         Assert.Equal("TestHabitUpdated",habit.Name);
     }
@@ -106,7 +105,7 @@ public class TestMongoHabitService{
         await habitService.CreateHabit(sessionKey, new Habit{Name="2"});
         List<Habit>? habits = await habitService.EditHabit(sessionKey, new Habit{Name="TestHabitUpdated", Id=ObjectId.GenerateNewId().ToString()});
 
-        Assert.Equal("TestHabitUpdated", habits![0].Name);
+        Assert.Null(habits);
     }
 
 }
