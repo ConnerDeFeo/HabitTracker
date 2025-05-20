@@ -56,18 +56,16 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<List<Habit>?> EditHabit(string sessionKey, Habit habit)
+    public async Task<List<Habit>?> EditHabit(string sessionKey,  Habit habit)
     {
         var findUser = filter.And(
-            filter.Eq(u => u.SessionKey, sessionKey),
+            filter.Eq(u=>u.SessionKey,sessionKey),
             filter.ElemMatch(u => u.Habits, h => h.Id == habit.Id)
         );
-        var updateHabit = update.Set("Habits.$.Name", habit.Name);
-
-        User user = await _users.FindOneAndUpdateAsync(findUser, updateHabit,options);
-        if (user != null)
+        var updateHabit = update.Set("Habits.$.Name",habit.Name);
+        User user = await _users.FindOneAndUpdateAsync(findUser,updateHabit,options);
+        if(user!=null)
             return user.Habits;
-        
         return null;
     }
 
