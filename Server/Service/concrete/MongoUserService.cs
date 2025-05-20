@@ -15,7 +15,13 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
     private readonly UpdateDefinitionBuilder<User> update = Builders<User>.Update;
-    
+
+
+    private static string GenerateSessionKey()
+    { 
+        byte[] key = RandomNumberGenerator.GetBytes(32);
+        return Convert.ToBase64String(key);
+    }
     private async Task<User> GetUserByUsername(string username)
     {
         var Filter = Builders<User>.Filter.Eq(u => u.Username, username);
@@ -54,22 +60,23 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             return new LoginResult{Success = false};
         }
 
-        //Generate random sessionKey
-        byte[] key = RandomNumberGenerator.GetBytes(32);
-        string sessionKey = Convert.ToBase64String(key);
-
+        string sessionKey = GenerateSessionKey();
+        string lastLogin = DateTime.Today.Date.ToString();
         var User = new User
         {
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
-            SessionKey=sessionKey,
+            SessionKey = sessionKey,
+            LastLoginDate = lastLogin
         };
 
         string id = ObjectId.GenerateNewId().ToString();
         User.Id=id;
         await _users.InsertOneAsync(User);
-        await _habitCollections.InsertOneAsync(new HabitCollection { Id=id});
+        HabitCollection collection = new() { Id = id };
+        collection.HabitHistory[lastLogin] = [];
+        await _habitCollections.InsertOneAsync(collection);
         return new LoginResult { Success = true, SessionKey = sessionKey };
     }
 
@@ -83,10 +90,12 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         if (user != null && PasswordHasher.VerifyPassword(password, user.Password))
         {
-            byte[] key = RandomNumberGenerator.GetBytes(32);
-            string sessionKey = Convert.ToBase64String(key);
+            string sessionKey = GenerateSessionKey();
+            string today = DateTime.Today.Date.ToString();
 
-            await _users.UpdateOneAsync(u => u.Username.Equals(username), update.Set(u => u.SessionKey, sessionKey));
+            await _users.UpdateOneAsync(
+                u => u.Username.Equals(username),
+                update.Combine(update.Set(u => u.SessionKey, sessionKey), update.Set(u => u.LastLoginDate, today)));
 
             return new LoginResult { Success = true, SessionKey = sessionKey };
         }

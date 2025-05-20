@@ -72,13 +72,24 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         string? id = await GetUserIdBySessionKey(sessionKey);
         if (id != null)
         {
+            var findHabit = habitFilter.And(
+                habitFilter.Eq(hc => hc.Id, id),
+                habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
+            );
+
+            //remove from habits collection
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
-                habitFilter.Eq(hc => hc.Id, id),
+                findHabit,
                 update.PullFilter(hc => hc.Habits,h =>h.Id==habit.Id),
                 options
             );
-            return collection.Habits;
+            //Add to delted list of habits
+            await _habitCollections.FindOneAndUpdateAsync(
+                habitFilter.Eq(hc => hc.Id, id),
+                update.Push(hc => hc.DeletedHabits, habit)
+            );
+            return collection?.Habits;
         }
         return null;
     }

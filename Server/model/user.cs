@@ -19,4 +19,6 @@ public class User
 
     public string SessionKey { get; set; } = string.Empty;
 
+    public string LastLoginDate { get; set; } = string.Empty;
+
 }
