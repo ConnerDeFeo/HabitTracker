@@ -2,6 +2,7 @@ namespace Server.service.concrete;
 using MongoDB.Driver;
 using Server.model;
 using System.Security.Cryptography;
+using MongoDB.Bson;
 
 
 /// <summary>
@@ -12,27 +13,30 @@ using System.Security.Cryptography;
 public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
+    private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
     private readonly UpdateDefinitionBuilder<User> update = Builders<User>.Update;
     
-    private async Task<User> GetUserByUsername(string username = "")
+    private async Task<User> GetUserByUsername(string username)
     {
         var Filter = Builders<User>.Filter.Eq(u => u.Username, username);
 
         return await _users.Find(Filter).FirstOrDefaultAsync();
     }
 
-    private async Task<User> GetUserBySessionKey(string sessionKey=""){
+    private async Task<User> GetUserBySessionKey(string sessionKey){
         var Filter = Builders<User>.Filter.Eq(u => u.SessionKey, sessionKey);
 
         return await _users.Find(Filter).FirstOrDefaultAsync();
     }
 
     //This is the public version of getUser, not exposing any sensitive info
-    public async Task<UserDto?> GetUser(string sessionKey){
+    public async Task<UserDto?> GetUser(string sessionKey)
+    {
 
         User user = await GetUserBySessionKey(sessionKey);
-        if(user!=null) 
-            return new UserDto{
+        if (user != null)
+            return new UserDto
+            {
                 Username = user.Username,
             };
         return null;
@@ -62,8 +66,11 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             SessionKey=sessionKey,
         };
 
+        string id = ObjectId.GenerateNewId().ToString();
+        User.Id=id;
         await _users.InsertOneAsync(User);
-        return new LoginResult{Success = true, SessionKey=sessionKey};
+        await _habitCollections.InsertOneAsync(new HabitCollection { Id=id});
+        return new LoginResult { Success = true, SessionKey = sessionKey };
     }
 
     /// <summary>
@@ -95,5 +102,13 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         return false;
     }
 
-
+    /// <summary>
+    /// Indexes session keys to make lookup faster
+    /// </summary>
+    public void CreateSessionKeyIndexes()
+    {
+        var indexKeys = Builders<User>.IndexKeys.Ascending(u => u.SessionKey);
+        var indexModel = new CreateIndexModel<User>(indexKeys);
+        _users.Indexes.CreateOne(indexModel); // Run once on startup
+    }
 }

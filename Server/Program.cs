@@ -49,6 +49,13 @@ public class Program
         //Mix everything and haza we have a server
         var app = builder.Build();
 
+        //Creates indexed session keys to make lookup faster when making multiple db queries
+        using (var scope = app.Services.CreateScope())
+        {
+            var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+            userService.CreateSessionKeyIndexes();
+        }
+
         //this took me a while to find in stacktrace
         app.UseCors("AllowReactApp");
 
