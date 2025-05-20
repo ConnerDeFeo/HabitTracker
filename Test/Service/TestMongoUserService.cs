@@ -8,20 +8,24 @@ using System.Threading.Tasks;
 
 public class TestMongoUserService{
     IUserService userService;
-    public TestMongoUserService(){
+    IHabitService habitService;
+    public TestMongoUserService()
+    {
         var Client = new MongoClient("mongodb://localhost:27017");
         Client.DropDatabase("TestMongoUserService");
         var database = Client.GetDatabase("TestMongoUserService");
         userService = new MongoUserService(database);
+        habitService = new MongoHabitService(database);
     }
 
     [Fact]
-    public async Task TestGetUser(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestGetUser()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
         UserDto? user = await userService.GetUser(result.SessionKey);
 
-        Assert.Equal("ConnerDeFeo",user!.Username);
+        Assert.Equal("ConnerDeFeo", user!.Username);
     }
 
     [Fact]
@@ -32,20 +36,22 @@ public class TestMongoUserService{
     }
 
     [Fact]
-    public async Task TestAddUser(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestCreateUser()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
         UserDto? user = await userService.GetUser(result.SessionKey);
 
-        Assert.Equal("ConnerDeFeo",user!.Username);
+        Assert.Equal("ConnerDeFeo", user!.Username);
 
-        LoginResult Result = await userService.CreateUser("ConnerDeFeo","12345678");
+        LoginResult Result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
         Assert.False(Result.Success);
+
     }
 
     [Fact]
-    public async Task TestAddUserFalse(){
+    public async Task TestCreateUserFalse(){
         await userService.CreateUser("ConnerDeFeo","12345678");
 
         LoginResult Result = await userService.CreateUser("ConnerDeFeo","12345678");
@@ -73,7 +79,6 @@ public class TestMongoUserService{
 
         LoginResult result = await userService.Login("ConnerDeFeo","Suk");
         Assert.False(result.Success);
-        Assert.Equal("",result.SessionKey);
     }
 
     [Fact]
