@@ -3,6 +3,7 @@ using Server.service;
 using MongoDB.Driver;
 using Server.model;
 using MongoDB.Bson;
+using System.Collections.ObjectModel;
 
 
 /// <summary>
@@ -22,9 +23,14 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly ProjectionDefinition<HabitCollection> projection = Builders<HabitCollection>.Projection.Include(h => h.Habits);
     private readonly FindOneAndUpdateOptions<HabitCollection> options = new()
     {
-        ReturnDocument = ReturnDocument.After
+        ReturnDocument = ReturnDocument.After,
     };
 
+
+    private void SetArrayFilters(Habit habit)
+    {
+        options.ArrayFilters =[new JsonArrayFilterDefinition<Habit>("{ 'h.Id': '" + habit.Id + "' }")];
+    }
     /// <summary>
     /// Optimized user lookup based on session key given
     /// </summary>
@@ -39,7 +45,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     public async Task<List<Habit>?> GetHabits(string sessionKey)
     {
         string? id = await GetUserIdBySessionKey(sessionKey);
-        if (id != null)
+        if (id is not null)
         {
             HabitCollection collection = await _habitCollections
             .Find(habitFilter.Eq(hc => hc.Id, id))
@@ -54,8 +60,14 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     {
         string? id = await GetUserIdBySessionKey(sessionKey);
 
-        if (id != null)
+        if (id is not null)
         {
+            string today = DateTime.Today.ToString("yyyy-MM-dd");
+            var updateHabits = update.Combine(
+                update.Push(hc=>hc.Habits,habit),
+                update.Push($"HabitHistory.{today}", habit)
+            );
+
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, id),
@@ -70,15 +82,17 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     public async Task<List<Habit>?> DeleteHabit(string sessionKey, Habit habit)
     {
         string? id = await GetUserIdBySessionKey(sessionKey);
-        if (id != null)
+        if (id is not null)
         {
             var findHabit = habitFilter.And(
                 habitFilter.Eq(hc => hc.Id, id),
                 habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
             );
 
+            string today = DateTime.Today.ToString("yyyy-MM-dd");
             var combinedUpdate = Builders<HabitCollection>.Update
                 .PullFilter(hc => hc.Habits, h => h.Id == habit.Id)
+                .PullFilter(hc => hc.HabitHistory[today], h => h.Id == habit.Id)
                 .Push(hc => hc.DeletedHabits, habit);
 
             //remove from habits collection
@@ -96,12 +110,19 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     public async Task<List<Habit>?> EditHabit(string sessionKey, Habit habit)
     {
         string? id = await GetUserIdBySessionKey(sessionKey);
-        if (id != null)
+        if (id is not null)
         {
             var findHabit = habitFilter.And(
                 habitFilter.Eq(hc => hc.Id, id),
                 habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
             );
+
+            string today = DateTime.Today.ToString("yyyy-MM-dd");
+            SetArrayFilters(habit);
+
+            var updateHabits = update
+                .Set("Habits.$[h]", habit)
+                .Set($"HabitHistory.{today}.$[h]", habit);
 
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
@@ -114,14 +135,20 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit)
+    public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit, string date)
     {
         string? id = await GetUserIdBySessionKey(sessionKey);
 
-        if (id != null)
+        if (id is not null)
         {
-            var findHabitCollection = habitFilter.Eq(hc => hc.Id, id);
+            //Set array filters so that the only element in the array updated is the one with the matching Id
+            SetArrayFilters(habit);
 
+            HabitCollection updatedCollection = await _habitCollections.FindOneAndUpdateAsync(
+                habitFilter.Eq(hc => hc.Id, id),
+                update.Set($"HabitHistory.{date}.$[h].Completed",true),
+                options
+            );
         }
         return null;
 

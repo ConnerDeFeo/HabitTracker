@@ -55,7 +55,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     public async Task<LoginResult> CreateUser(string username, string password){
 
         //username and password valid, User does not exists, password long enough 
-        if(username==null || username.Equals("") || password==null || password.Length<8 || await GetUserByUsername(username)!=null){
+        if(username is null || username.Equals("") || password is null || password.Length<8 || await GetUserByUsername(username)is not null){
             return new LoginResult{Success = false};
         }
 
@@ -87,7 +87,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     public async Task<LoginResult> Login(string username, string password){
         User user = await GetUserByUsername(username);
 
-        if (user != null && PasswordHasher.VerifyPassword(password, user.Password))
+        if (user is not null && PasswordHasher.VerifyPassword(password, user.Password))
         {
             DateTime today = DateTime.Today.Date;
             if (!DateTime.TryParse(user.LastLoginDate, out DateTime lastLogin))
@@ -128,7 +128,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
     public async Task<bool> Logout(string sessionKey){
         User user = await GetUserBySessionKey(sessionKey);
-        if(user!=null && user.SessionKey.Equals(sessionKey)){
+        if(user is not null && user.SessionKey.Equals(sessionKey)){
             await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),update.Set(u=>u.SessionKey, ""));
             return true;
         }
