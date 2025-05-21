@@ -5,15 +5,17 @@ using Server.service.concrete;
 using Server.model;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 public class TestMongoUserService{
+    IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
     public TestMongoUserService()
     {
-        var Client = new MongoClient("mongodb://localhost:27017");
-        Client.DropDatabase("TestMongoUserService");
-        var database = Client.GetDatabase("TestMongoUserService");
+        var client = new MongoClient("mongodb://localhost:27017");
+        client.DropDatabase("TestMongoUserService");
+        database = client.GetDatabase("TestMongoUserService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
     }
@@ -64,12 +66,33 @@ public class TestMongoUserService{
     }
 
     [Fact]
-    public async Task TestLogin(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestLogin()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
-        LoginResult Result = await userService.Login("ConnerDeFeo","12345678");
+        LoginResult Result = await userService.Login("ConnerDeFeo", "12345678");
         Assert.True(Result.Success);
         Assert.NotNull(Result.SessionKey);
+
+    }
+
+    public async Task TestLoginUpdatesPreviousDates()
+    {
+        string id = ObjectId.GenerateNewId().ToString();
+        IMongoCollection<User> users = database.GetCollection<User>("Users");
+        IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
+
+
+        DateTime past = DateTime.Today.ToString("yyyy-MM-dd");
+        User user = new()
+        {
+            Username = username,
+            //Hash the password before storing in database
+            Password = PasswordHasher.HashPassword(password),
+            SessionKey = sessionKey,
+            LastLoginDate = past;
+        };
+
 
     }
 

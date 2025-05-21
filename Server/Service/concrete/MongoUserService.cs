@@ -3,8 +3,6 @@ using MongoDB.Driver;
 using Server.model;
 using System.Security.Cryptography;
 using MongoDB.Bson;
-using Xunit;
-
 
 /// <summary>
 /// Concrete implementations of the User service class allowing functionality
@@ -62,8 +60,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         }
 
         string sessionKey = GenerateSessionKey();
-        string lastLogin = DateTime.Today.Date.ToString();
-        var User = new User
+        string lastLogin = DateTime.Today.ToString("yyyy-MM-dd");
+        User user = new()
         {
             Username = username,
             //Hash the password before storing in database
@@ -73,8 +71,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         };
 
         string id = ObjectId.GenerateNewId().ToString();
-        User.Id=id;
-        await _users.InsertOneAsync(User);
+        user.Id=id;
+        await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
         collection.HabitHistory[lastLogin] = [];
         await _habitCollections.InsertOneAsync(collection);
