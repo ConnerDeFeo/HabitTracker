@@ -77,17 +77,16 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
             );
 
+            var combinedUpdate = Builders<HabitCollection>.Update
+                .PullFilter(hc => hc.Habits, h => h.Id == habit.Id)
+                .Push(hc => hc.DeletedHabits, habit);
+
             //remove from habits collection
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
                 findHabit,
-                update.PullFilter(hc => hc.Habits,h =>h.Id==habit.Id),
+                combinedUpdate,
                 options
-            );
-            //Add to delted list of habits
-            await _habitCollections.FindOneAndUpdateAsync(
-                habitFilter.Eq(hc => hc.Id, id),
-                update.Push(hc => hc.DeletedHabits, habit)
             );
             return collection?.Habits;
         }
@@ -115,4 +114,16 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
+    public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit)
+    {
+        string? id = await GetUserIdBySessionKey(sessionKey);
+
+        if (id != null)
+        {
+            var findHabitCollection = habitFilter.Eq(hc => hc.Id, id);
+
+        }
+        return null;
+
+    }
 }
