@@ -76,23 +76,43 @@ public class TestMongoUserService{
 
     }
 
+    [Fact]
     public async Task TestLoginUpdatesPreviousDates()
     {
-        string id = ObjectId.GenerateNewId().ToString();
         IMongoCollection<User> users = database.GetCollection<User>("Users");
         IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
 
+        string id = ObjectId.GenerateNewId().ToString();
+        string past = DateTime.Today.AddDays(-5).ToString("yyyy-MM-dd");
+        string sessionKey = "12341234";
+        string password = "asdfasdf";
+        string username = "Jack";
 
-        DateTime past = DateTime.Today.ToString("yyyy-MM-dd");
         User user = new()
         {
+            Id = id,
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
             SessionKey = sessionKey,
-            LastLoginDate = past;
+            LastLoginDate = past
         };
 
+        HabitCollection habitCollection = new()
+        {
+            Id = id,
+            Habits = [],
+            HabitHistory = [],
+            DeletedHabits = []
+        };
+
+        await users.InsertOneAsync(user);
+        await collection.InsertOneAsync(habitCollection);
+        await userService.Login(username, password);
+
+        HabitCollection habitCollectionUpdated = await collection.Find(Builders<HabitCollection>.Filter.Eq(hc => hc.Id, id)).FirstOrDefaultAsync();
+
+        Assert.Equal(6, habitCollectionUpdated.HabitHistory.Count);
 
     }
 
