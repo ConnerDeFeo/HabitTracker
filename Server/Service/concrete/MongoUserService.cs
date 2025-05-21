@@ -91,11 +91,17 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         if (user != null && PasswordHasher.VerifyPassword(password, user.Password))
         {
             string sessionKey = GenerateSessionKey();
-            string today = DateTime.Today.Date.ToString();
+            DateTime today = DateTime.Today.Date;
+            
+
+            while (!today.ToString().Equals(user.LastLoginDate))
+            {
+
+            }
 
             await _users.UpdateOneAsync(
                 u => u.Username.Equals(username),
-                update.Combine(update.Set(u => u.SessionKey, sessionKey), update.Set(u => u.LastLoginDate, today)));
+                update.Combine(update.Set(u => u.SessionKey, sessionKey), update.Set(u => u.LastLoginDate, today.ToString())));
 
             return new LoginResult { Success = true, SessionKey = sessionKey };
         }
