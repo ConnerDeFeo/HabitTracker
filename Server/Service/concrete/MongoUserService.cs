@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Server.model;
 using System.Security.Cryptography;
 using MongoDB.Bson;
+using Xunit;
 
 
 /// <summary>
@@ -90,18 +91,37 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         if (user != null && PasswordHasher.VerifyPassword(password, user.Password))
         {
-            string sessionKey = GenerateSessionKey();
             DateTime today = DateTime.Today.Date;
-            
+            if (!DateTime.TryParse(user.LastLoginDate, out DateTime lastLogin))
+                throw new Exception("Date was not parsed properly");
+            lastLogin = lastLogin.Date;
 
-            while (!today.ToString().Equals(user.LastLoginDate))
+            //Get habit collection for updating missing dates
+            var filter = Builders<HabitCollection>.Filter.Eq(hc => hc.Id, user.Id);
+            HabitCollection collection = await _habitCollections
+                .Find(filter)
+                .Project<HabitCollection>(Builders<HabitCollection>.Projection.Include(hc => hc.Habits))
+                .FirstOrDefaultAsync();
+            List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = [];
+            UpdateDefinitionBuilder<HabitCollection> updateHabitCollection = Builders<HabitCollection>.Update;
+
+            /*For every day there has not been a login and today, set the habit history as the blank slate
+            of incomplete haibts*/
+            while (lastLogin <= today)
             {
+                string dateKey = lastLogin.ToString("yyyy-MM-dd");
+                //No need to make a copy of the Habits, mongodb does that for us
+                habitHistoryUpdates.Add(updateHabitCollection.Set($"HabitHistory.{dateKey}", collection.Habits));
 
+                lastLogin = lastLogin.AddDays(1);
             }
+            //complete all updated on the dictionary
+            await _habitCollections.UpdateOneAsync(filter, updateHabitCollection.Combine(habitHistoryUpdates));
 
+            string sessionKey = GenerateSessionKey();
             await _users.UpdateOneAsync(
                 u => u.Username.Equals(username),
-                update.Combine(update.Set(u => u.SessionKey, sessionKey), update.Set(u => u.LastLoginDate, today.ToString())));
+                update.Combine(update.Set(u => u.SessionKey, sessionKey), update.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))));
 
             return new LoginResult { Success = true, SessionKey = sessionKey };
         }
@@ -118,7 +138,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     }
 
     /// <summary>
-    /// Indexes session keys to make lookup faster
+    /// Indexes session keys to make lookup faster, only used on server startup
     /// </summary>
     public void CreateSessionKeyIndexes()
     {
