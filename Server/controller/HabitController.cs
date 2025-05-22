@@ -67,7 +67,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            
+            //Note this will be the list of habits that correspond with the date
             List<Habit>? habits = await _habitService.CompleteHabit(sesionKey, habitRequest.Habit, habitRequest.Date);
             if (habits != null) return Ok(habits);
         }
