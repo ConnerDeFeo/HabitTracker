@@ -1,4 +1,4 @@
-namespace Server.model;
+namespace Server.model.user;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

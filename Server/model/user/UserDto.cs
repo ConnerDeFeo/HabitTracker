@@ -1,4 +1,4 @@
-namespace Server.model;
+namespace Server.model.user;
 
 /// <summary>
 /// Data transfer object representing the public information 

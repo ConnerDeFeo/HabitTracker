@@ -1,5 +1,5 @@
 namespace Server.service;
-using Server.model;
+using Server.model.user;
 
 
 /// <summary>

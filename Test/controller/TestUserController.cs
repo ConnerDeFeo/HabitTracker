@@ -4,7 +4,8 @@ using Xunit;
 using Microsoft.AspNetCore.Http;
 using Server.service;
 using Server.controller;
-using Server.model;
+using Server.model.user;
+using Server.model.habit;
 using Moq;
 
 

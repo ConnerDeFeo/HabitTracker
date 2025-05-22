@@ -1,4 +1,4 @@
-namespace Server.model;
+namespace Server.model.habit;
 
 public enum HabitType
 {

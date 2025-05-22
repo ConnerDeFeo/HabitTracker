@@ -1,4 +1,4 @@
-using Server.model;
+using Server.model.habit;
 
 namespace Server.service;
 

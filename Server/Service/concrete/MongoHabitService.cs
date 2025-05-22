@@ -1,9 +1,9 @@
 namespace Server.service.concrete;
 using Server.service;
 using MongoDB.Driver;
-using Server.model;
+using Server.model.habit;
+using Server.model.user;
 using MongoDB.Bson;
-using System.Collections.ObjectModel;
 
 
 /// <summary>
