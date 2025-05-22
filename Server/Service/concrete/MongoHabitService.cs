@@ -52,8 +52,8 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     }
 
     public async Task<HabitCollection?> GetHabitCollection(string sessionKey)
-    { 
-      string? userId = await GetUserIdBySessionKey(sessionKey);
+    {
+        string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
             HabitCollection collection = await _habitCollections
@@ -61,7 +61,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             .FirstOrDefaultAsync();
             return collection;
         }
-        return null;  
+        return null;
     }
 
     public async Task<List<Habit>?> CreateHabit(string sessionKey, Habit habit)
@@ -142,19 +142,22 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit, string date)
+    public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit, string? date=null)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
 
         if (userId is not null)
         {
+            date ??= DateTime.Today.ToString("yyyy-MM-dd");
             HabitCollection updatedCollection = await _habitCollections.FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.{habit.Id}.Completed",true),
+                update.Set($"HabitHistory.{date}.{habit.Id}.Completed", true),
                 options
             );
+            return [.. updatedCollection.HabitHistory[date].Values];
         }
         return null;
 
     }
+    
 }
