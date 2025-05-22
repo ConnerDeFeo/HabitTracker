@@ -108,7 +108,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             //only need one copy then mongo db will copy when we write to the db
             Dictionary<string, Habit> datedHabits = [];
             foreach (Habit habit in collection.Habits) {
-                datedHabits[habit.Id] = habit;
+                datedHabits[habit.Id!] = habit;
             }
             /*For every day there has not been a login and today, set the habit history as the blank slate
             of incomplete haibts*/
