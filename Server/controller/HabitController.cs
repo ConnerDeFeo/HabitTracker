@@ -19,7 +19,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         if (sesionKey != null)
         {
             List<Habit>? habits = await _habitService.GetHabits(sesionKey);
-            if (habits != null) return Ok(habits);
+            if (habits != null)
+                return Ok(habits);
         }
         return Unauthorized();
 
@@ -32,7 +33,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         if (sesionKey != null)
         {
             List<Habit>? habits = await _habitService.CreateHabit(sesionKey, habit);
-            if (habits != null) return Ok(habits);
+            if (habits != null)
+                return Ok(habits);
         }
         return Unauthorized();
     }

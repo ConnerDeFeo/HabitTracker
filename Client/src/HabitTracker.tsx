@@ -8,7 +8,7 @@ import CreateAccount from './pages/CreateAccount';
 import Login from './pages/Login';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Habits from './pages/Habits';
+import DailyHabits from './pages/DailyHabits';
 import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
 import UserService from './service/UserService';
@@ -36,7 +36,7 @@ const HabitTracker = ()=>{
         <Router >
             <Navbar/>
             <Routes>
-                <Route path='' element={sessionUsername=="" ? <HomePage/> : <Habits/>}/>
+                <Route path='' element={sessionUsername=="" ? <HomePage/> : <DailyHabits/>}/>
                 <Route path='CreateAccount' element={<CreateAccount setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Login' element={<Login setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Profile' element={<Profile sessionUsername={sessionUsername} setSessionUsername={setSessionUserName}/>}/>

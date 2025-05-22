@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import Container from "../components/Container";
 import HabitService from "../service/HabitService";
 import Habit from "../types/Habit";
 import Button from "../components/Button";
 
-const Habits = ()=>{
+const DailyHabits = ()=>{
 
     const [habits,setHabits] = useState<Habit[]>([]);
-    console.log(habits);
 
     useEffect(()=>{
         const fetchHabits = async ()=>{
-            const response : Habit[] = await HabitService.GetHabits().then((resp)=>resp.json());
-            setHabits(response);
+            const resp = await HabitService.GetHabits();
+            const data = await resp.json();
+            setHabits(data);
         }
         fetchHabits();
     },[])
@@ -21,7 +20,6 @@ const Habits = ()=>{
         const response = await HabitService.CreateHabit(habitName);
         const habits = await response.json();
         setHabits(habits);
-        console.log(habits);
     }
 
     return(
@@ -36,4 +34,4 @@ const Habits = ()=>{
     );
 }
 
-export default Habits;
+export default DailyHabits;

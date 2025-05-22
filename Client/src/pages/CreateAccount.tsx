@@ -12,14 +12,14 @@ const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void
     const navigate = useNavigate();
 
     //Determines if the loading screen shows
-    const [waiting, setWaiting] = useState(false);
+    const [waiting, setWaiting] = useState<boolean>(false);
 
     //Invisible character holding the place of where all messages are displayed
-    const [message,setMessage] = useState("\u00A0");
+    const [message,setMessage] = useState<string>("\u00A0");
 
-    const [username,setUsername] = useState("");
-    const [password,setPassword] = useState("");
-    const [confirmPassword,setConfirmPassword] = useState("");
+    const [username,setUsername] = useState<string>("");
+    const [password,setPassword] = useState<string>("");
+    const [confirmPassword,setConfirmPassword] = useState<string>("");
 
     const onSubmit = async ()=>{
         if(password!=confirmPassword){
