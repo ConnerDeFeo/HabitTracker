@@ -7,22 +7,28 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabitService{
+public class TestMongoHabitService
+{
 
+    string dateKey;
+    IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
 
-    public TestMongoHabitService(){
+    public TestMongoHabitService()
+    {
         var Client = new MongoClient("mongodb://localhost:27017");
         Client.DropDatabase("TestMongoHabitService");
-        var database = Client.GetDatabase("TestMongoHabitService");
+        database = Client.GetDatabase("TestMongoHabitService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
+        dateKey = DateTime.Today.ToString("yyyy-MM-dd");
     }
 
     [Fact]
-    public async Task TestGetHabits(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestGetHabits()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey);
 
@@ -31,8 +37,9 @@ public class TestMongoHabitService{
     }
 
     [Fact]
-    public async Task TestGetHabitsInvalid(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestGetHabitsInvalid()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
         List<Habit>? habits = await habitService.GetHabits("INVALID");
 
@@ -40,69 +47,99 @@ public class TestMongoHabitService{
     }
 
     [Fact]
-    public async Task TestCreateHabit(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestCreateHabit()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        List<Habit>? habits = await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit"});
+        List<Habit>? habits = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
+        Habit historyHabit = collection!.HabitHistory[dateKey]![habits![0].Id];
 
         Assert.NotEmpty(habits!);
-        Assert.Equal("TestHabit",habits![0].Name);
+        Assert.Equal("TestHabit", habits![0].Name);
+        Assert.NotNull(historyHabit);
+        Assert.Equal("TestHabit", historyHabit.Name);
+
     }
 
     [Fact]
     public async Task TestDeleteHabit()
     {
-        // Create a user
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
-        Habit habit = new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() };
+        string id = ObjectId.GenerateNewId().ToString();
 
-        // Create a habit
+        Habit habit = new Habit { Name = "TestHabit", Id = id };
         await habitService.CreateHabit(sessionKey, habit);
-        
         List<Habit>? habits = await habitService.DeleteHabit(sessionKey, habit);
+        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.Empty(habits!);
+        Assert.Empty(collection!.HabitHistory[dateKey]);
+
     }
 
     [Fact]
-    public async Task TestDeleteHabitInvalid(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestDeleteHabitInvalid()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() });
-        List<Habit>? habits = await habitService.DeleteHabit(sessionKey, new Habit{Name="TestHabit"});
+        List<Habit>? habits = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        List<Habit>? deletedHabits = await habitService.DeleteHabit(sessionKey, new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() });
+        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
-        Assert.Null(habits);
+        Assert.Null(deletedHabits);
+        Assert.NotEmpty(collection!.Habits);
+        Assert.NotNull(collection!.HabitHistory[dateKey][habits![0].Id]);
     }
 
     [Fact]
-    public async Task TestEditHabit(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestEditHabit()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        List<Habit>? habitsBefore = await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit"});
+        List<Habit>? habitsBefore = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
         await habitService.CreateHabit(sessionKey, new Habit { Name = "1" });
-        await habitService.CreateHabit(sessionKey, new Habit{Name="2"});
-        List<Habit>? habitsAfter = await habitService.EditHabit(sessionKey, new Habit{Name="TestHabitUpdated", Id = habitsBefore![0].Id});
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "2" });
+
+        string id = habitsBefore![0].Id;
+        List<Habit>? habitsAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = id });
+        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Habit habit = habitsAfter![0];
-
-        Assert.Equal("TestHabitUpdated",habit.Name);
+        Assert.Equal("TestHabitUpdated", habit.Name);
+        Assert.Equal("TestHabitUpdated", collection!.HabitHistory[dateKey][id].Name);
     }
 
     [Fact]
-    public async Task TestEditHabitInvalid(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+    public async Task TestEditHabitInvalid()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        await habitService.CreateHabit(sessionKey, new Habit{Name="TestHabit"});
-        await habitService.CreateHabit(sessionKey, new Habit{Name="1"});
-        await habitService.CreateHabit(sessionKey, new Habit{Name="2"});
-        List<Habit>? habits = await habitService.EditHabit(sessionKey, new Habit{Name="TestHabitUpdated", Id=ObjectId.GenerateNewId().ToString()});
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "1" });
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "2" });
+
+        string id = ObjectId.GenerateNewId().ToString();
+        List<Habit>? habits = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = id });
+        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.Null(habits);
+        Assert.Equal("TestHabit", collection!.Habits[0].Name);
+        Assert.Equal("TestHabit", collection!.HabitHistory[dateKey][collection!.Habits[0].Id].Name);
+    }
+
+    [Fact]
+    public async Task GetHabitCollection()
+    {
+        LoginResult result = await userService.CreateUser("Conner", "12341234");
+        HabitCollection? collection = await habitService.GetHabitCollection(result.SessionKey);
+
+        Assert.NotNull(collection);
     }
 
 }

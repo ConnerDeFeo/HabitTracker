@@ -13,5 +13,5 @@ public class HabitCollection
     public string? Id { get; set; }
     public List<Habit> Habits { get; set; } = [];
     public List<Habit> DeletedHabits { get; set; } = [];
-    public Dictionary<string, List<Habit>> HabitHistory { get; set; } = [];
+    public Dictionary<string,Dictionary<string,Habit>> HabitHistory { get; set; } = [];
 }

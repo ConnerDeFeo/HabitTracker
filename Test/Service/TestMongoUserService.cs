@@ -84,7 +84,6 @@ public class TestMongoUserService{
 
         string id = ObjectId.GenerateNewId().ToString();
         string past = DateTime.Today.AddDays(-5).ToString("yyyy-MM-dd");
-        string sessionKey = "12341234";
         string password = "asdfasdf";
         string username = "Jack";
 
@@ -94,7 +93,6 @@ public class TestMongoUserService{
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
-            SessionKey = sessionKey,
             LastLoginDate = past
         };
 
@@ -108,11 +106,11 @@ public class TestMongoUserService{
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
-        await userService.Login(username, password);
+        LoginResult result = await userService.Login(username, password);
 
-        HabitCollection habitCollectionUpdated = await collection.Find(Builders<HabitCollection>.Filter.Eq(hc => hc.Id, id)).FirstOrDefaultAsync();
+        HabitCollection? habitCollectionUpdated = await habitService.GetHabitCollection(result.SessionKey);
 
-        Assert.Equal(6, habitCollectionUpdated.HabitHistory.Count);
+        Assert.Equal(6, habitCollectionUpdated!.HabitHistory.Count);
 
     }
 

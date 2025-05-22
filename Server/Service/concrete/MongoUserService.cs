@@ -60,21 +60,21 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         }
 
         string sessionKey = GenerateSessionKey();
-        string lastLogin = DateTime.Today.ToString("yyyy-MM-dd");
+        string today = DateTime.Today.ToString("yyyy-MM-dd");
         User user = new()
         {
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
             SessionKey = sessionKey,
-            LastLoginDate = lastLogin
+            LastLoginDate = today
         };
 
         string id = ObjectId.GenerateNewId().ToString();
         user.Id=id;
         await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
-        collection.HabitHistory[lastLogin] = [];
+        collection.HabitHistory[today] = [];
         await _habitCollections.InsertOneAsync(collection);
         return new LoginResult { Success = true, SessionKey = sessionKey };
     }
@@ -89,6 +89,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         if (user is not null && PasswordHasher.VerifyPassword(password, user.Password))
         {
+            //Get the previous date time in the date class format for < and > comparisons
             DateTime today = DateTime.Today.Date;
             if (!DateTime.TryParse(user.LastLoginDate, out DateTime lastLogin))
                 throw new Exception("Date was not parsed properly");
@@ -103,13 +104,20 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = [];
             UpdateDefinitionBuilder<HabitCollection> updateHabitCollection = Builders<HabitCollection>.Update;
 
+            //only need one copy then mongo db will copy when we write to the db
+            Dictionary<string, Habit> datedHabits = [];
+            foreach (Habit habit in collection.Habits) {
+                datedHabits[habit.Id] = habit;
+            }
             /*For every day there has not been a login and today, set the habit history as the blank slate
             of incomplete haibts*/
             while (lastLogin <= today)
             {
                 string dateKey = lastLogin.ToString("yyyy-MM-dd");
-                //No need to make a copy of the Habits, mongodb does that for us
-                habitHistoryUpdates.Add(updateHabitCollection.Set($"HabitHistory.{dateKey}", collection.Habits));
+                //add the dict to the db
+                habitHistoryUpdates.Add(
+                    updateHabitCollection.Set($"HabitHistory.{dateKey}", datedHabits)
+                );
 
                 lastLogin = lastLogin.AddDays(1);
             }

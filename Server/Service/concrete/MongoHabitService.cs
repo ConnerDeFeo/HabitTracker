@@ -26,11 +26,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         ReturnDocument = ReturnDocument.After,
     };
 
-
-    private void SetArrayFilters(Habit habit)
-    {
-        options.ArrayFilters =[new JsonArrayFilterDefinition<Habit>("{ 'h.Id': '" + habit.Id + "' }")];
-    }
     /// <summary>
     /// Optimized user lookup based on session key given
     /// </summary>
@@ -44,11 +39,11 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<List<Habit>?> GetHabits(string sessionKey)
     {
-        string? id = await GetUserIdBySessionKey(sessionKey);
-        if (id is not null)
+        string? userId = await GetUserIdBySessionKey(sessionKey);
+        if (userId is not null)
         {
             HabitCollection collection = await _habitCollections
-            .Find(habitFilter.Eq(hc => hc.Id, id))
+            .Find(habitFilter.Eq(hc => hc.Id, userId))
             .Project<HabitCollection>(projection)
             .FirstOrDefaultAsync();
             return collection.Habits;
@@ -56,22 +51,36 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
+    public async Task<HabitCollection?> GetHabitCollection(string sessionKey)
+    { 
+      string? userId = await GetUserIdBySessionKey(sessionKey);
+        if (userId is not null)
+        {
+            HabitCollection collection = await _habitCollections
+            .Find(habitFilter.Eq(hc => hc.Id, userId))
+            .FirstOrDefaultAsync();
+            return collection;
+        }
+        return null;  
+    }
+
     public async Task<List<Habit>?> CreateHabit(string sessionKey, Habit habit)
     {
-        string? id = await GetUserIdBySessionKey(sessionKey);
+        string? userId = await GetUserIdBySessionKey(sessionKey);
 
-        if (id is not null)
+        if (userId is not null)
         {
+            //Id needs to be mannually generated as the habit is being held in something other than a document
+            habit.Id = ObjectId.GenerateNewId().ToString();
             string today = DateTime.Today.ToString("yyyy-MM-dd");
-            var updateHabits = update.Combine(
-                update.Push(hc=>hc.Habits,habit),
-                update.Push($"HabitHistory.{today}", habit)
-            );
+            var updateHabits = update
+                .Push(hc => hc.Habits, habit)
+                .Set($"HabitHistory.{today}.{habit.Id}", habit);
 
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
-                habitFilter.Eq(hc => hc.Id, id),
-                update.Push(hc => hc.Habits, habit),
+                habitFilter.Eq(hc => hc.Id, userId),
+                updateHabits,
                 options
             );
             return collection.Habits;
@@ -81,18 +90,18 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<List<Habit>?> DeleteHabit(string sessionKey, Habit habit)
     {
-        string? id = await GetUserIdBySessionKey(sessionKey);
-        if (id is not null)
+        string? userId = await GetUserIdBySessionKey(sessionKey);
+        if (userId is not null)
         {
             var findHabit = habitFilter.And(
-                habitFilter.Eq(hc => hc.Id, id),
+                habitFilter.Eq(hc => hc.Id, userId),
                 habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
             );
 
             string today = DateTime.Today.ToString("yyyy-MM-dd");
             var combinedUpdate = Builders<HabitCollection>.Update
                 .PullFilter(hc => hc.Habits, h => h.Id == habit.Id)
-                .PullFilter(hc => hc.HabitHistory[today], h => h.Id == habit.Id)
+                .Unset($"HabitHistory.{today}.{habit.Id}")
                 .Push(hc => hc.DeletedHabits, habit);
 
             //remove from habits collection
@@ -109,25 +118,23 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<List<Habit>?> EditHabit(string sessionKey, Habit habit)
     {
-        string? id = await GetUserIdBySessionKey(sessionKey);
-        if (id is not null)
+        string? userId = await GetUserIdBySessionKey(sessionKey);
+        if (userId is not null)
         {
             var findHabit = habitFilter.And(
-                habitFilter.Eq(hc => hc.Id, id),
+                habitFilter.Eq(hc => hc.Id, userId),
                 habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
             );
 
             string today = DateTime.Today.ToString("yyyy-MM-dd");
-            SetArrayFilters(habit);
-
             var updateHabits = update
-                .Set("Habits.$[h]", habit)
-                .Set($"HabitHistory.{today}.$[h]", habit);
+                .Set("Habits.$", habit)
+                .Set($"HabitHistory.{today}.{habit.Id}", habit);
 
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
                 findHabit,
-                update.Set("Habits.$.Name", habit.Name),
+                updateHabits,
                 options
             );
             return collection?.Habits;
@@ -137,16 +144,13 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit, string date)
     {
-        string? id = await GetUserIdBySessionKey(sessionKey);
+        string? userId = await GetUserIdBySessionKey(sessionKey);
 
-        if (id is not null)
+        if (userId is not null)
         {
-            //Set array filters so that the only element in the array updated is the one with the matching Id
-            SetArrayFilters(habit);
-
             HabitCollection updatedCollection = await _habitCollections.FindOneAndUpdateAsync(
-                habitFilter.Eq(hc => hc.Id, id),
-                update.Set($"HabitHistory.{date}.$[h].Completed",true),
+                habitFilter.Eq(hc => hc.Id, userId),
+                update.Set($"HabitHistory.{date}.{habit.Id}.Completed",true),
                 options
             );
         }

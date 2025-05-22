@@ -15,4 +15,6 @@ public interface IHabitService
     Task<List<Habit>?> EditHabit(string sessionKey, Habit habit);
 
     Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit, string date);
+
+    Task<HabitCollection?> GetHabitCollection(string sessionKey);
 }
