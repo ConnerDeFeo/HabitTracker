@@ -142,7 +142,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<List<Habit>?> CompleteHabit(string sessionKey, Habit habit, string? date=null)
+    public async Task<List<Habit>?> SetHabitCompletion(string sessionKey,string date, Habit habit, bool completed)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
 
@@ -151,7 +151,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
             HabitCollection updatedCollection = await _habitCollections.FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.{habit.Id}.Completed", true),
+                update.Set($"HabitHistory.{date}.{habit.Id}.Completed", completed),
                 options
             );
             return [.. updatedCollection.HabitHistory[date].Values];

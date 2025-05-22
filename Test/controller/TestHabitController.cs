@@ -74,14 +74,14 @@ public class TestHabitController
         );
 
         MockHabitService
-        .Setup(hs => hs.CompleteHabit(It.IsAny<string>(), It.IsAny<Habit>(), It.IsAny<string>()))
-        .Returns<string, Habit, string>((sessionKey, habit, date) =>
+        .Setup(hs => hs.SetHabitCompletion(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Habit>(), It.IsAny<bool>()))
+        .Returns<string, string, Habit, bool>((sessionKey, date, habit, completed) =>
         {
             if (sessionKey.Equals("TestSessionKey"))
             {
                 if (habit.Equals(new Habit { Name = "TestHabit", Id = "1234" }) && date == "2025-05-22")
                 {
-                    habit.Completed = true;
+                    habit.Completed = completed;
                     return Task.FromResult<List<Habit>?>(new List<Habit> { habit });
                 }
                 else return Task.FromResult<List<Habit>?>(null);
@@ -187,15 +187,16 @@ public class TestHabitController
     }
 
     [Fact]
-    public async Task TestCompleteHabit()
+    public async Task TestSetHabitCompletion()
     {
         SetValidSessionKey();
 
-        IActionResult result = await habitController.CompleteHabit(
+        IActionResult result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
                 Habit = new Habit { Name = "TestHabit", Id = "1234" },
-                Date = "2025-05-22"
+                Date = "2025-05-22",
+                Completed=true
             }
         );
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -205,35 +206,38 @@ public class TestHabitController
     }
 
     [Fact]
-    public async Task TestCompleteHabitInvalid()
+    public async Task TestSetHabitCompletionInvalid()
     {
         SetInvalidSessionKey();
 
-        IActionResult result = await habitController.CompleteHabit(
+        IActionResult result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
                 Habit = new Habit { Name = "TestHabit", Id = "1234" },
-                Date = "2025-05-22"
+                Date = "2025-05-22",
+                Completed = true
             }
         );
         Assert.IsType<UnauthorizedResult>(result);
 
         SetValidSessionKey();
 
-        result = await habitController.CompleteHabit(
+        result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
                 Habit = new Habit { Name = "TestHabit", Id = "1233" },
-                Date = "2025-05-22"
+                Date = "2025-05-22",
+                Completed = true
             }
         );
         Assert.IsType<UnauthorizedResult>(result);
 
-        result = await habitController.CompleteHabit(
+        result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
                 Habit = new Habit { Name = "TestHabit", Id = "1234" },
-                Date = "2025-05-21"
+                Date = "2025-05-21",
+                Completed = true
             }
         );
         Assert.IsType<UnauthorizedResult>(result);

@@ -145,14 +145,14 @@ public class TestMongoHabitService
     }
 
     [Fact]
-    public async Task TestCompleteHabit()
+    public async Task TestSetHabitCompletion()
     {
         LoginResult result = await userService.CreateUser("Conner", "12341234");
         string sessionKey = result.SessionKey;
 
         List<Habit>? habits = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
         Habit habit = habits![0];
-        List<Habit>? datedHabits = await habitService.CompleteHabit(sessionKey, habit, DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? datedHabits = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), habit,true);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.True(datedHabits![0].Completed);
@@ -161,14 +161,14 @@ public class TestMongoHabitService
     }
 
     [Fact]
-    public async Task TestCompleteHabitFailiure()
+    public async Task TestSetHabitCompletionFailiure()
     {
         LoginResult result = await userService.CreateUser("Conner", "12341234");
         string sessionKey = result.SessionKey;
 
         List<Habit>? habits = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
         Habit habit = habits![0];
-        List<Habit>? datedHabits = await habitService.CompleteHabit(sessionKey, new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() },DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? datedHabits = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() },true);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.False(datedHabits![0].Completed);
