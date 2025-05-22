@@ -62,24 +62,13 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     }
 
     [HttpPost("complete")]
-    public async Task<IActionResult> CompleteHabit([FromBody] Habit habit)
+    public async Task<IActionResult> CompleteHabit([FromBody] CompleteHabitRequest habitRequest)
     {
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            List<Habit>? habits = await _habitService.CompleteHabit(sesionKey, habit);
-            if (habits != null) return Ok(habits);
-        }
-        return Unauthorized();
-    }
-
-    [HttpPost("completePast")]
-    public async Task<IActionResult> CompletePastHabit([FromBody] Habit habit)
-    {
-        var sesionKey = Request.Cookies["sessionKey"];
-        if (sesionKey != null)
-        {
-            List<Habit>? habits = await _habitService.CompleteHabit(sesionKey, habit);
+            
+            List<Habit>? habits = await _habitService.CompleteHabit(sesionKey, habitRequest.Habit, habitRequest.Date);
             if (habits != null) return Ok(habits);
         }
         return Unauthorized();
