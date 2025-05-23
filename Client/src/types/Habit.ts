@@ -3,7 +3,7 @@ type Habit ={
     name:string,
     type: string,
     completed: boolean,
-    value: number
+    value?: number;
 };
 
 export default Habit;
