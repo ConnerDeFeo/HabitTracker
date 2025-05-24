@@ -20,6 +20,8 @@ public class Habit
 
     public double? Value { get; set; }
 
+    public string? ValueUnitType { get; set; }
+
     public override bool Equals(object? obj)
     {
         if (obj != null && obj is Habit other)

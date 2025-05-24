@@ -4,6 +4,7 @@ type Habit ={
     type: string,
     completed: boolean,
     value?: number;
+    valueUnitType?:string;
 };
 
 export default Habit;

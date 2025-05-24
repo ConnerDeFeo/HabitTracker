@@ -3,13 +3,72 @@ import HabitService from "../service/HabitService";
 import Habit from "../types/Habit";
 import ImageButton from "../components/ImageButton";
 import DailyHabit from "./DailyHabit";
-import Input from "../components/Input";
 
-const CreateHabit = (props: {habit: Habit, setHabit: ()=>void})=>{
-    // const {habit, setHabit} = props;
+
+//not technically needed as a function but makes code more readable
+const CreateHabit = (props: {setHabit: React.Dispatch<React.SetStateAction<Habit>> })=>{
+    const {setHabit} = props;
+    const [valueSelection, setValueSelection] = useState<React.ReactNode>(<></>)
+
+    const handleBooleanHabit = ()=>{
+        setValueSelection(<></>);
+    }
+    const handleTimeHabit = ()=>{
+        setValueSelection(
+            <div className="grid grid-cols-2 grid-rows-2">
+                <label htmlFor="value" className="font-hand text-4xl text-left col-span-2 border-b border-black">Value: </label>
+                <input id="value" type="number" className="text-4xl text-center"/>
+                <div className="font-hand text-4xl">Minutes</div>
+            </div>
+        );
+    }
+    const handleNumericHabit = ()=>{
+        setValueSelection(
+            <div className="grid grid-cols-2 grid-rows-2">
+                <label htmlFor="value" className="font-hand text-4xl text-left col-span-2 border-b border-black">Value: </label>
+                <input id="value" type="number" className="text-4xl text-center"/>
+                <input id="valueUnitType" className="text-2xl text-center"/>
+            </div>
+        );
+    }
+
+    //NO SWITCH STATEMENTS RAHHHHHHH (that's a code smell - Bobby <-- If you're an employer thats my prof)
+    const typeChangeEvents: Record<string, ()=>void> = {
+        boolean: handleBooleanHabit, 
+        time: handleTimeHabit, 
+        numeric: handleNumericHabit
+    };
+
+
+    const handleTypeChange = (event:string)=>{
+        const handler = typeChangeEvents[event];
+        handler();
+    }
+
+
     return(
-        <div>
-            {/* <Input title="Name: " value={habit.name} updateValue={u}/> */}
+        <div className="grid">
+            <label htmlFor="name" className="font-hand text-4xl text-left">{"Name: "}</label>
+            <input 
+                id="name"
+                name="name" 
+                className="resize-none border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 " 
+                onChange={(e) => {
+                    setHabit((prevHabit: Habit) => ({
+                    ...prevHabit,
+                    name: e.target.value,
+                    }));
+                }}
+            />
+            <div className="grid">
+                <label htmlFor="type" className="font-hand text-4xl text-left">Type: </label>
+                <select id="type" name="type" className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3" onChange={(e)=>handleTypeChange(e.target.value)}>
+                    <option value="boolean">Boolean</option>
+                    <option value="time">Time</option>
+                    <option value="numeric">Numeric</option>
+                </select>
+                {valueSelection}
+            </div>
         </div>
     );
 }
@@ -23,15 +82,13 @@ const HabitCheckList = ()=>{
     }
 
     const [habits,setHabits] = useState<Habit[]>([]);
+
+    //all used for creating new habit UI
     const [addHabit, setAddHabit] = useState<React.ReactNode>(<></>);
     const [inEditMode,setInEditMode] = useState<boolean>(false);
     const [newHabit, setNewHabit] = useState<Habit>(defaultHabit);
-    
-    const createHabit = ()=>{
-        setAddHabit(<CreateHabit habit={newHabit} setHabit={()=>setNewHabit}/>);
-    }
 
-    const addHabitButton = <ImageButton className="mx-auto" onClick={()=>createHabit()}
+    const addHabitButton = <ImageButton className="mx-auto" onClick={()=>setAddHabit(<CreateHabit setHabit={()=>setNewHabit}/>)}
     image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>;
 
     useEffect(()=>{
@@ -52,8 +109,8 @@ const HabitCheckList = ()=>{
     }
 
     return(
-            <div className="flex flex-col border border-black mx-auto">
-                <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10 border border-black ">
+            <div className="flex flex-col  mx-auto">
+                <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
                     {habits.map((habit)=>
                         <DailyHabit habit={habit} key={habit.id}/>
                     )}
