@@ -17,17 +17,17 @@ const CreateHabit = (props: {setHabit: React.Dispatch<React.SetStateAction<Habit
         setValueSelection(
             <div className="grid grid-cols-2 grid-rows-2">
                 <label htmlFor="value" className="font-hand text-4xl text-left col-span-2 border-b border-black">Value: </label>
-                <input id="value" type="number" className="text-4xl text-center"/>
-                <div className="font-hand text-4xl">Minutes</div>
+                <input id="timeValue" type="number" name="type" className="text-2xl text-center border-2 shadow-xl rounded-2xl"/>
+                <div className="font-hand text-4xl border-2 shadow-xl rounded-2xl">Minutes</div>
             </div>
         );
     }
     const handleNumericHabit = ()=>{
         setValueSelection(
-            <div className="grid grid-cols-2 grid-rows-2">
-                <label htmlFor="value" className="font-hand text-4xl text-left col-span-2 border-b border-black">Value: </label>
-                <input id="value" type="number" className="text-4xl text-center"/>
-                <input id="valueUnitType" className="text-2xl text-center"/>
+            <div className="grid grid-cols-2 grid-rows-2 gap-x-1">
+                <label htmlFor="numericValue" className="font-hand text-4xl text-left col-span-2 border-b border-black">Value: </label>
+                <input id="numericValue" type="number" name="type" className="text-2xl text-center border-2 shadow-xl rounded-2xl"/>
+                <input id="valueUnitType" className="text-2xl text-center border-2 shadow-xl rounded-2xl"/>
             </div>
         );
     }
@@ -62,7 +62,12 @@ const CreateHabit = (props: {setHabit: React.Dispatch<React.SetStateAction<Habit
             />
             <div className="grid">
                 <label htmlFor="type" className="font-hand text-4xl text-left">Type: </label>
-                <select id="type" name="type" className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3" onChange={(e)=>handleTypeChange(e.target.value)}>
+                <select 
+                    id="type" 
+                    name="type" 
+                    className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3" 
+                    onChange={(e)=>handleTypeChange(e.target.value)}
+                >
                     <option value="boolean">Boolean</option>
                     <option value="time">Time</option>
                     <option value="numeric">Numeric</option>
