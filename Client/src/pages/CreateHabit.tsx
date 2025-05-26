@@ -2,12 +2,26 @@ import { useState } from "react";
 import Habit from "../types/Habit";
 import HabitService from "../service/HabitService";
 
+/**
+ * _____________________________________________________
+ * IMPORTANT READ BEFORE LOOKING AT THE REST OF THE CODE
+ * 
+ * Types are held as numeric values on the front end for deserialization purposes:
+ * 
+ * 1: Boolean
+ * 2: Time
+ * 3: Numeric
+ * 
+ * @param props 
+ * @returns 
+ */
 const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habit[]>>, handleCancelation:()=>void })=>{
     const {setHabits, handleCancelation} = props;
 
     const defaultHabit: Habit = {
         name: "",
-        type: "boolean",
+        //Type is set default to "Boolean"
+        type: 0,
         completed:false,
         value:0,
         valueUnitType:""
@@ -22,7 +36,8 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
     const handleValueChange = (number: number)=>{
         if(number<0)
             return;
-        if(habit.type=="time"){
+        //If habit type is "Time"
+        if(habit.type==2){
             if(number<=600){
                 setHabit((prevHabit)=>({
                     ...prevHabit,
@@ -41,7 +56,7 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
 
     const renderValueOutput = ()=>{
         switch(habit.type){
-            case "time":
+            case 2:
                 return(
                     <div className="grid grid-cols-2 grid-rows-2 gap-x-1">
                         <label htmlFor="timeValue" className="font-hand text-4xl text-left col-span-2">Value: </label>
@@ -56,7 +71,7 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
                         <span className={valueUnitStyling+" text-4xl"}>Minutes</span>
                     </div>
                 );
-            case "numeric":
+            case 3:
                 return(
                     <div className="grid grid-cols-2 grid-rows-2 gap-x-1">
                         <label htmlFor="numericValue" className="font-hand text-4xl text-left col-span-2">Value: </label>
@@ -93,10 +108,11 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
     }
 
     const handleTypeChange = (event:string)=>{
-        const valueUnitType = event=="time" ? "minutes" : "";
+        const num = Number.parseInt(event);
+        const valueUnitType = num==2 ? "minutes" : "";
         setHabit((prevHabit)=>({
             ...prevHabit,
-            type: event,
+            type: num,
             value: 0,
             valueUnitType:valueUnitType
         }))
@@ -124,9 +140,9 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
                     className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3" 
                     onChange={(e)=>handleTypeChange(e.target.value)}
                 >
-                    <option value="boolean">Boolean</option>
-                    <option value="time">Time</option>
-                    <option value="numeric">Numeric</option>
+                    <option value={1}>Boolean</option>
+                    <option value={2}>Time</option>
+                    <option value={3}>Numeric</option>
                 </select>
                 {renderValueOutput()}
             </div>
@@ -136,6 +152,12 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
                 </button>
                 <button className={buttonStyling} onClick={
                     async () => {
+                        const resp = await HabitService.CreateHabit(habit);
+                        if(resp.status==200){
+                            const newHabit = await resp.json();
+                            setHabits((habits)=>([...habits,newHabit]));
+                        }
+                        handleCancelation();
                     }
                 }>
                     <img src="./checkMark.webp" alt="check mark" className="w-8 h-8 mx-auto"/>

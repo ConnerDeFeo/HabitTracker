@@ -1,7 +1,7 @@
 type Habit ={
     id?: string,
     name:string,
-    type: string,
+    type: number,
     completed: boolean,
     value?: number;
     valueUnitType?:string;

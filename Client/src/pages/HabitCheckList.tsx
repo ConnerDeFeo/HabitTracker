@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import HabitService from "../service/HabitService";
 import Habit from "../types/Habit";
 import ImageButton from "../components/ImageButton";
-import DailyHabit from "./DailyHabit";
 import CreateHabit from "./CreateHabit";
-
 
 const HabitCheckList = ()=>{
 
@@ -17,7 +15,7 @@ const HabitCheckList = ()=>{
     const addHabitButton = 
         <ImageButton 
             className="mx-auto" 
-            onClick={()=>setAddHabit(<CreateHabit setHabits={()=>setHabits} handleCancelation={()=>setAddHabit(addHabitButton)}/>)}
+            onClick={()=>setAddHabit(<CreateHabit setHabits={setHabits} handleCancelation={()=>setAddHabit(addHabitButton)}/>)}
             image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>;
 
     useEffect(()=>{
@@ -41,7 +39,9 @@ const HabitCheckList = ()=>{
             <div className="flex flex-col  mx-auto">
                 <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
                     {habits.map((habit)=>
-                        <DailyHabit habit={habit} key={habit.id}/>
+                        <div className="w-80 break-words mx-auto" key={habit.id}>
+                            <p className="text-5xl">{habit.name}</p> 
+                        </div>
                     )}
                     {addHabit}
                 </div>
