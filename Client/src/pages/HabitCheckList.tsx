@@ -3,6 +3,7 @@ import HabitService from "../service/HabitService";
 import Habit from "../types/Habit";
 import ImageButton from "../components/ImageButton";
 import CreateHabit from "./CreateHabit";
+import DailyHabit from "./DailyHabit";
 
 const HabitCheckList = ()=>{
 
@@ -27,6 +28,10 @@ const HabitCheckList = ()=>{
         fetchHabits();
     },[])
 
+    const handleHabitEdits = ()=>{
+        
+    }
+
     const toggleEdit = ()=>{
         if(inEditMode)
             setAddHabit(<></>);
@@ -38,11 +43,7 @@ const HabitCheckList = ()=>{
     return(
             <div className="flex flex-col  mx-auto">
                 <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
-                    {habits.map((habit)=>
-                        <div className="w-80 break-words mx-auto" key={habit.id}>
-                            <p className="text-5xl">{habit.name}</p> 
-                        </div>
-                    )}
+                    {habits.map((habit)=><DailyHabit habit={habit} inEditMode={inEditMode} key={habit.id}/>)}
                     {addHabit}
                 </div>
                 <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 

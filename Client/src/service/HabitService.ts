@@ -10,6 +10,9 @@ const HabitService ={
     CreateHabit: async (habit:Habit)=>{
         return await API.post(url,habit);
     },
+    EditHabit: async (habit: Habit)=>{
+        return await API.put(url,habit);
+    }
 }
 
 export default HabitService;
