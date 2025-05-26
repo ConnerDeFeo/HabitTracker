@@ -23,9 +23,9 @@ public class TestHabitController
         .Returns<string, Habit>((sessionKey, habit) =>
         {
             if (sessionKey.Equals("TestSessionKey"))
-                return Task.FromResult<List<Habit>?>(new List<Habit> { habit });
+                return Task.FromResult<Habit?>(habit);
             else
-                return Task.FromResult<List<Habit>?>(null);
+                return Task.FromResult<Habit?>(null);
 
         }
         );
@@ -50,11 +50,11 @@ public class TestHabitController
             if (sessionKey.Equals("TestSessionKey"))
             {
                 if (habit.Equals(new Habit { Name = "Test", Id = "1234" }))
-                    return Task.FromResult<List<Habit>?>(new List<Habit> { });
-                else return Task.FromResult<List<Habit>?>(null);
+                    return Task.FromResult<bool>(true);
+                else return Task.FromResult<bool>(false);
             }
             else
-                return Task.FromResult<List<Habit>?>(null);
+                return Task.FromResult<bool>(false);
         }
         );
 
@@ -65,11 +65,11 @@ public class TestHabitController
             if (sessionKey.Equals("TestSessionKey"))
             {
                 if (habit.Equals(new Habit { Name = "TestHabit", Id = "1234" }))
-                    return Task.FromResult<List<Habit>?>(new List<Habit> { habit });
-                else return Task.FromResult<List<Habit>?>(null);
+                    return Task.FromResult<Habit?>(habit);
+                else return Task.FromResult<Habit?>(null);
             }
             else
-                return Task.FromResult<List<Habit>?>(null);
+                return Task.FromResult<Habit?>(null);
         }
         );
 
@@ -80,15 +80,13 @@ public class TestHabitController
             if (sessionKey.Equals("TestSessionKey"))
             {
                 if (habit.Equals(new Habit { Name = "TestHabit", Id = "1234" }) && date == "2025-05-22")
-                {
-                    habit.Completed = completed;
-                    return Task.FromResult<List<Habit>?>(new List<Habit> { habit });
-                }
-                else return Task.FromResult<List<Habit>?>(null);
+                    return Task.FromResult<bool>(true);
+                else
+                    return Task.FromResult<bool>(false);
             }
             else
             {
-                return Task.FromResult<List<Habit>?>(null);
+                return Task.FromResult<bool>(false);
             }
         }
         );
@@ -136,9 +134,8 @@ public class TestHabitController
 
         IActionResult result = await habitController.CreateHabit(new Habit { Name = "TestHabit" });
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
-        Assert.NotEmpty(habitResult);
-        Assert.Equal("TestHabit", habitResult[0].Name);
+        var habitResult = Assert.IsType<Habit>(okResult.Value);
+        Assert.Equal("TestHabit", habitResult.Name);
     }
 
     [Fact]
@@ -147,9 +144,7 @@ public class TestHabitController
         SetValidSessionKey();
 
         IActionResult result = await habitController.DeleteHabit(new Habit { Name = "TestHabit", Id = "1234" });
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
-        Assert.Empty(habitResult);
+        Assert.IsType<OkResult>(result);
     }
     [Fact]
     public async Task TestDeleteHabitInvalid()
@@ -170,8 +165,8 @@ public class TestHabitController
 
         IActionResult result = await habitController.EditHabit(new Habit { Name = "TestHabit", Id = "1234" });
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
-        Assert.Equal("TestHabit", habitResult[0].Name);
+        var habitResult = Assert.IsType<Habit>(okResult.Value);
+        Assert.Equal("TestHabit", habitResult.Name);
     }
     [Fact]
     public async Task TestEditHabitInvalid()
@@ -199,10 +194,7 @@ public class TestHabitController
                 Completed=true
             }
         );
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
-
-        Assert.True(habitResult[0].Completed);
+        Assert.IsType<OkResult>(result);
     }
 
     [Fact]

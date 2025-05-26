@@ -32,9 +32,9 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            List<Habit>? habits = await _habitService.CreateHabit(sesionKey, habit);
-            if (habits != null)
-                return Ok(habits);
+            Habit? createdHabit = await _habitService.CreateHabit(sesionKey, habit);
+            if (createdHabit != null)
+                return Ok(createdHabit);
         }
         return Unauthorized();
     }
@@ -45,8 +45,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            List<Habit>? habits = await _habitService.DeleteHabit(sesionKey, habit);
-            if (habits != null) return Ok(habits);
+            bool habitDeleted = await _habitService.DeleteHabit(sesionKey, habit);
+            if (habitDeleted) return Ok();
         }
         return Unauthorized();
     }
@@ -57,8 +57,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            List<Habit>? habits = await _habitService.EditHabit(sesionKey, habit);
-            if (habits != null) return Ok(habits);
+            Habit? editedHabit = await _habitService.EditHabit(sesionKey, habit);
+            if (editedHabit != null) return Ok(editedHabit);
         }
         return Unauthorized();
     }
@@ -70,8 +70,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         if (sesionKey != null)
         {
             //Note this will be the list of habits that correspond with the date
-            List<Habit>? habits = await _habitService.SetHabitCompletion(sesionKey,habitRequest.Date, habitRequest.Habit, habitRequest.Completed);
-            if (habits != null) return Ok(habits);
+            bool completed = await _habitService.SetHabitCompletion(sesionKey,habitRequest.Date, habitRequest.Habit, habitRequest.Completed);
+            if (completed) return Ok();
         }
         return Unauthorized();
     }

@@ -8,13 +8,13 @@ namespace Server.service;
 public interface IHabitService
 {
     Task<List<Habit>?> GetHabits(string sessionKey);
-    Task<List<Habit>?> CreateHabit(string sessionKey, Habit habit);
+    Task<Habit?> CreateHabit(string sessionKey, Habit habit);
 
-    Task<List<Habit>?> DeleteHabit(string sessionKey, Habit habit);
+    Task<bool> DeleteHabit(string sessionKey, Habit habit);
 
-    Task<List<Habit>?> EditHabit(string sessionKey, Habit habit);
+    Task<Habit?> EditHabit(string sessionKey, Habit habit);
 
-    Task<List<Habit>?> SetHabitCompletion(string sessionKey, string date, Habit habit, bool completed);
+    Task<bool> SetHabitCompletion(string sessionKey, string date, Habit habit, bool completed);
 
     Task<HabitCollection?> GetHabitCollection(string sessionKey);
 }

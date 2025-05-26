@@ -134,12 +134,11 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
                 <button className={buttonStyling}>
                     <img src="./x.webp" alt="x" className="w-10 h-10 mx-auto" onClick={handleCancelation}/>
                 </button>
-                <button className={buttonStyling}>
-                    <img src="./checkMark.webp" alt="check mark" className="w-8 h-8 mx-auto" onClick={
-                        async ()=>{
-                            const createdHabit = await HabitService.CreateHabit(habit);
-                        }
-                    }/>
+                <button className={buttonStyling} onClick={
+                    async () => {
+                    }
+                }>
+                    <img src="./checkMark.webp" alt="check mark" className="w-8 h-8 mx-auto"/>
                 </button>
             </div>
         </div>
