@@ -1,7 +1,16 @@
+import { useEffect, useState } from "react";
 import Habit from "../types/Habit";
+import CreateHabit from "./CreateHabit";
+import HabitService from "../service/HabitService";
 
-const DailyHabit = (props: {habit: Habit, inEditMode: boolean})=>{
-    const {habit, inEditMode} = props;
+const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.Dispatch<React.SetStateAction<Habit[]>>})=>{
+    const {habit, inEditMode, setHabits} = props;
+    const [inEditHabitMode, setInEditHabitMode] = useState<boolean>(false);
+
+    //when edit mode is changed, editing a habit should be reset
+    useEffect(()=>{
+        setInEditHabitMode(false);
+    },[inEditMode]);
 
     let habitType;
     switch(habit.type){
@@ -16,14 +25,40 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean})=>{
             break;
     }
 
-    return inEditMode ? 
-        <div className="text-5xl text-left">
-            <p >Name: {habit.name}</p>
-            <p >{habitType}</p>
-        </div>:
-        <div className="w-80 break-words mx-auto" key={habit.id}>
+    const handleClick = ()=>{
+        if(inEditMode)
+            setInEditHabitMode(true);
+    }
+
+    const handleHabitEditCompletion = async(habit:Habit)=>{
+        const resp = await HabitService.CreateHabit(habit);
+        const newHabit = await resp.json();
+        
+        if(resp.status==200){
+            setHabits((prevHabits)=>({
+                    ...prevHabits,
+                    newHabit
+                }
+            ));
+        }
+    }
+
+    const handleCancelation = ()=>{
+        setInEditHabitMode(false);
+    }
+
+    return inEditMode && inEditHabitMode ? 
+        <CreateHabit 
+            handleCancelation={handleCancelation}
+            handleHabitCompletion={handleHabitEditCompletion}
+            initialHabit={{...habit}}
+        />
+        :
+        <div className="w-80 break-words mx-auto cursor-pointer" key={habit.id} 
+            onClick={handleClick}
+        >
             <p className="text-5xl">{habit.name}</p> 
-        </div>;
+        </div>
 }
 
 export default DailyHabit;

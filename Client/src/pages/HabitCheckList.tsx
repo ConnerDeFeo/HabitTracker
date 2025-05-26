@@ -13,11 +13,31 @@ const HabitCheckList = ()=>{
     const [addHabit, setAddHabit] = useState<React.ReactNode>(<></>);
     const [inEditMode,setInEditMode] = useState<boolean>(false);
 
+    const handleNewHabitCompletion = async (habit:Habit)=>{
+        const resp = await HabitService.CreateHabit(habit);
+
+        if(resp.status==200){
+            const newHabit = await resp.json();
+            setHabits((prevHabits)=>([
+                    ...prevHabits,
+                    newHabit
+                ]
+            ));
+        }
+    }
+
     const addHabitButton = 
         <ImageButton 
             className="mx-auto" 
-            onClick={()=>setAddHabit(<CreateHabit setHabits={setHabits} handleCancelation={()=>setAddHabit(addHabitButton)}/>)}
-            image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>;
+            onClick={
+                ()=>setAddHabit(
+                    <CreateHabit 
+                        handleCancelation={()=>setAddHabit(addHabitButton)}
+                        handleHabitCompletion={handleNewHabitCompletion}
+                    />
+                )}
+            image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}
+        />;
 
     useEffect(()=>{
         const fetchHabits = async ()=>{
@@ -28,9 +48,6 @@ const HabitCheckList = ()=>{
         fetchHabits();
     },[])
 
-    const handleHabitEdits = ()=>{
-        
-    }
 
     const toggleEdit = ()=>{
         if(inEditMode)
@@ -43,7 +60,7 @@ const HabitCheckList = ()=>{
     return(
             <div className="flex flex-col  mx-auto">
                 <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
-                    {habits.map((habit)=><DailyHabit habit={habit} inEditMode={inEditMode} key={habit.id}/>)}
+                    {habits.map((habit)=><DailyHabit habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits}/>)}
                     {addHabit}
                 </div>
                 <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 

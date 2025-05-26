@@ -15,10 +15,14 @@ import HabitService from "../service/HabitService";
  * @param props 
  * @returns 
  */
-const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habit[]>>, handleCancelation:()=>void })=>{
-    const {setHabits, handleCancelation} = props;
+const CreateHabit = (props: {
+    handleCancelation:()=>void,
+    handleHabitCompletion: (habit: Habit)=>Promise<void>,
+    initialHabit?: Habit,
+})=>{
+    const {handleCancelation, handleHabitCompletion, initialHabit,} = props;
 
-    const defaultHabit: Habit = {
+    const defaultHabit: Habit = initialHabit??{
         name: "",
         //Type is set default to "Boolean"
         type: 0,
@@ -125,6 +129,7 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
                 id="name"
                 name="name" 
                 className="resize-none border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 " 
+                value={habit.name}
                 onChange={(e) => {
                     setHabit((prevHabit: Habit) => ({
                     ...prevHabit,
@@ -151,14 +156,7 @@ const CreateHabit = (props: {setHabits: React.Dispatch<React.SetStateAction<Habi
                     <img src="./x.webp" alt="x" className="w-10 h-10 mx-auto" onClick={handleCancelation}/>
                 </button>
                 <button className={buttonStyling} onClick={
-                    async () => {
-                        const resp = await HabitService.CreateHabit(habit);
-                        if(resp.status==200){
-                            const newHabit = await resp.json();
-                            setHabits((habits)=>([...habits,newHabit]));
-                        }
-                        handleCancelation();
-                    }
+                    async () => { await handleHabitCompletion(habit);}
                 }>
                     <img src="./checkMark.webp" alt="check mark" className="w-8 h-8 mx-auto"/>
                 </button>
