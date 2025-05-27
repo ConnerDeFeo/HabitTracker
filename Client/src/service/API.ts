@@ -27,6 +27,16 @@ const API = {
         },
         body: JSON.stringify(data),
       });
+    },
+    delete: async (path: string, data: Record<string, any>): Promise<Response> => {
+      return await fetch(path, {
+        credentials: 'include', 
+        method: 'DELETE',  
+        headers: {
+          'Content-Type': 'application/json',  
+        },
+        body: JSON.stringify(data),
+      });
     }
   };
   

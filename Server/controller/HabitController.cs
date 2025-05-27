@@ -40,7 +40,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteHabit([FromBody] Habit habit)
+    public async Task<IActionResult> DeleteHabit([FromHeader] string habitId)
     {
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)

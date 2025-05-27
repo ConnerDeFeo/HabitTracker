@@ -3,7 +3,7 @@ const Input = (props: { title: string; value: string; updateValue: (character: s
     return(
         <>
             <label htmlFor={title} className="font-hand text-4xl">{title}</label>
-            <input type={type} id={title} name={title} className="resize-none border-2 shadow-xl rounded-2xl text-xl h-12 pl-3 align-center" value={value} onChange={(e)=>updateValue(e.target.value)}/>
+            <input type={type} id={title} name={title} className="resize-none habitBorder text-xl h-12 pl-3 align-center" value={value} onChange={(e)=>updateValue(e.target.value)}/>
         </>
     );
 } 

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+h1,p{
+    font-family: 'Just Another Hand', Courier, monospace;
+}
+
 .font-hand{
     font-family: 'Just Another Hand', Courier, monospace;
 }
@@ -26,6 +30,10 @@
     transform: scaleX(1); 
 }
 
-h1,p{
-    font-family: 'Just Another Hand', Courier, monospace;
+.habitBorder{
+  border-width: 2px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Tailwind's shadow-xl */
+  border-radius: 1rem; /* 2xl = 16px = 1rem in Tailwind */
+
 }
