@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 import HabitCheckList from './pages/HabitCheckList';
 import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
-import UserService from './service/UserService';
+import UserService from './services/UserService';
 
 const HabitTracker = ()=>{
 

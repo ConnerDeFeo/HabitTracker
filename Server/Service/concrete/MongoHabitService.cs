@@ -10,7 +10,7 @@ using MongoDB.Bson;
 /// Concrete implementations of the Habit service class allowing functionality
 /// with a mongo database.
 /// </summary>
-/// <param name="_database"></param>
+/// <param name="_database">self explanitory</param>
 public class MongoHabitService(IMongoDatabase _database) : IHabitService
 {
 
@@ -22,11 +22,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly UpdateDefinitionBuilder<HabitCollection> update = Builders<HabitCollection>.Update;
     private readonly ProjectionDefinition<HabitCollection> projection = Builders<HabitCollection>.Projection.Include(h => h.Habits);
 
-    /// <summary>
-    /// Optimized user lookup based on session key given
-    /// </summary>
-    /// <param name="sessionKey"></param>
-    /// <returns></returns>
     public async Task<string?> GetUserIdBySessionKey(string sessionKey)
     {
         User user = await _users.Find(userFilter.Eq(u => u.SessionKey, sessionKey)).FirstOrDefaultAsync();
@@ -60,6 +55,12 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
+    /// <summary>
+    /// Checks if the given habitid exists in the users current habits
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="habitId"></param>
+    /// <returns></returns>
     private async Task<Habit?> HabitIdExists(string userId, string habitId)
     {
         var collection = await _habitCollections
@@ -67,6 +68,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             .FirstOrDefaultAsync();
         return collection?.Habits.FirstOrDefault(h => h.Id == habitId);
     }
+
+    /*For the followiong functions the habit is checked to make sure it exists before
+        performing any actions so that the controllers can send back the proper message
+        should a habit be deleted, but it never existed, for instance. */
 
     public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
     {
@@ -156,7 +161,8 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<bool> SetHabitCompletion(string sessionKey,string date, string habitId, bool completed)
+
+    public async Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
 
@@ -164,11 +170,11 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         {
             if (await HabitIdExists(userId, habitId) is null)
                 return false;
-                
+
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
             await _habitCollections.UpdateOneAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date.Trim()}.{habitId}.Completed", completed)
+                update.Set($"HabitHistory.{date}.{habitId}.Completed", completed)
             );
             return true;
         }

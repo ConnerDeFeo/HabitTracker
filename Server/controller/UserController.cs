@@ -7,9 +7,8 @@ using Server.service;
 
 /// <summary>
 /// Handles user requests dealing with user profiles specifically.
-/// This does not include and data regarding habits. All logic is delegated
-/// to the userService class and this class simply routes and returns
-/// communications between the front and back end service classes.
+/// This does not include and data regarding habits. Logic is delegated
+/// to a concrete implementation of the userService interface.
 /// </summary>
 /// <param name="_userService"></param>
 [Route("users")]

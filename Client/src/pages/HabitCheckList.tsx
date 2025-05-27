@@ -1,18 +1,29 @@
 import { useEffect, useState } from "react";
-import HabitService from "../service/HabitService";
+import HabitService from "../services/HabitService";
 import Habit from "../types/Habit";
 import ImageButton from "../components/ImageButton";
-import CreateHabit from "./CreateHabit";
-import DailyHabit from "./DailyHabit";
+import CreateHabit from "../components/CreateHabit";
+import HabitComponent from "./HabitComponet";
 
 const HabitCheckList = ()=>{
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
-    //all used for creating new habit UI
+    //All used for creating new habit UI
     const [addHabit, setAddHabit] = useState<React.ReactNode>(<></>);
     const [inEditMode,setInEditMode] = useState<boolean>(false);
 
+    //On render grab the users habits
+    useEffect(()=>{
+        const fetchHabits = async ()=>{
+            const resp = await HabitService.getHabits();
+            const data = await resp.json();
+            setHabits(data);
+        }
+        fetchHabits();
+    },[])
+
+    //When the user completes a new habit
     const handleNewHabitCompletion = async (habit:Habit)=>{
         const resp = await HabitService.createHabit(habit);
 
@@ -27,6 +38,7 @@ const HabitCheckList = ()=>{
         }
     }
 
+    //The plus icon the user looks at when making a new habit
     const addHabitButton = 
         <ImageButton 
             className="mx-auto" 
@@ -40,16 +52,7 @@ const HabitCheckList = ()=>{
             image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}
         />;
 
-    useEffect(()=>{
-        const fetchHabits = async ()=>{
-            const resp = await HabitService.getHabits();
-            const data = await resp.json();
-            setHabits(data);
-        }
-        fetchHabits();
-    },[])
-
-
+    //Switches between differnet edit modes
     const toggleEdit = ()=>{
         if(inEditMode)
             setAddHabit(<></>);
@@ -61,7 +64,8 @@ const HabitCheckList = ()=>{
     return(
             <div className="flex flex-col  mx-auto">
                 <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
-                    {habits.map((habit)=><DailyHabit habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits}/>)}
+                    {habits.map((habit)=><HabitComponent habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits}/>)}
+                    {/*This will only show if user is in edit mode */}
                     {addHabit}
                 </div>
                 <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 

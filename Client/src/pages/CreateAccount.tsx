@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Container from "../components/Container";
-import UserService from "../service/UserService";
+import UserService from "../services/UserService";
 import Waiting from "../components/Waiting";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";

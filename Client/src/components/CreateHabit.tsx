@@ -11,6 +11,8 @@ import Habit from "../types/Habit";
  * 2: Time
  * 3: Numeric
  * 
+ * This component is somewhat generic and can deal with the creation adn editation of habits.
+ * 
  * @param props 
  * @returns 
  */
@@ -23,7 +25,7 @@ const CreateHabit = (props: {
 
     const defaultHabit: Habit = initialHabit??{
         name: "",
-        //Type is set default to "Boolean"
+        //Type is set default to "Binary"
         type: 0,
         completed:false
     }
@@ -33,7 +35,7 @@ const CreateHabit = (props: {
     const valueUnitStyling = "font-hand border-2 shadow-xl rounded-2xl h-9 text-center";
     const buttonStyling = "border-2 border-black w-12 h-12 rounded-xl cursor-pointer mx-auto";
 
-    
+    //Handles value changes for the numeric and time habits.    
     const handleValueChange = (number: string)=>{
         const num = Number.parseInt(number);
         console.log(num);
@@ -49,6 +51,7 @@ const CreateHabit = (props: {
                 }));
             }
         }
+        //If habit type is "Numeric"
         else if(num<=99999){
             setHabit((prevHabit)=>({
                 ...prevHabit,
@@ -58,6 +61,8 @@ const CreateHabit = (props: {
         
     }
 
+    /*Renders the different creation components based on the type of habit being created.
+        Directly tied to the current habit.type*/
     const renderValueOutput = ()=>{
         switch(habit.type){
             case 2:
@@ -111,6 +116,7 @@ const CreateHabit = (props: {
         }
     }
 
+    //Changes the habit type and in effect the above function renderValueOutput() is effected by this
     const handleTypeChange = (event:string)=>{
         const num = Number.parseInt(event);
         const valueUnitType = num==2 ? "minutes" : "";

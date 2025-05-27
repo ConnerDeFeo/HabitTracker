@@ -18,6 +18,8 @@ public class Habit
 
     public bool Completed { get; set; } = false;
 
+
+    //The following two only apply to numeric and time habits
     public double? Value { get; set; }
 
     public string? ValueUnitType { get; set; }

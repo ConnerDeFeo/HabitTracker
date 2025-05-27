@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Server.model.habit;
 using Server.service;
 
+/// <summary>
+/// Main controller for dictating habit changes.
+/// Logic for how this is done is delegated to the
+/// habit service interface. 
+/// </summary>
 [Route("habits")]
 [ApiController]
 public class HabitController(IHabitService _habitService) : ControllerBase

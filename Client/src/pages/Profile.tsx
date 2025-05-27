@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Container from "../components/Container";
-import UserService from "../service/UserService";
+import UserService from "../services/UserService";
 
 const Profile =(props:{sessionUsername: string; setSessionUsername: (username:string)=>void})=>{
     const navigate = useNavigate();

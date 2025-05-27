@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Container from "../components/Container";
 import Input from "../components/Input";
 import Waiting from "../components/Waiting";
-import UserService from "../service/UserService";
+import UserService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 
 const Login = (props: {setSessionUsername: (username:string)=>void})=>{
