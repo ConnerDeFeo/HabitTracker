@@ -2,10 +2,7 @@ const API = {
     get: async (path: string): Promise<Response> => {
       return await fetch(path, {
         credentials: 'include', 
-        method: 'GET',  
-        headers: {
-          'Content-Type': 'application/json',  
-        }
+        method: 'GET'
       });
     },
     post: async (path: string, data: Record<string, any>): Promise<Response> => {
@@ -28,14 +25,10 @@ const API = {
         body: JSON.stringify(data),
       });
     },
-    delete: async (path: string, data: Record<string, any>): Promise<Response> => {
+    delete: async (path: string): Promise<Response> => {
       return await fetch(path, {
         credentials: 'include', 
-        method: 'DELETE',  
-        headers: {
-          'Content-Type': 'application/json',  
-        },
-        body: JSON.stringify(data),
+        method: 'DELETE'
       });
     }
   };

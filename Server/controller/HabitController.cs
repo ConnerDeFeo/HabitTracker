@@ -39,8 +39,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         return Unauthorized();
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteHabit([FromHeader] string habitId)
+    [HttpDelete("{habitId}")]
+    public async Task<IActionResult> DeleteHabit(string habitId)
     {
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
@@ -70,7 +70,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         if (sesionKey != null)
         {
             //Note this will be the list of habits that correspond with the date
-            bool completed = await _habitService.SetHabitCompletion(sesionKey,habitRequest.Date, habitRequest.Habit, habitRequest.Completed);
+            bool completed = await _habitService.SetHabitCompletion(sesionKey,habitRequest.Date, habitRequest.HabitId, habitRequest.Completed);
             if (completed) return Ok();
         }
         return Unauthorized();

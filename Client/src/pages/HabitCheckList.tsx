@@ -14,7 +14,7 @@ const HabitCheckList = ()=>{
     const [inEditMode,setInEditMode] = useState<boolean>(false);
 
     const handleNewHabitCompletion = async (habit:Habit)=>{
-        const resp = await HabitService.CreateHabit(habit);
+        const resp = await HabitService.createHabit(habit);
 
         if(resp.status==200){
             const newHabit = await resp.json();
@@ -42,7 +42,7 @@ const HabitCheckList = ()=>{
 
     useEffect(()=>{
         const fetchHabits = async ()=>{
-            const resp = await HabitService.GetHabits();
+            const resp = await HabitService.getHabits();
             const data = await resp.json();
             setHabits(data);
         }

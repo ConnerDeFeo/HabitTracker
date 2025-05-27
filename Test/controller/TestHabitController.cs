@@ -74,12 +74,12 @@ public class TestHabitController
         );
 
         MockHabitService
-        .Setup(hs => hs.SetHabitCompletion(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Habit>(), It.IsAny<bool>()))
-        .Returns<string, string, Habit, bool>((sessionKey, date, habit, completed) =>
+        .Setup(hs => hs.SetHabitCompletion(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+        .Returns<string, string, string, bool>((sessionKey, date, habitId, completed) =>
         {
             if (sessionKey.Equals("TestSessionKey"))
             {
-                if (habit.Equals(new Habit { Name = "TestHabit", Id = "1234" }) && date == "2025-05-22")
+                if (habitId.Equals("1234" ) && date.Equals("2025-05-22"))
                     return Task.FromResult<bool>(true);
                 else
                     return Task.FromResult<bool>(false);
@@ -189,7 +189,7 @@ public class TestHabitController
         IActionResult result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                Habit = new Habit { Name = "TestHabit", Id = "1234" },
+                HabitId = "1234" ,
                 Date = "2025-05-22",
                 Completed=true
             }
@@ -205,7 +205,7 @@ public class TestHabitController
         IActionResult result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                Habit = new Habit { Name = "TestHabit", Id = "1234" },
+                HabitId = "1234" ,
                 Date = "2025-05-22",
                 Completed = true
             }
@@ -217,7 +217,7 @@ public class TestHabitController
         result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                Habit = new Habit { Name = "TestHabit", Id = "1233" },
+                HabitId = "1233" ,
                 Date = "2025-05-22",
                 Completed = true
             }
@@ -227,7 +227,7 @@ public class TestHabitController
         result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                Habit = new Habit { Name = "TestHabit", Id = "1234" },
+                HabitId = "1234" ,
                 Date = "2025-05-21",
                 Completed = true
             }

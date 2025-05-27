@@ -60,12 +60,12 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    private async Task<bool> HabitIdExists(string userId, Habit habit)
+    private async Task<Habit?> HabitIdExists(string userId, string habitId)
     {
         var collection = await _habitCollections
-            .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habit.Id))
+            .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habitId))
             .FirstOrDefaultAsync();
-        return collection != null;
+        return collection?.Habits.FirstOrDefault(h => h.Id == habitId);
     }
 
     public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
@@ -102,13 +102,9 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
-            HabitCollection collection = await _habitCollections
-                .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habitId))
-                .FirstOrDefaultAsync();
-            if (collection == null)
+            Habit? habit = await HabitIdExists(userId, habitId);
+            if (habit is null)
                 return false;
-
-            Habit? habit = collection.Habits.FirstOrDefault(h => h.Id == habitId);
 
             var findHabit = habitFilter.And(
                 habitFilter.Eq(hc => hc.Id, userId),
@@ -137,7 +133,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
-            if (!await HabitIdExists(userId, habit))
+            if (habit.Id is null || await HabitIdExists(userId, habit.Id) is null)
                 return null;
 
             var findHabit = habitFilter.And(
@@ -160,19 +156,19 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<bool> SetHabitCompletion(string sessionKey,string date, Habit habit, bool completed)
+    public async Task<bool> SetHabitCompletion(string sessionKey,string date, string habitId, bool completed)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
 
         if (userId is not null)
         {
-            if (!await HabitIdExists(userId, habit))
+            if (await HabitIdExists(userId, habitId) is null)
                 return false;
                 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
             await _habitCollections.UpdateOneAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.{habit.Id}.Completed", completed)
+                update.Set($"HabitHistory.{date}.{habitId}.Completed", completed)
             );
             return true;
         }

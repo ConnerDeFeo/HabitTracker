@@ -154,7 +154,7 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
-        bool completed = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), habit!,true);
+        bool completed = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), habit!.Id!,true);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.True(completed);
@@ -169,7 +169,7 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
-        bool completed = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), new Habit { Name = "TestHabit", Id = ObjectId.GenerateNewId().ToString() },true);
+        bool completed = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), ObjectId.GenerateNewId().ToString() ,true);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.False(completed);

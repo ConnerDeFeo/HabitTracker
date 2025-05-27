@@ -4,14 +4,20 @@ import API from "./API";
 const url = import.meta.env.VITE_SERVER_URL+"habits/";
 
 const HabitService ={
-    GetHabits: async ()=>{
+    getHabits: async ()=>{
         return await API.get(url);
     },
-    CreateHabit: async (habit:Habit)=>{
+    createHabit: async (habit:Habit)=>{
         return await API.post(url,habit);
     },
-    EditHabit: async (habit: Habit)=>{
+    editHabit: async (habit: Habit)=>{
         return await API.put(url,habit);
+    },
+    deleteHabit: async (habitId: string)=>{
+        return await API.delete(url+habitId);
+    },
+    completeHabit: async (habitId: string)=>{
+        return await API.put(url,{ habitId:habitId });
     }
 }
 
