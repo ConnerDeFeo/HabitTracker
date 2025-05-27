@@ -2,7 +2,7 @@ namespace Server.model.habit;
 
 public enum HabitType
 {
-    BOOLEAN,
+    BINARY,
     TIME,
     NUMERIC
 }

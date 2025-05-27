@@ -145,7 +145,7 @@ const CreateHabit = (props: {
                     className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3" 
                     onChange={(e)=>handleTypeChange(e.target.value)}
                 >
-                    <option value={1}>Boolean</option>
+                    <option value={1}>Binary</option>
                     <option value={2}>Time</option>
                     <option value={3}>Numeric</option>
                 </select>

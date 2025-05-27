@@ -14,7 +14,7 @@ public class Habit
     
     public string Name{get;set;} = string.Empty;
 
-    public HabitType Type { get; set; } = HabitType.BOOLEAN;
+    public HabitType Type { get; set; } = HabitType.BINARY;
 
     public bool Completed { get; set; } = false;
 
