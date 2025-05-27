@@ -90,7 +90,7 @@ const HabitComponet = (props: {habit: Habit, inEditMode: boolean, setHabits: Rea
         :
         //Just looking at the normal daily checklist
         <div className={"w-80 break-words mx-auto cursor-pointer "} key={habit.id} onClick={handleHabitCompletionChange}>
-            <p className={fontStyling + (habit.completed ? " line-through":" ")}>{habit.name}</p>
+            <p className={fontStyling + (habit.completed && " line-through")}>{habit.name}</p>
         </div>
 }
 
