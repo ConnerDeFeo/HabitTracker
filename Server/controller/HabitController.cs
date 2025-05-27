@@ -58,7 +58,8 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         if (sesionKey != null)
         {
             Habit? editedHabit = await _habitService.EditHabit(sesionKey, habit);
-            if (editedHabit != null) return Ok(editedHabit);
+            if (editedHabit != null)
+                return Ok(editedHabit);
         }
         return Unauthorized();
     }
@@ -70,8 +71,9 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         if (sesionKey != null)
         {
             //Note this will be the list of habits that correspond with the date
-            bool completed = await _habitService.SetHabitCompletion(sesionKey,habitRequest.Date, habitRequest.HabitId, habitRequest.Completed);
-            if (completed) return Ok();
+            bool completed = await _habitService.SetHabitCompletion(sesionKey, habitRequest.Date, habitRequest.HabitId, habitRequest.Completed);
+            if (completed)
+                return Ok();
         }
         return Unauthorized();
     }

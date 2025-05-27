@@ -44,7 +44,6 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
         
         if(resp.status==200){
             const newHabit = await resp.json();
-            console.log(newHabit);
             setHabits((prevHabits) =>
                 prevHabits.map((h) =>
                     h.id === newHabit.id ? newHabit : h
@@ -55,7 +54,17 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
     }
 
     const handleHabitCompletionChange = async()=>{
+        const resp = await HabitService.completeHabit(habit.id!);
 
+        if(resp.status==200){
+            habit.completed=true;
+            setHabits((prevHabits) =>
+                prevHabits.map((h) =>
+                    h.id === habit.id ? habit : h
+                )
+            );
+            setHabits
+        }
     }
 
     const handleCancelation = ()=>{
@@ -84,7 +93,7 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
                 </div>
             :
                 <div className={"w-80 break-words mx-auto cursor-pointer"} key={habit.id} onClick={handleHabitCompletionChange}>
-                    <p className={fontStyling + (habit.completed ? "":"")}>{habit.name}</p>
+                    <p className={fontStyling + (habit.completed ? "border border-black":"")}>{habit.name}</p>
                 </div>
 }
 
