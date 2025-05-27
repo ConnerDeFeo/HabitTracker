@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Habit from "../types/Habit";
-import HabitService from "../service/HabitService";
 
 /**
  * _____________________________________________________
@@ -26,9 +25,7 @@ const CreateHabit = (props: {
         name: "",
         //Type is set default to "Boolean"
         type: 0,
-        completed:false,
-        value:0,
-        valueUnitType:""
+        completed:false
     }
     const [habit, setHabit] = useState<Habit>(defaultHabit);
 
@@ -37,22 +34,25 @@ const CreateHabit = (props: {
     const buttonStyling = "border-2 border-black w-12 h-12 rounded-xl cursor-pointer mx-auto";
 
     
-    const handleValueChange = (number: number)=>{
-        if(number<0)
+    const handleValueChange = (number: string)=>{
+        const num = Number.parseInt(number);
+        console.log(num);
+
+        if(num<0)
             return;
         //If habit type is "Time"
         if(habit.type==2){
-            if(number<=600){
+            if(num<=600){
                 setHabit((prevHabit)=>({
                     ...prevHabit,
-                    value:number
+                    value:num
                 }));
             }
         }
-        else if(number<=99999){
+        else if(num<=99999){
             setHabit((prevHabit)=>({
                 ...prevHabit,
-                value:number
+                value:num
             }));
         }
         
@@ -69,8 +69,8 @@ const CreateHabit = (props: {
                             type="number" 
                             name="type" 
                             className={valueInputStyling} 
-                            onChange={(e)=>handleValueChange(Number(e.target.value))}
                             value={habit.value}
+                            onChange={(e)=>handleValueChange(e.target.value)}
                         />
                         <span className={valueUnitStyling+" text-4xl"}>Minutes</span>
                     </div>
@@ -85,12 +85,13 @@ const CreateHabit = (props: {
                             name="type" 
                             title=""
                             className={valueInputStyling}
-                            onChange={(e)=>handleValueChange(Number(e.target.value))}
+                            onChange={(e)=>handleValueChange(e.target.value)}
                             value={habit.value}
                         />
                         <input 
                             id="valueUnitType" 
                             className={valueUnitStyling+" text-3xl"}
+                            value={habit.valueUnitType}
                             onChange={(e)=>setHabit((prevHabit)=>{
                                     const value = e.target.value;
                                     if(value.length<15){
@@ -102,7 +103,6 @@ const CreateHabit = (props: {
                                     return prevHabit
                                 }
                             )}
-                            value={habit.valueUnitType}
                         />
                     </div>
                 ); 

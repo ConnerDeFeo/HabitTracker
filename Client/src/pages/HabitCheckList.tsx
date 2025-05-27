@@ -23,6 +23,7 @@ const HabitCheckList = ()=>{
                     newHabit
                 ]
             ));
+            setAddHabit(addHabitButton);
         }
     }
 

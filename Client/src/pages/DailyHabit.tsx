@@ -31,15 +31,17 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
     }
 
     const handleHabitEditCompletion = async(habit:Habit)=>{
-        const resp = await HabitService.CreateHabit(habit);
-        const newHabit = await resp.json();
+        const resp = await HabitService.EditHabit(habit);
         
         if(resp.status==200){
-            setHabits((prevHabits)=>({
-                    ...prevHabits,
-                    newHabit
-                }
-            ));
+            const newHabit = await resp.json();
+            console.log(newHabit);
+            setHabits((prevHabits) =>
+                prevHabits.map((h) =>
+                    h.id === newHabit.id ? newHabit : h
+                )
+            );
+            setInEditHabitMode(false);
         }
     }
 
@@ -54,10 +56,11 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
             initialHabit={{...habit}}
         />
         :
-        <div className="w-80 break-words mx-auto cursor-pointer" key={habit.id} 
+        <div className={"w-80 break-words mx-auto cursor-pointer "+ (inEditMode?"border-2 shadow-xl rounded-2xl":"")} key={habit.id} 
             onClick={handleClick}
         >
-            <p className="text-5xl">{habit.name}</p> 
+            {inEditMode ? <img src="./EditHabits.svg" alt="editIcon" className="h-10 w-10 pl-2 mt-2"/>:<></>}
+            <p className="text-5xl pb-2">{habit.name}</p> 
         </div>
 }
 
