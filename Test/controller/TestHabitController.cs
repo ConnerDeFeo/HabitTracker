@@ -44,12 +44,12 @@ public class TestHabitController
         habitController = new HabitController(MockHabitService.Object);
 
         MockHabitService
-        .Setup(hs => hs.DeleteHabit(It.IsAny<string>(), It.IsAny<Habit>()))
-        .Returns<string, Habit>((sessionKey, habit) =>
+        .Setup(hs => hs.DeleteHabit(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, habitId) =>
         {
             if (sessionKey.Equals("TestSessionKey"))
             {
-                if (habit.Equals(new Habit { Name = "Test", Id = "1234" }))
+                if (habitId.Equals("1234" ))
                     return Task.FromResult<bool>(true);
                 else return Task.FromResult<bool>(false);
             }
@@ -143,7 +143,7 @@ public class TestHabitController
     {
         SetValidSessionKey();
 
-        IActionResult result = await habitController.DeleteHabit(new Habit { Name = "TestHabit", Id = "1234" });
+        IActionResult result = await habitController.DeleteHabit("1234");
         Assert.IsType<OkResult>(result);
     }
     [Fact]
@@ -151,11 +151,11 @@ public class TestHabitController
     {
         SetInvalidSessionKey();
 
-        IActionResult result = await habitController.DeleteHabit(new Habit { Name = "TestHabit", Id = "1234" });
+        IActionResult result = await habitController.DeleteHabit("1234");
         Assert.IsType<UnauthorizedResult>(result);
 
         SetValidSessionKey();
-        result = await habitController.DeleteHabit(new Habit { Name = "TestHabit", Id = "InvalidId" });
+        result = await habitController.DeleteHabit("InValidId");
         Assert.IsType<UnauthorizedResult>(result);
     }
     [Fact]

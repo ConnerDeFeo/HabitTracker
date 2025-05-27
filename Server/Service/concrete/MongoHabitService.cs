@@ -62,10 +62,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     private async Task<bool> HabitIdExists(string userId, Habit habit)
     {
-        var existingHabit = await _habitCollections
+        var collection = await _habitCollections
             .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habit.Id))
             .FirstOrDefaultAsync();
-        return existingHabit != null;
+        return collection != null;
     }
 
     public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
@@ -97,24 +97,29 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<bool> DeleteHabit(string sessionKey, Habit habit)
+    public async Task<bool> DeleteHabit(string sessionKey, string habitId)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
-            if (!await HabitIdExists(userId, habit))
+            HabitCollection collection = await _habitCollections
+                .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habitId))
+                .FirstOrDefaultAsync();
+            if (collection == null)
                 return false;
+
+            Habit? habit = collection.Habits.FirstOrDefault(h => h.Id == habitId);
 
             var findHabit = habitFilter.And(
                 habitFilter.Eq(hc => hc.Id, userId),
-                habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
+                habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habitId)
             );
 
             string today = DateTime.Today.ToString("yyyy-MM-dd");
             var combinedUpdate = Builders<HabitCollection>.Update
-                .PullFilter(hc => hc.Habits, h => h.Id == habit.Id)
-                .Unset($"HabitHistory.{today}.{habit.Id}")
-                .Push(hc => hc.DeletedHabits, habit);
+                .PullFilter(hc => hc.Habits, h => h.Id == habitId)
+                .Unset($"HabitHistory.{today}.{habitId}")
+                .Push(hc => hc.DeletedHabits, habit!);
 
             //remove from habits collection
              await _habitCollections

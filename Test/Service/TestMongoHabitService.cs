@@ -75,7 +75,7 @@ public class TestMongoHabitService
 
         Habit habit = new Habit { Name = "TestHabit", Id = id };
         await habitService.CreateHabit(sessionKey, habit);
-        bool deleted = await habitService.DeleteHabit(sessionKey, habit);
+        bool deleted = await habitService.DeleteHabit(sessionKey, habit.Id);
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
@@ -92,7 +92,7 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
-        bool deleted = await habitService.DeleteHabit(sessionKey, new Habit { Name = "TestHabit"});
+        bool deleted = await habitService.DeleteHabit(sessionKey, ObjectId.GenerateNewId().ToString());
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 

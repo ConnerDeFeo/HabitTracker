@@ -45,7 +45,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            bool habitDeleted = await _habitService.DeleteHabit(sesionKey, habit);
+            bool habitDeleted = await _habitService.DeleteHabit(sesionKey, habitId);
             if (habitDeleted) return Ok();
         }
         return Unauthorized();
