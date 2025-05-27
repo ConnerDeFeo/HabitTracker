@@ -16,8 +16,8 @@ const HabitService ={
     deleteHabit: async (habitId: string)=>{
         return await API.delete(url+habitId);
     },
-    completeHabit: async (habitId: string)=>{
-        return await API.put(url,{ habitId:habitId });
+    completeHabit: async (habitId: string, date:string, completed: boolean)=>{
+        return await API.put(url+"habitCompletion",{ HabitId:habitId, Date: date, Completed: completed });
     }
 }
 

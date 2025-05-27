@@ -54,16 +54,16 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
     }
 
     const handleHabitCompletionChange = async()=>{
-        const resp = await HabitService.completeHabit(habit.id!);
+        const habitCompleted = !habit.completed;
+        const resp = await HabitService.completeHabit(habit.id!, new Date().toISOString().split('T')[0], habitCompleted);
 
         if(resp.status==200){
-            habit.completed=true;
+            habit.completed = habitCompleted;
             setHabits((prevHabits) =>
                 prevHabits.map((h) =>
                     h.id === habit.id ? habit : h
                 )
             );
-            setHabits
         }
     }
 
@@ -92,8 +92,8 @@ const DailyHabit = (props: {habit: Habit, inEditMode: boolean, setHabits: React.
                     <p className={fontStyling}>{habit.name}</p>
                 </div>
             :
-                <div className={"w-80 break-words mx-auto cursor-pointer"} key={habit.id} onClick={handleHabitCompletionChange}>
-                    <p className={fontStyling + (habit.completed ? "border border-black":"")}>{habit.name}</p>
+                <div className={"w-80 break-words mx-auto cursor-pointer "} key={habit.id} onClick={handleHabitCompletionChange}>
+                    <p className={fontStyling + (habit.completed ? " line-through":" ")}>{habit.name}</p>
                 </div>
 }
 

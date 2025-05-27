@@ -168,7 +168,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
             await _habitCollections.UpdateOneAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.{habitId}.Completed", completed)
+                update.Set($"HabitHistory.{date.Trim()}.{habitId}.Completed", completed)
             );
             return true;
         }
