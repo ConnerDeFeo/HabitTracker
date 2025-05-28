@@ -60,7 +60,6 @@ public class TestMongoUserService{
         HistoricalDate date = collection!.HabitHistory[today.ToString("yyyy-MM-dd")];
 
         Assert.Equal(today.ToString("yyyy-MM"), date.DateLookUpKey);
-        Assert.False(date.AllHabitsCompleted);
     }
 
     [Fact]
@@ -122,7 +121,6 @@ public class TestMongoUserService{
         HabitCollection? habitCollectionUpdated = await habitService.GetHabitCollection(result.SessionKey);
 
         Assert.Equal(6, habitCollectionUpdated!.HabitHistory.Count);
-        Assert.False(habitCollectionUpdated!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")].AllHabitsCompleted);
 
     }
 

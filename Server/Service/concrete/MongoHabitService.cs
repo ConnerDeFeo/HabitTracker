@@ -20,7 +20,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly FilterDefinitionBuilder<User> userFilter = Builders<User>.Filter;
     private readonly FilterDefinitionBuilder<HabitCollection> habitFilter = Builders<HabitCollection>.Filter;
     private readonly UpdateDefinitionBuilder<HabitCollection> update = Builders<HabitCollection>.Update;
-    FindOneAndUpdateOptions<HabitCollection> options = new();
+    readonly FindOneAndUpdateOptions<HabitCollection> options = new();
 
     public async Task<string?> GetUserIdBySessionKey(string sessionKey)
     {
@@ -119,7 +119,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             );
 
             CheckAllHabitsCompleted(today, collection, userId);
-            
+
             return habit;
         }
         return null;
