@@ -54,10 +54,12 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     /// <param name="date">Date for this collection</param>
     /// <param name="collection">habitcollection, generically should only contain the respective date in its habithistory</param>
     /// <param name="userId">user for which this is occuring</param>
-    private async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
+    private  async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
     {
+        string thisMonth = date[..7];
+        string thisDay = date.Substring(8, 2);
         //If there was a change in all completed habit, set it. 
-        HistoricalDate historicalDate = collection.HabitHistory[date][date];
+        HistoricalDate historicalDate = collection.HabitHistory[thisMonth][thisDay];
             bool allCompleted = true;
             foreach (Habit habit in historicalDate.Habits.Values)
                 if (!habit.Completed)
@@ -66,7 +68,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             if (allCompleted != historicalDate.AllHabitsCompleted)
                 await _habitCollections.UpdateOneAsync(
                     habitFilter.Eq(hc => hc.Id, userId),
-                    update.Set($"HabitHistory.{date[..7]}.{date.Substring(8,2)}.AllHabitsCompleted", allCompleted)
+                    update.Set($"HabitHistory.{thisMonth}.{thisDay}.AllHabitsCompleted", allCompleted)
                 );
     }
 
@@ -119,9 +121,9 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             var updateHabits = update
                 .Push(hc => hc.Habits, habit)
-                .Set($"HabitHistory.{thisMonth}.{today}.Habits.{habit.Id}", habit);
+                .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit);
 
-            options.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{today}");
+            options.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
             options.ReturnDocument = ReturnDocument.After;
 
             HabitCollection collection = await _habitCollections
@@ -223,13 +225,13 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             string thisDay = date.Substring(8,2);
 
 
-            options.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{date}");
+            options.Projection = projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
             options.ReturnDocument = ReturnDocument.After;
             
             //update and set the new date
             HabitCollection collection = await _habitCollections.FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.Habits.{habitId}.Completed", completed),
+                update.Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}.Completed", completed),
                 options
             );
 

@@ -11,7 +11,8 @@ using MongoDB.Bson;
 public class TestMongoHabitService
 {
 
-    string dateKey;
+    string monthKey;
+    string dayKey;
     IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
@@ -23,7 +24,8 @@ public class TestMongoHabitService
         database = Client.GetDatabase("TestMongoHabitService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
-        dateKey = DateTime.Today.ToString("yyyy-MM-dd");
+        monthKey = DateTime.Today.ToString("yyyy-MM");
+        dayKey = DateTime.Today.ToString("dd");
     }
 
     [Fact]
@@ -56,7 +58,7 @@ public class TestMongoHabitService
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
-        Habit historyHabit = collection!.HabitHistory[dateKey]!.Habits[habits![0].Id!];
+        Habit historyHabit = collection!.HabitHistory[monthKey][dayKey]!.Habits[habits![0].Id!];
 
         Assert.NotNull(habit);
         Assert.Equal("TestHabit", habits![0].Name);
@@ -81,7 +83,7 @@ public class TestMongoHabitService
 
         Assert.True(deleted);
         Assert.Empty(habits!);
-        Assert.Empty(collection!.HabitHistory[dateKey].Habits);
+        Assert.Empty(collection!.HabitHistory[monthKey][dayKey].Habits);
 
     }
 
@@ -99,7 +101,7 @@ public class TestMongoHabitService
         Assert.False(deleted);
         Assert.NotEmpty(habits!);
         Assert.NotEmpty(collection!.Habits);
-        Assert.NotNull(collection!.HabitHistory[dateKey].Habits[habits![0].Id!]);
+        Assert.NotNull(collection!.HabitHistory[monthKey][dayKey].Habits[habits![0].Id!]);
     }
 
     [Fact]
@@ -119,7 +121,7 @@ public class TestMongoHabitService
 
         Assert.Equal("TestHabitUpdated", habits![0].Name);
         Assert.Equal("TestHabitUpdated", habitAfter!.Name);
-        Assert.Equal("TestHabitUpdated", collection!.HabitHistory[dateKey].Habits[id].Name);
+        Assert.Equal("TestHabitUpdated", collection!.HabitHistory[monthKey][dayKey].Habits[id].Name);
     }
 
     [Fact]
@@ -135,7 +137,7 @@ public class TestMongoHabitService
 
         Assert.Null(habitAfter);
         Assert.Equal("TestHabit", habits![0].Name);
-        Assert.Equal("TestHabit", collection!.HabitHistory[dateKey].Habits[habit!.Id!].Name);
+        Assert.Equal("TestHabit", collection!.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Name);
     }
 
     [Fact]
@@ -157,10 +159,8 @@ public class TestMongoHabitService
         bool completed = await habitService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), habit!.Id!, true);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
-        HistoricalDate date = collection!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")];
-
         Assert.True(completed);
-        Assert.True(date.Habits[habit!.Id!].Completed);
+        Assert.True(collection!.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Completed);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class TestMongoHabitService
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.False(completed);
-        Assert.False(collection!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")].Habits[habit!.Id!].Completed);
+        Assert.False(collection!.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Completed);
 
     }
 
@@ -189,7 +189,7 @@ public class TestMongoHabitService
         await habitService.SetHabitCompletion(sessionKey, today, habit!.Id!, true);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
-        HistoricalDate date = collection!.HabitHistory[today];
+        HistoricalDate date = collection!.HabitHistory[monthKey][dayKey];
 
         Assert.True(date.AllHabitsCompleted);
 
@@ -197,7 +197,7 @@ public class TestMongoHabitService
         await habitService.DeleteHabit(sessionKey, habit!.Id!);
 
         collection = await habitService.GetHabitCollection(sessionKey);
-        date = collection!.HabitHistory[today];
+        date = collection!.HabitHistory[monthKey][dayKey];
 
         Assert.True(date.AllHabitsCompleted);
 
@@ -205,7 +205,7 @@ public class TestMongoHabitService
         await habitService.CreateHabit(sessionKey, habit!);
 
         collection = await habitService.GetHabitCollection(sessionKey);
-        date = collection!.HabitHistory[today];
+        date = collection!.HabitHistory[monthKey][dayKey];
 
         Assert.False(date.AllHabitsCompleted);
 
@@ -214,7 +214,7 @@ public class TestMongoHabitService
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2" });
 
         collection = await habitService.GetHabitCollection(sessionKey);
-        date = collection!.HabitHistory[today];
+        date = collection!.HabitHistory[monthKey][dayKey];
 
         Assert.False(date.AllHabitsCompleted);
 
@@ -248,11 +248,15 @@ public class TestMongoHabitService
             DeletedHabits = []
         };
 
-        habitCollection.HabitHistory["0000-00-00"] = new() { DateLookUpKey = "0000-00" };
-        habitCollection.HabitHistory["0000-00-01"] = new() { DateLookUpKey = "0000-00" };
-        habitCollection.HabitHistory["0000-01-00"] = new() { DateLookUpKey = "0000-01" };
-        habitCollection.HabitHistory["0001-01-00"] = new() { DateLookUpKey = "0001-01" };
-        habitCollection.HabitHistory["0001-00-00"] = new() { DateLookUpKey = "0001-00" };
+        habitCollection.HabitHistory["0000-00"] = [];
+        habitCollection.HabitHistory["0000-00"]["00"] = new(); 
+        habitCollection.HabitHistory["0000-00"]["01"] = new(); 
+        habitCollection.HabitHistory["0000-01"] = [];
+        habitCollection.HabitHistory["0000-01"]["00"] = new();
+        habitCollection.HabitHistory["0001-01"] = [];
+        habitCollection.HabitHistory["0001-01"]["00"] = new();
+        habitCollection.HabitHistory["0001-00"] = [];
+        habitCollection.HabitHistory["0001-00"]["00"] = new();
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);

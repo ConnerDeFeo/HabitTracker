@@ -53,13 +53,6 @@ public class TestMongoUserService{
 
         Assert.False(Result.Success);
 
-
-        //Checking in habit history was properly configured
-        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
-        DateTime today = DateTime.Today;
-        HistoricalDate date = collection!.HabitHistory[today.ToString("yyyy-MM-dd")];
-
-        Assert.Equal(today.ToString("yyyy-MM"), date.DateLookUpKey);
     }
 
     [Fact]
@@ -120,7 +113,13 @@ public class TestMongoUserService{
 
         HabitCollection? habitCollectionUpdated = await habitService.GetHabitCollection(result.SessionKey);
 
-        Assert.Equal(6, habitCollectionUpdated!.HabitHistory.Count);
+        //in case i test at the begining of a month
+        int total = 0;
+        foreach (var kvp in habitCollectionUpdated!.HabitHistory.Values) 
+            total += kvp.Values.Count;
+        
+
+        Assert.Equal(6, total);
 
     }
 
