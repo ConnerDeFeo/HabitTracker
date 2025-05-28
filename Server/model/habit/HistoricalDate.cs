@@ -5,6 +5,4 @@ public class HistoricalDate
     public Dictionary<string, Habit> Habits { get; set; } = [];
     public bool AllHabitsCompleted { get; set; } = true;
 
-    public string DateLookUpKey { get; set; } = null!;
-
 }
