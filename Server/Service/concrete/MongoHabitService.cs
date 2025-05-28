@@ -244,7 +244,12 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             var filter = habitFilter.Where(hc => hc.HabitHistory.Values.Any(hd => hd.DateLookUpKey == yearMonth));
             ProjectionDefinition<HabitCollection> habitProjection = projection.Include(hc => hc.HabitHistory);
 
-            HabitCollection collection = awa;
+            HabitCollection collection = await _habitCollections
+            .Find(filter)
+            .Project<HabitCollection>(habitProjection)
+            .FirstOrDefaultAsync();
+
+            return collection.HabitHistory;
         }
 
         return null;
