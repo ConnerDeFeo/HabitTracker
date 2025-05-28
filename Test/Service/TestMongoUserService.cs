@@ -43,6 +43,8 @@ public class TestMongoUserService{
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
+        string sessionKey = result.SessionKey;
+
         UserDto? user = await userService.GetUser(result.SessionKey);
 
         Assert.Equal("ConnerDeFeo", user!.Username);
@@ -51,6 +53,14 @@ public class TestMongoUserService{
 
         Assert.False(Result.Success);
 
+
+        //Checking in habit history was properly configured
+        HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
+        DateTime today = DateTime.Today;
+        HistoricalDate date = collection!.HabitHistory[today.ToString("yyyy-MM-dd")];
+
+        Assert.Equal(today.ToString("yyyy-MM"), date.DateLookUpKey);
+        Assert.False(date.AllHabitsCompleted);
     }
 
     [Fact]

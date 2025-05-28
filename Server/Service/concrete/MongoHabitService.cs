@@ -173,16 +173,33 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
 
-            var options = new FindOneAndUpdateOptions<HabitCollection, BsonDocument>
+            FindOneAndUpdateOptions<HabitCollection> options = new ()
             {
                 Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{date}"),
                 ReturnDocument = ReturnDocument.After
             };
-
+            
+            //update and set the new date
             HabitCollection collection = await _habitCollections.FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.Habits.{habitId}.Completed", completed)
+                update.Set($"HabitHistory.{date}.Habits.{habitId}.Completed", completed),
+                options
             );
+
+            //If there was a change in all completed habit, set it. 
+            HistoricalDate historicalDate = collection.HabitHistory[date];
+            bool allCompleted = true;
+            foreach (Habit habit in historicalDate.Habits.Values)
+                if (!habit.Completed)
+                    allCompleted = false;
+
+            if (allCompleted != historicalDate.AllHabitsCompleted)
+                await _habitCollections.UpdateOneAsync(
+                    habitFilter.Eq(hc => hc.Id, userId),
+                    update.Set($"HabitHistory.{date}.AllHabitsCompleted", completed)
+                );
+
+
             return true;
         }
         return false;

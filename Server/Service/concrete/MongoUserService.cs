@@ -75,7 +75,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         user.Id=id;
         await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
-        collection.HabitHistory[today] = new();
+        collection.HabitHistory[today] = new() { DateLookUpKey = DateTime.Today.ToString("yyyy-MM")};
         await _habitCollections.InsertOneAsync(collection);
         return new LoginResult { Success = true, SessionKey = sessionKey };
     }
@@ -106,11 +106,14 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             UpdateDefinitionBuilder<HabitCollection> updateHabitCollection = Builders<HabitCollection>.Update;
 
             //only need one copy then mongo db will copy when we write to the db
-            HistoricalDate datedHabits = new();
+            HistoricalDate datedHabits = new()
+            {
+                DateLookUpKey = today.ToString("yyyy-MM")
+            };
             foreach (Habit habit in collection.Habits)
             {
                 datedHabits.Habits[habit.Id!] = habit;
-                
+
             }
             /*For every day there has not been a login and today, set the habit history as the blank slate
             of incomplete haibts*/
@@ -130,7 +133,11 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             string sessionKey = GenerateSessionKey();
             await _users.UpdateOneAsync(
                 u => u.Username.Equals(username),
-                update.Combine(update.Set(u => u.SessionKey, sessionKey), update.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))));
+                update.Combine(
+                    update.Set(u => u.SessionKey, sessionKey),
+                    update.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
+                )
+            );
 
             return new LoginResult { Success = true, SessionKey = sessionKey };
         }
