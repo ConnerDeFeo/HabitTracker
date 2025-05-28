@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using Server.model.habit;
 using Server.model.user;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 
 /// <summary>
@@ -241,15 +242,34 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
         if (userId is not null)
         {
-            var filter = habitFilter.Where(hc => hc.HabitHistory.Values.Any(hd => hd.DateLookUpKey == yearMonth));
-            ProjectionDefinition<HabitCollection> habitProjection = projection.Include(hc => hc.HabitHistory);
+            var pipeline = _habitCollections.Aggregate()
+            .Match(Builders<HabitCollection>.Filter.Eq(hc => hc.Id, userId)) // step 1
+            .AppendStage<BsonDocument>("{ $project: { HabitHistoryArray: { $objectToArray: '$HabitHistory' } } }")
+            .AppendStage<BsonDocument>($@"
+            {{
+                $project: {{
+                    HabitHistory: {{
+                        $arrayToObject: {{
+                            $filter: {{
+                                input: '$HabitHistoryArray',
+                                as: 'item',
+                                cond: {{ $eq: ['$$item.v.DateLookUpKey', '{yearMonth}'] }}
+                            }}
+                        }}
+                    }}
+                }}
+            }}");
 
-            HabitCollection collection = await _habitCollections
-            .Find(filter)
-            .Project<HabitCollection>(habitProjection)
-            .FirstOrDefaultAsync();
+            BsonDocument result = await pipeline.FirstOrDefaultAsync();
+            if (result != null && result.Contains("HabitHistory"))
+            {
+                var habitHistoryBson = result["HabitHistory"].AsBsonDocument;
 
-            return collection.HabitHistory;
+                // Deserialize to Dictionary<string, HistoricalDate>
+                var habitHistory = BsonSerializer.Deserialize<Dictionary<string, HistoricalDate>>(habitHistoryBson);
+
+                return habitHistory;
+            }
         }
 
         return null;

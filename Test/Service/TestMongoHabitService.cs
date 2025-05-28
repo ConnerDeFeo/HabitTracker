@@ -199,7 +199,7 @@ public class TestMongoHabitService
         collection = await habitService.GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[today];
 
-        Assert.True(date.AllHabitsCompleted);  
+        Assert.True(date.AllHabitsCompleted);
 
         //Add a new habit
         await habitService.CreateHabit(sessionKey, habit!);
@@ -211,14 +211,65 @@ public class TestMongoHabitService
 
         //Complete then add new habit
         await habitService.SetHabitCompletion(sessionKey, today, habit!.Id!, true);
-        await habitService.CreateHabit(sessionKey, new Habit { Name="TestHabit2"});
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2" });
 
         collection = await habitService.GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[today];
 
         Assert.False(date.AllHabitsCompleted);
 
+    }
 
+    [Fact]
+    public async Task TestGetHabitHistoryByMonth()
+    {
+        IMongoCollection<User> users = database.GetCollection<User>("Users");
+        IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
+
+        string id = ObjectId.GenerateNewId().ToString();
+        string today = DateTime.Today.ToString("yyyy-MM-dd");
+        string password = "asdfasdf";
+        string username = "Jack";
+
+        User user = new()
+        {
+            Id = id,
+            Username = username,
+            //Hash the password before storing in database
+            Password = PasswordHasher.HashPassword(password),
+            LastLoginDate = today
+        };
+
+        HabitCollection habitCollection = new()
+        {
+            Id = id,
+            Habits = [],
+            HabitHistory = [],
+            DeletedHabits = []
+        };
+
+        habitCollection.HabitHistory["0000-00-00"] = new() { DateLookUpKey = "0000-00" };
+        habitCollection.HabitHistory["0000-00-01"] = new() { DateLookUpKey = "0000-00" };
+        habitCollection.HabitHistory["0000-01-00"] = new() { DateLookUpKey = "0000-01" };
+        habitCollection.HabitHistory["0001-01-00"] = new() { DateLookUpKey = "0001-01" };
+        habitCollection.HabitHistory["0001-00-00"] = new() { DateLookUpKey = "0001-00" };
+
+        await users.InsertOneAsync(user);
+        await collection.InsertOneAsync(habitCollection);
+        LoginResult result = await userService.Login(username, password);
+        string sessionKey = result.SessionKey;
+
+        Dictionary<string, HistoricalDate>? datedHabits = await habitService.GetHabitHistoryByMonth(sessionKey, "0000-00");
+        Assert.Equal(2, datedHabits!.Count);
+
+        datedHabits = await habitService.GetHabitHistoryByMonth(sessionKey, "0000-01");
+        Assert.Single(datedHabits!);
+
+        datedHabits = await habitService.GetHabitHistoryByMonth(sessionKey, "0001-01");
+        Assert.Single(datedHabits!);
+
+        datedHabits = await habitService.GetHabitHistoryByMonth(sessionKey, "0001-00");
+        Assert.Single(datedHabits!);
     }
 
 }
