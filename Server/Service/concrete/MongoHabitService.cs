@@ -20,12 +20,53 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly FilterDefinitionBuilder<User> userFilter = Builders<User>.Filter;
     private readonly FilterDefinitionBuilder<HabitCollection> habitFilter = Builders<HabitCollection>.Filter;
     private readonly UpdateDefinitionBuilder<HabitCollection> update = Builders<HabitCollection>.Update;
-    readonly FindOneAndUpdateOptions<HabitCollection> options = new();
+    private readonly FindOneAndUpdateOptions<HabitCollection> options = new();
+    private readonly ProjectionDefinitionBuilder<HabitCollection> projection = Builders<HabitCollection>.Projection;
 
-    public async Task<string?> GetUserIdBySessionKey(string sessionKey)
+
+    private async Task<string?> GetUserIdBySessionKey(string sessionKey)
     {
         User user = await _users.Find(userFilter.Eq(u => u.SessionKey, sessionKey)).FirstOrDefaultAsync();
         return user?.Id;
+    }
+
+    /// <summary>
+    /// Checks if the given habitid exists in the users current habits
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="habitId"></param>
+    /// <returns></returns>
+    private async Task<Habit?> HabitIdExists(string userId, string habitId)
+    {
+        var collection = await _habitCollections
+            .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habitId))
+            .FirstOrDefaultAsync();
+        return collection?.Habits.FirstOrDefault(h => h.Id == habitId);
+    }
+
+    
+    /// <summary>
+    /// Checks the current state of some given date to see if all habits for that date were
+    /// completed. Then update the AllHabitsCompleted variable in the respective
+    /// historical date if needed
+    /// </summary>
+    /// <param name="date">Date for this collection</param>
+    /// <param name="collection">habitcollection, generically should only contain the respective date in its habithistory</param>
+    /// <param name="userId">user for which this is occuring</param>
+    private async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
+    {
+        //If there was a change in all completed habit, set it. 
+            HistoricalDate historicalDate = collection.HabitHistory[date];
+            bool allCompleted = true;
+            foreach (Habit habit in historicalDate.Habits.Values)
+                if (!habit.Completed)
+                    allCompleted = false;
+
+            if (allCompleted != historicalDate.AllHabitsCompleted)
+                await _habitCollections.UpdateOneAsync(
+                    habitFilter.Eq(hc => hc.Id, userId),
+                    update.Set($"HabitHistory.{date}.AllHabitsCompleted", allCompleted)
+                );
     }
 
     public async Task<List<Habit>?> GetHabits(string sessionKey)
@@ -33,10 +74,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
-            ProjectionDefinition<HabitCollection> projection = Builders<HabitCollection>.Projection.Include(h => h.Habits);
+            ProjectionDefinition<HabitCollection> habitProjection = projection.Include(hc => hc.Habits);
             HabitCollection collection = await _habitCollections
             .Find(habitFilter.Eq(hc => hc.Id, userId))
-            .Project<HabitCollection>(projection)
+            .Project<HabitCollection>(habitProjection)
             .FirstOrDefaultAsync();
             return collection.Habits;
         }
@@ -56,39 +97,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    /// <summary>
-    /// Checks if the given habitid exists in the users current habits
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="habitId"></param>
-    /// <returns></returns>
-    private async Task<Habit?> HabitIdExists(string userId, string habitId)
-    {
-        var collection = await _habitCollections
-            .Find(hc => hc.Id == userId && hc.Habits.Any(h => h.Id == habitId))
-            .FirstOrDefaultAsync();
-        return collection?.Habits.FirstOrDefault(h => h.Id == habitId);
-    }
-
-    /*For the followiong functions the habit is checked to make sure it exists before
-        performing any actions so that the controllers can send back the proper message
-        should a habit be deleted, but it never existed, for instance. */
-
-    private async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
-    {
-        //If there was a change in all completed habit, set it. 
-            HistoricalDate historicalDate = collection.HabitHistory[date];
-            bool allCompleted = true;
-            foreach (Habit habit in historicalDate.Habits.Values)
-                if (!habit.Completed)
-                    allCompleted = false;
-
-            if (allCompleted != historicalDate.AllHabitsCompleted)
-                await _habitCollections.UpdateOneAsync(
-                    habitFilter.Eq(hc => hc.Id, userId),
-                    update.Set($"HabitHistory.{date}.AllHabitsCompleted", allCompleted)
-                );
-    }
     public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
@@ -233,7 +241,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
         if (userId is not null)
         {
-            
+            var filter = habitFilter.Where(hc => hc.HabitHistory.Values.Any(hd => hd.DateLookUpKey == yearMonth));
+            ProjectionDefinition<HabitCollection> habitProjection = projection.Include(hc => hc.HabitHistory);
+
+            HabitCollection collection = awa;
         }
 
         return null;
