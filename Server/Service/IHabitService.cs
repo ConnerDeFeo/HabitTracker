@@ -17,4 +17,6 @@ public interface IHabitService
     Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed);
 
     Task<HabitCollection?> GetHabitCollection(string sessionKey);
+
+    Task<Dictionary<string, HistoricalDate>?> GetHabitHistoryByMonth(string sessionKey, string month);
 }

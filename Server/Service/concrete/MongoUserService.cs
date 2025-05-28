@@ -75,7 +75,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         user.Id=id;
         await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
-        collection.HabitHistory[today] = [];
+        collection.HabitHistory[today] = new();
         await _habitCollections.InsertOneAsync(collection);
         return new LoginResult { Success = true, SessionKey = sessionKey };
     }
@@ -106,9 +106,11 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             UpdateDefinitionBuilder<HabitCollection> updateHabitCollection = Builders<HabitCollection>.Update;
 
             //only need one copy then mongo db will copy when we write to the db
-            Dictionary<string, Habit> datedHabits = [];
-            foreach (Habit habit in collection.Habits) {
-                datedHabits[habit.Id!] = habit;
+            HistoricalDate datedHabits = new();
+            foreach (Habit habit in collection.Habits)
+            {
+                datedHabits.Habits[habit.Id!] = habit;
+                
             }
             /*For every day there has not been a login and today, set the habit history as the blank slate
             of incomplete haibts*/

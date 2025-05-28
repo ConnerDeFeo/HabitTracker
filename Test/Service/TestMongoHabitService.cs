@@ -56,7 +56,7 @@ public class TestMongoHabitService
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey);
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
-        Habit historyHabit = collection!.HabitHistory[dateKey]![habits![0].Id!];
+        Habit historyHabit = collection!.HabitHistory[dateKey]!.Habits[habits![0].Id!];
 
         Assert.NotNull(habit);
         Assert.Equal("TestHabit", habits![0].Name);
@@ -81,7 +81,7 @@ public class TestMongoHabitService
 
         Assert.True(deleted);
         Assert.Empty(habits!);
-        Assert.Empty(collection!.HabitHistory[dateKey]);
+        Assert.Empty(collection!.HabitHistory[dateKey].Habits);
 
     }
 
@@ -99,7 +99,7 @@ public class TestMongoHabitService
         Assert.False(deleted);
         Assert.NotEmpty(habits!);
         Assert.NotEmpty(collection!.Habits); 
-        Assert.NotNull(collection!.HabitHistory[dateKey][habits![0].Id!]);
+        Assert.NotNull(collection!.HabitHistory[dateKey].Habits[habits![0].Id!]);
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class TestMongoHabitService
 
         Assert.Equal("TestHabitUpdated", habits![0].Name);
         Assert.Equal("TestHabitUpdated", habitAfter!.Name);
-        Assert.Equal("TestHabitUpdated", collection!.HabitHistory[dateKey][id].Name);
+        Assert.Equal("TestHabitUpdated", collection!.HabitHistory[dateKey].Habits[id].Name);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class TestMongoHabitService
 
         Assert.Null(habitAfter);
         Assert.Equal("TestHabit", habits![0].Name);
-        Assert.Equal("TestHabit", collection!.HabitHistory[dateKey][habit!.Id!].Name);
+        Assert.Equal("TestHabit", collection!.HabitHistory[dateKey].Habits[habit!.Id!].Name);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class TestMongoHabitService
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.True(completed);
-        Assert.True(collection!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")][habit!.Id!].Completed);
+        Assert.True(collection!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")].Habits[habit!.Id!].Completed);
 
     }
 
@@ -173,7 +173,7 @@ public class TestMongoHabitService
         HabitCollection? collection = await habitService.GetHabitCollection(sessionKey);
 
         Assert.False(completed);
-        Assert.False(collection!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")][habit!.Id!].Completed);
+        Assert.False(collection!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")].Habits[habit!.Id!].Completed);
 
     }
 

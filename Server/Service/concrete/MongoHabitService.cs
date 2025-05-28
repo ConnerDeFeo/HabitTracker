@@ -20,7 +20,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly FilterDefinitionBuilder<User> userFilter = Builders<User>.Filter;
     private readonly FilterDefinitionBuilder<HabitCollection> habitFilter = Builders<HabitCollection>.Filter;
     private readonly UpdateDefinitionBuilder<HabitCollection> update = Builders<HabitCollection>.Update;
-    private readonly ProjectionDefinition<HabitCollection> projection = Builders<HabitCollection>.Projection.Include(h => h.Habits);
 
     public async Task<string?> GetUserIdBySessionKey(string sessionKey)
     {
@@ -33,6 +32,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
+            ProjectionDefinition<HabitCollection> projection = Builders<HabitCollection>.Projection.Include(h => h.Habits);
             HabitCollection collection = await _habitCollections
             .Find(habitFilter.Eq(hc => hc.Id, userId))
             .Project<HabitCollection>(projection)
@@ -90,7 +90,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             string today = DateTime.Today.ToString("yyyy-MM-dd");
             var updateHabits = update
                 .Push(hc => hc.Habits, habit)
-                .Set($"HabitHistory.{today}.{habit.Id}", habit);
+                .Set($"HabitHistory.{today}.Habits.{habit.Id}", habit);
 
             await _habitCollections
             .UpdateOneAsync(
@@ -119,15 +119,15 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             string today = DateTime.Today.ToString("yyyy-MM-dd");
             var combinedUpdate = Builders<HabitCollection>.Update
                 .PullFilter(hc => hc.Habits, h => h.Id == habitId)
-                .Unset($"HabitHistory.{today}.{habitId}")
+                .Unset($"HabitHistory.{today}.Habits.{habitId}")
                 .Push(hc => hc.DeletedHabits, habit!);
 
             //remove from habits collection
-             await _habitCollections
-            .UpdateOneAsync(
-                findHabit,
-                combinedUpdate
-            );
+            await _habitCollections
+           .UpdateOneAsync(
+               findHabit,
+               combinedUpdate
+           );
             return true;
         }
         return false;
@@ -149,7 +149,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             string today = DateTime.Today.ToString("yyyy-MM-dd");
             var updateHabits = update
                 .Set("Habits.$", habit)
-                .Set($"HabitHistory.{today}.{habit.Id}", habit);
+                .Set($"HabitHistory.{today}.Habits.{habit.Id}", habit);
 
             await _habitCollections
             .UpdateOneAsync(
@@ -172,14 +172,37 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 return false;
 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
-            await _habitCollections.UpdateOneAsync(
+
+            var options = new FindOneAndUpdateOptions<HabitCollection, BsonDocument>
+            {
+                Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{date}"),
+                ReturnDocument = ReturnDocument.After
+            };
+
+            HabitCollection collection = await _habitCollections.FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{date}.{habitId}.Completed", completed)
+                update.Set($"HabitHistory.{date}.Habits.{habitId}.Completed", completed)
             );
             return true;
         }
         return false;
 
     }
-    
+
+    /// <summary>
+    /// Returns the habit hitory of a given month
+    /// </summary>
+    /// <param name="month">Should be in yyyy-MM format</param>
+    /// <returns></returns>
+    public async Task<Dictionary<string, HistoricalDate>?> GetHabitHistoryByMonth(string sessionKey, string yearMonth)
+    {
+        string? userId = await GetUserIdBySessionKey(sessionKey);
+
+        if (userId is not null)
+        {
+            
+        }
+
+        return null;
+    }
 }
