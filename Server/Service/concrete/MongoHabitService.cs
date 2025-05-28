@@ -20,6 +20,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly FilterDefinitionBuilder<User> userFilter = Builders<User>.Filter;
     private readonly FilterDefinitionBuilder<HabitCollection> habitFilter = Builders<HabitCollection>.Filter;
     private readonly UpdateDefinitionBuilder<HabitCollection> update = Builders<HabitCollection>.Update;
+    FindOneAndUpdateOptions<HabitCollection> options = new();
 
     public async Task<string?> GetUserIdBySessionKey(string sessionKey)
     {
@@ -73,6 +74,21 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         performing any actions so that the controllers can send back the proper message
         should a habit be deleted, but it never existed, for instance. */
 
+    private async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
+    {
+        //If there was a change in all completed habit, set it. 
+            HistoricalDate historicalDate = collection.HabitHistory[date];
+            bool allCompleted = true;
+            foreach (Habit habit in historicalDate.Habits.Values)
+                if (!habit.Completed)
+                    allCompleted = false;
+
+            if (allCompleted != historicalDate.AllHabitsCompleted)
+                await _habitCollections.UpdateOneAsync(
+                    habitFilter.Eq(hc => hc.Id, userId),
+                    update.Set($"HabitHistory.{date}.AllHabitsCompleted", allCompleted)
+                );
+    }
     public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
@@ -92,11 +108,18 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 .Push(hc => hc.Habits, habit)
                 .Set($"HabitHistory.{today}.Habits.{habit.Id}", habit);
 
-            await _habitCollections
-            .UpdateOneAsync(
+            options.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{today}");
+            options.ReturnDocument = ReturnDocument.After;
+
+            HabitCollection collection = await _habitCollections
+            .FindOneAndUpdateAsync(
                 habitFilter.Eq(hc => hc.Id, userId),
-                updateHabits
+                updateHabits,
+                options
             );
+
+            CheckAllHabitsCompleted(today, collection, userId);
+            
             return habit;
         }
         return null;
@@ -122,12 +145,17 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 .Unset($"HabitHistory.{today}.Habits.{habitId}")
                 .Push(hc => hc.DeletedHabits, habit!);
 
+            options.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{today}");
+            options.ReturnDocument = ReturnDocument.After;
             //remove from habits collection
-            await _habitCollections
-           .UpdateOneAsync(
+            HabitCollection collection = await _habitCollections
+           .FindOneAndUpdateAsync(
                findHabit,
-               combinedUpdate
+               combinedUpdate,
+               options
            );
+
+            CheckAllHabitsCompleted(today, collection, userId);
             return true;
         }
         return false;
@@ -173,11 +201,9 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
 
-            FindOneAndUpdateOptions<HabitCollection> options = new ()
-            {
-                Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{date}"),
-                ReturnDocument = ReturnDocument.After
-            };
+
+            options.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{date}");
+            options.ReturnDocument = ReturnDocument.After;
             
             //update and set the new date
             HabitCollection collection = await _habitCollections.FindOneAndUpdateAsync(
@@ -187,17 +213,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             );
 
             //If there was a change in all completed habit, set it. 
-            HistoricalDate historicalDate = collection.HabitHistory[date];
-            bool allCompleted = true;
-            foreach (Habit habit in historicalDate.Habits.Values)
-                if (!habit.Completed)
-                    allCompleted = false;
-
-            if (allCompleted != historicalDate.AllHabitsCompleted)
-                await _habitCollections.UpdateOneAsync(
-                    habitFilter.Eq(hc => hc.Id, userId),
-                    update.Set($"HabitHistory.{date}.AllHabitsCompleted", completed)
-                );
+            CheckAllHabitsCompleted(date, collection, userId);
 
 
             return true;

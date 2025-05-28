@@ -122,6 +122,7 @@ public class TestMongoUserService{
         HabitCollection? habitCollectionUpdated = await habitService.GetHabitCollection(result.SessionKey);
 
         Assert.Equal(6, habitCollectionUpdated!.HabitHistory.Count);
+        Assert.False(habitCollectionUpdated!.HabitHistory[DateTime.Today.ToString("yyyy-MM-dd")].AllHabitsCompleted);
 
     }
 
