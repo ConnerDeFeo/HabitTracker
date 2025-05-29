@@ -8,6 +8,18 @@ import DateInfo from "../types/DateInfo";
 
 const HabitCheckList = (props:{date:DateInfo})=>{
     const {date} = props;
+    const todaysDate = new Date();
+
+    const today: DateInfo = {
+        year: todaysDate.getFullYear(),
+        month: todaysDate.getMonth()+1,
+        day: todaysDate.getDate()
+    }
+
+    console.log(today);
+    console.log(date);
+
+    const dateIsToday = today.year===date.year && today.month === date.month && today.day===date.day;
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
@@ -73,8 +85,10 @@ const HabitCheckList = (props:{date:DateInfo})=>{
                 {/*This will only show if user is in edit mode */}
                 {addHabit}
             </div>
-            <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
-                image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>
+            {dateIsToday && 
+                <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
+                    image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>}
+            
         </div>      
     );
 }
