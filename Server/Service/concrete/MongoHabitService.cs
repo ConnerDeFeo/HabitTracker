@@ -87,7 +87,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             )
             .Project<HabitCollection>(habitProjection)
             .FirstOrDefaultAsync();
-            return [.. collection.HabitHistory[thisMonth][today].Habits.Values];
+            Dictionary<string, Dictionary<string, HistoricalDate>> history = collection.HabitHistory;
+            if (history.TryGetValue(thisMonth, out Dictionary<string, HistoricalDate>? value) && value.TryGetValue(today, out HistoricalDate? historicalDate)) 
+                return [.. historicalDate.Habits.Values];
+            return null;
         }
         return null;
     }

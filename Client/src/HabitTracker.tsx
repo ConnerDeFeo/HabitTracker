@@ -13,13 +13,14 @@ import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
 import UserService from './services/UserService';
 import Schedule from './pages/Schedule';
+import DateInfo from './types/DateInfo';
 
 const HabitTracker = ()=>{
 
     const [sessionUsername,setSessionUserName] = useState("");
-    const [date, setDate] = useState(() => {
+    const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
-        return {
+        return{
             year: now.getFullYear(),
             month: now.getMonth()+1, //0 indexed based
             day: now.getDate()
@@ -44,18 +45,15 @@ const HabitTracker = ()=>{
         fetchUser();
     },[])
 
-    //Add 0 in front of dates that do not have them
-    const padZero = (num: number): string => String(num).padStart(2, '0');
-
     return(
         <Router >
             <Navbar/>
             <Routes>
-                <Route path='' element={sessionUsername=="" ? <HomePage/> : <HabitCheckList date={`${date.year}-${padZero(date.month)}-${padZero(date.day)}`}/>}/>
+                <Route path='' element={sessionUsername=="" ? <HomePage/> : <HabitCheckList date={date}/>}/>
                 <Route path='CreateAccount' element={<CreateAccount setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Login' element={<Login setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Profile' element={sessionUsername==""? <HomePage/> : <Profile sessionUsername={sessionUsername} setSessionUsername={setSessionUserName}/>}/>
-                <Route path='Schedule' element={<Schedule/>}/>
+                <Route path='Schedule' element={<Schedule setDate={setDate}/>}/>
             </Routes>
             <Footer/>
         </Router>

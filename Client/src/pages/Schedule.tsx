@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import HabitService from "../services/HabitService";
 import HistoricalDate from "../types/HistoricalDate";
+import DateInfo from "../types/DateInfo";
+import { useNavigate } from "react-router-dom";
 
-const Schedule = ()=>{
+const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
+    const {setDate} = props;
+    const navigate = useNavigate();
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -56,10 +60,19 @@ const Schedule = ()=>{
         const newMonth = month+1;
         const remainder = newMonth/12;
 
-        if(remainder>=1){
+        if(remainder>=1)
             setYear(year+1);
-        }
+        
         setMonth(newMonth%12);
+    }
+
+    const handleDateSelection = (day: number)=>{
+        setDate(({
+            day: day,
+            month: month+1,
+            year: year
+        }));
+        navigate("/");
     }
 
     return(
@@ -70,10 +83,12 @@ const Schedule = ()=>{
                 {/*Row span down one for all days prior to the first day to give that calender look */}
                 {days.map((day,i)=><p className={"text-4xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
 
-                {Array.from({ length: daysInMonth }, (_, i) => i+1).map((number) => (
-                    <div key={number} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15 dropShadow">
-                        <p className="text-3xl text-center">{number}</p>
-                        <p>{renderDay(number)}</p>
+                {Array.from({ length: daysInMonth }, (_, i) => i+1).map((day) => (
+                    <div key={day} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15 dropShadow"
+                        onClick={()=>handleDateSelection(day)}
+                    >
+                        <p className="text-3xl text-center">{day}</p>
+                        <p>{renderDay(day)}</p>
                     </div>
                 ))}
             </div>

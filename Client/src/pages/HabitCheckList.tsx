@@ -4,8 +4,9 @@ import Habit from "../types/Habit";
 import ImageButton from "../components/ImageButton";
 import CreateHabit from "../components/CreateHabit";
 import HabitComponent from "./HabitComponet";
+import DateInfo from "../types/DateInfo";
 
-const HabitCheckList = (props:{date:string})=>{
+const HabitCheckList = (props:{date:DateInfo})=>{
     const {date} = props;
 
     const [habits,setHabits] = useState<Habit[]>([]);
@@ -14,12 +15,16 @@ const HabitCheckList = (props:{date:string})=>{
     const [addHabit, setAddHabit] = useState<React.ReactNode>(<></>);
     const [inEditMode,setInEditMode] = useState<boolean>(false);
 
+    const padZero = (num: number): string => String(num).padStart(2, '0');
+
     //On render grab the users habits
     useEffect(()=>{
         const fetchHabits = async ()=>{
-            const resp = await HabitService.getHabits(date);
-            const data = await resp.json();
-            setHabits(data);
+            const resp = await HabitService.getHabits(`${date.year}-${padZero(date.month)}-${padZero(date.day)}`);
+            if(resp.status===200){
+                const data = await resp.json();
+                setHabits(data);
+            }
         }
         fetchHabits();
     },[])
