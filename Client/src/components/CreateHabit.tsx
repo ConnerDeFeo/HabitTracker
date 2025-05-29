@@ -38,8 +38,7 @@ const CreateHabit = (props: {
     //Handles value changes for the numeric and time habits.    
     const handleValueChange = (number: string)=>{
         const num = Number.parseInt(number);
-        console.log(num);
-
+        
         if(num<0)
             return;
         //If habit type is "Time"

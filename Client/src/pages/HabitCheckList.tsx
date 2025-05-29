@@ -62,15 +62,15 @@ const HabitCheckList = ()=>{
     }
 
     return(
-            <div className="flex flex-col  mx-auto">
-                <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
-                    {habits.map((habit)=><HabitComponent habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits}/>)}
-                    {/*This will only show if user is in edit mode */}
-                    {addHabit}
-                </div>
-                <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
-                    image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>
-            </div>      
+        <div className="flex flex-col  mx-auto mb-[50vh]">
+            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
+                {habits.map((habit)=><HabitComponent habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits}/>)}
+                {/*This will only show if user is in edit mode */}
+                {addHabit}
+            </div>
+            <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
+                image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>
+        </div>      
     );
 }
 

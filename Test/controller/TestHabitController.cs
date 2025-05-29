@@ -152,7 +152,7 @@ public class TestHabitController
         SetInvalidSessionKey();
 
         IActionResult result = await habitController.DeleteHabit("1234");
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
 
         SetValidSessionKey();
         result = await habitController.DeleteHabit("InValidId");
@@ -174,7 +174,7 @@ public class TestHabitController
         SetInvalidSessionKey();
 
         IActionResult result = await habitController.EditHabit(new Habit { Name = "TestHabit", Id = "1234" });
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
 
         SetValidSessionKey();
         result = await habitController.EditHabit(new Habit { Name = "TestHabit", Id = "InvalidId" });
@@ -210,7 +210,7 @@ public class TestHabitController
                 Completed = true
             }
         );
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
 
         SetValidSessionKey();
 

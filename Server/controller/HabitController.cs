@@ -19,7 +19,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetHabits()
     {
-        var sesionKey = Request.Cookies["sessionKey"];
+        string? sesionKey = Request.Cookies["sessionKey"];
 
         if (sesionKey != null)
         {
@@ -34,12 +34,13 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateHabit([FromBody] Habit habit)
     {
-        var sesionKey = Request.Cookies["sessionKey"];
+        string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
             Habit? createdHabit = await _habitService.CreateHabit(sesionKey, habit);
             if (createdHabit != null)
                 return Ok(createdHabit);
+            return Conflict();
         }
         return Unauthorized();
     }
@@ -47,11 +48,13 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     [HttpDelete("{habitId}")]
     public async Task<IActionResult> DeleteHabit(string habitId)
     {
-        var sesionKey = Request.Cookies["sessionKey"];
+        string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
             bool habitDeleted = await _habitService.DeleteHabit(sesionKey, habitId);
-            if (habitDeleted) return Ok();
+            if (habitDeleted)
+                return Ok();
+            return NotFound();
         }
         return Unauthorized();
     }
@@ -59,12 +62,13 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     [HttpPut]
     public async Task<IActionResult> EditHabit([FromBody] Habit habit)
     {
-        var sesionKey = Request.Cookies["sessionKey"];
+        string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
             Habit? editedHabit = await _habitService.EditHabit(sesionKey, habit);
             if (editedHabit != null)
                 return Ok(editedHabit);
+            return NotFound();
         }
         return Unauthorized();
     }
@@ -72,13 +76,29 @@ public class HabitController(IHabitService _habitService) : ControllerBase
     [HttpPut("habitCompletion")]
     public async Task<IActionResult> SetHabitCompletion([FromBody] CompleteHabitRequest habitRequest)
     {
-        var sesionKey = Request.Cookies["sessionKey"];
+        string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
             //Note this will be the list of habits that correspond with the date
             bool changed = await _habitService.SetHabitCompletion(sesionKey, habitRequest.Date, habitRequest.HabitId, habitRequest.Completed);
             if (changed)
                 return Ok();
+            return NotFound();
+        }
+        return Unauthorized();
+    }
+
+    [HttpGet("month/{yyyyMM}")]
+    public async Task<IActionResult> GetHabitHistoryByMonth(string yyyyMM)
+    {
+        string? sesionKey = Request.Cookies["sessionKey"];
+        if (sesionKey != null)
+        {
+            //Note this will be the list of habits that correspond with the date
+            Dictionary<string, HistoricalDate>? month = await _habitService.GetHabitHistoryByMonth(sesionKey, yyyyMM);
+            if (month != null)
+                return Ok(month);
+            return NotFound();
         }
         return Unauthorized();
     }

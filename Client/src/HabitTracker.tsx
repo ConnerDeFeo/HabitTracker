@@ -12,6 +12,7 @@ import HabitCheckList from './pages/HabitCheckList';
 import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
 import UserService from './services/UserService';
+import Schedule from './pages/Schedule';
 
 const HabitTracker = ()=>{
 
@@ -40,6 +41,7 @@ const HabitTracker = ()=>{
                 <Route path='CreateAccount' element={<CreateAccount setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Login' element={<Login setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Profile' element={sessionUsername==""? <HomePage/> : <Profile sessionUsername={sessionUsername} setSessionUsername={setSessionUserName}/>}/>
+                <Route path='Schedule' element={<Schedule/>}/>
             </Routes>
             <Footer/>
         </Router>
