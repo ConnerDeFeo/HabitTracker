@@ -15,15 +15,18 @@ const Schedule = ()=>{
     //This will fetch the monthl habits
     useEffect(()=>{
         const fetchMonth = async ()=>{
-            const yyyyMM: string = new Date().toISOString().split('T')[0].substring(0,7);
+            setMonthlyHabits({});
+            const yyyyMM: string = `${year}-${String(month+1).padStart(2,'0')}`;
 
             const resp = await HabitService.getMonth(yyyyMM);
-            const habits = await resp.json();
-            setMonthlyHabits(habits);
+            if(resp.status==200){
+                const habits = await resp.json();
+                setMonthlyHabits(habits);
+            }
         }
 
         fetchMonth();
-    },[])
+    },[month])
 
     //Depending on weather all habits were completed for a give day, return respective image
     const renderDay = (number:number):React.ReactNode=>{
@@ -39,9 +42,29 @@ const Schedule = ()=>{
         return <></>;
     }
 
+    const handleTimeDecrease = ()=>{
+        let newMonth = month-1;
+
+        if(newMonth<0){
+            setYear(year-1);
+            newMonth=11;
+        }
+        setMonth(newMonth);
+    }
+
+    const handleTimeIncrease = ()=>{
+        const newMonth = month+1;
+        const remainder = newMonth/12;
+
+        if(remainder>=1){
+            setYear(year+1);
+        }
+        setMonth(newMonth%12);
+    }
+
     return(
         <div className="relative">
-            <p className="text-9xl absolute left-35 top-50 cursor-pointer">{"<"}</p>
+            <p className="text-9xl absolute left-35 top-50 cursor-pointer" onClick={handleTimeDecrease}>{"<"}</p>
             <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${months[month]} ${year}`}</p>
             <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto justify-items-center">   
                 {/*Row span down one for all days prior to the first day to give that calender look */}
@@ -54,7 +77,7 @@ const Schedule = ()=>{
                     </div>
                 ))}
             </div>
-            <p className="text-9xl absolute right-35 top-50 cursor-pointer">{">"}</p>
+            <p className="text-9xl absolute right-35 top-50 cursor-pointer" onClick={handleTimeIncrease}>{">"}</p>
         </div>
     );
 }

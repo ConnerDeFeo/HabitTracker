@@ -20,7 +20,6 @@ const HabitCheckList = (props:{date:string})=>{
             const resp = await HabitService.getHabits(date);
             const data = await resp.json();
             setHabits(data);
-            console.log(data);
         }
         fetchHabits();
     },[])
