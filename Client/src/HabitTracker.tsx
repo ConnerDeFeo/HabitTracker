@@ -17,6 +17,9 @@ import Schedule from './pages/Schedule';
 const HabitTracker = ()=>{
 
     const [sessionUsername,setSessionUserName] = useState("");
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
+    const today = new Date().getDate();
 
     /**
      * Fetches user on load of application so that all relevant data can

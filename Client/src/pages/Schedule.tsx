@@ -4,6 +4,7 @@ import HistoricalDate from "../types/HistoricalDate";
 
 const Schedule = ()=>{
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -39,16 +40,21 @@ const Schedule = ()=>{
     }
 
     return(
-        <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto mt-8 justify-items-center">   
-            {/*Row span down one for all days prior to the first day to give that calender look */}
-            {days.map((day,i)=><p className={"text-4xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
+        <div className="relative">
+            <p className="text-9xl absolute left-35 top-50 cursor-pointer">{"<"}</p>
+            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${months[month]} ${year}`}</p>
+            <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto justify-items-center">   
+                {/*Row span down one for all days prior to the first day to give that calender look */}
+                {days.map((day,i)=><p className={"text-4xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
 
-            {Array.from({ length: daysInMonth }, (_, i) => i+1).map((number) => (
-                <div key={number} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15">
-                    <p className="text-3xl text-center">{number}</p>
-                    <p>{renderDay(number)}</p>
-                </div>
-            ))}
+                {Array.from({ length: daysInMonth }, (_, i) => i+1).map((number) => (
+                    <div key={number} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15">
+                        <p className="text-3xl text-center">{number}</p>
+                        <p>{renderDay(number)}</p>
+                    </div>
+                ))}
+            </div>
+            <p className="text-9xl absolute right-35 top-50 cursor-pointer">{">"}</p>
         </div>
     );
 }
