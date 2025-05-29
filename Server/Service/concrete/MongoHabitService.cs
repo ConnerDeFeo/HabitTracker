@@ -72,17 +72,22 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 );
     }
 
-    public async Task<List<Habit>?> GetHabits(string sessionKey)
+    public async Task<List<Habit>?> GetHabits(string sessionKey, string date)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
-            ProjectionDefinition<HabitCollection> habitProjection = projection.Include(hc => hc.Habits);
+            string thisMonth = date[..7];
+            string today = date.Substring(8, 2);
+
+            ProjectionDefinition<HabitCollection> habitProjection = projection.Include($"HabitHistory.{thisMonth}.{today}");
             HabitCollection collection = await _habitCollections
-            .Find(habitFilter.Eq(hc => hc.Id, userId))
+            .Find(
+                habitFilter.Eq(hc => hc.Id, userId) 
+            )
             .Project<HabitCollection>(habitProjection)
             .FirstOrDefaultAsync();
-            return collection.Habits;
+            return [.. collection.HabitHistory[thisMonth][today].Habits.Values];
         }
         return null;
     }

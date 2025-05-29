@@ -7,7 +7,7 @@ namespace Server.service;
 /// </summary>
 public interface IHabitService
 {
-    Task<List<Habit>?> GetHabits(string sessionKey);
+    Task<List<Habit>?> GetHabits(string sessionKey, string date);
     Task<Habit?> CreateHabit(string sessionKey, Habit habit);
 
     Task<bool> DeleteHabit(string sessionKey, string habitId);

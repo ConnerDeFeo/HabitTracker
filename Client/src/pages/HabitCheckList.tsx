@@ -19,6 +19,7 @@ const HabitCheckList = ()=>{
             const resp = await HabitService.getHabits();
             const data = await resp.json();
             setHabits(data);
+            console.log(data);
         }
         fetchHabits();
     },[])
@@ -60,7 +61,6 @@ const HabitCheckList = ()=>{
             setAddHabit(addHabitButton);
         setInEditMode(!inEditMode);
     }
-
     return(
         <div className="flex flex-col  mx-auto mb-[50vh]">
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">

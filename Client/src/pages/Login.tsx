@@ -31,6 +31,7 @@ const Login = (props: {setSessionUsername: (username:string)=>void})=>{
             }else{
                 const data = await response.json();
                 document.cookie = "sessionKey="+data.sessionKey;
+                localStorage.setItem("loggedIn","true");
                 setSessionUsername(username);
                 navigate('/');
             }

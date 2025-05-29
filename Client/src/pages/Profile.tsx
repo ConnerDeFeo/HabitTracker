@@ -9,6 +9,7 @@ const Profile =(props:{sessionUsername: string; setSessionUsername: (username:st
 
     const logout = async ()=>{
         await UserService.Logout();
+        localStorage.setItem("loggedIn","false");
         setSessionUsername("");
         navigate('/');
     }

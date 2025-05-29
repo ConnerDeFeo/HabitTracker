@@ -16,16 +16,17 @@ public class HabitController(IHabitService _habitService) : ControllerBase
 {
     private readonly IHabitService _habitService = _habitService;
 
-    [HttpGet]
-    public async Task<IActionResult> GetHabits()
+    [HttpGet("{date}")]
+    public async Task<IActionResult> GetHabits(string date)
     {
         string? sesionKey = Request.Cookies["sessionKey"];
 
         if (sesionKey != null)
         {
-            List<Habit>? habits = await _habitService.GetHabits(sesionKey);
+            List<Habit>? habits = await _habitService.GetHabits(sesionKey, date);
             if (habits != null)
                 return Ok(habits);
+            return NotFound();
         }
         return Unauthorized();
 

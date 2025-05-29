@@ -30,10 +30,10 @@ public class TestHabitController
         );
 
         MockHabitService
-        .Setup(hs => hs.GetHabits(It.IsAny<string>()))
-        .Returns<string>((sessionKey) =>
+        .Setup(hs => hs.GetHabits(It.IsAny<string>(),It.IsAny<string>()))
+        .Returns<string,string>((sessionKey,date) =>
         {
-            if (sessionKey.Equals("TestSessionKey"))
+            if (sessionKey.Equals("TestSessionKey") && date.Equals("0000-00-00"))
                 return Task.FromResult<List<Habit>?>(new List<Habit> { new Habit { Name = "TestHabit" } });
             return Task.FromResult<List<Habit>?>(null);
 
@@ -122,7 +122,7 @@ public class TestHabitController
     {
         SetValidSessionKey();
 
-        IActionResult result = await habitController.GetHabits();
+        IActionResult result = await habitController.GetHabits("0000-00-00");
         var okResult = Assert.IsType<OkObjectResult>(result);
         var habitResult = Assert.IsType<List<Habit>>(okResult.Value);
         Assert.NotEmpty(habitResult);
@@ -134,8 +134,12 @@ public class TestHabitController
     {
         SetInvalidSessionKey();
 
-        IActionResult result = await habitController.GetHabits();
-        Assert.IsType<UnauthorizedResult>(result);
+        IActionResult result = await habitController.GetHabits("0000-00-00");
+        Assert.IsType<NotFoundResult>(result);
+
+        SetValidSessionKey();
+        result = await habitController.GetHabits("0000-00-01");
+        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]

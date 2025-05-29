@@ -40,6 +40,7 @@ const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void
                 const data = await response.json();
                 //store session token so that user does not have to log in
                 document.cookie = "sessionKey="+data.sessionKey;
+                localStorage.setItem("loggedIn","true");
                 setSessionUsername(username);
                 navigate('/');
             }
