@@ -24,8 +24,7 @@ public class TestHabitController
         {
             if (sessionKey.Equals("TestSessionKey"))
                 return Task.FromResult<Habit?>(habit);
-            else
-                return Task.FromResult<Habit?>(null);
+            return Task.FromResult<Habit?>(null);
 
         }
         );
@@ -36,8 +35,7 @@ public class TestHabitController
         {
             if (sessionKey.Equals("TestSessionKey"))
                 return Task.FromResult<List<Habit>?>(new List<Habit> { new Habit { Name = "TestHabit" } });
-            else
-                return Task.FromResult<List<Habit>?>(null);
+            return Task.FromResult<List<Habit>?>(null);
 
         }
         );
@@ -49,9 +47,9 @@ public class TestHabitController
         {
             if (sessionKey.Equals("TestSessionKey"))
             {
-                if (habitId.Equals("1234" ))
+                if (habitId.Equals("1234"))
                     return Task.FromResult<bool>(true);
-                else return Task.FromResult<bool>(false);
+                return Task.FromResult<bool>(false);
             }
             else
                 return Task.FromResult<bool>(false);
@@ -76,19 +74,32 @@ public class TestHabitController
         MockHabitService
         .Setup(hs => hs.SetHabitCompletion(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
         .Returns<string, string, string, bool>((sessionKey, date, habitId, completed) =>
-        {
-            if (sessionKey.Equals("TestSessionKey"))
             {
-                if (habitId.Equals("1234" ) && date.Equals("2025-05-22"))
-                    return Task.FromResult<bool>(true);
+                if (sessionKey.Equals("TestSessionKey"))
+                {
+                    if (habitId.Equals("1234") && date.Equals("2025-05-22"))
+                        return Task.FromResult<bool>(true);
+                    return Task.FromResult<bool>(false);
+                }
                 else
                     return Task.FromResult<bool>(false);
             }
-            else
+        );
+
+        MockHabitService
+        .Setup(hs => hs.GetHabitHistoryByMonth(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, yyyyMM) =>
             {
-                return Task.FromResult<bool>(false);
+                if (sessionKey.Equals("TestSessionKey"))
+                {
+                    if (yyyyMM.Equals("0000-00"))
+                        return Task.FromResult<Dictionary<string,HistoricalDate>?>(new());
+                        
+                    return Task.FromResult<Dictionary<string, HistoricalDate>?>(null);
+                }
+                else
+                    return Task.FromResult<Dictionary<string,HistoricalDate>?>(null);
             }
-        }
         );
     }
 
@@ -156,7 +167,7 @@ public class TestHabitController
 
         SetValidSessionKey();
         result = await habitController.DeleteHabit("InValidId");
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
     }
     [Fact]
     public async Task TestEditHabit()
@@ -178,7 +189,7 @@ public class TestHabitController
 
         SetValidSessionKey();
         result = await habitController.EditHabit(new Habit { Name = "TestHabit", Id = "InvalidId" });
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
@@ -189,9 +200,9 @@ public class TestHabitController
         IActionResult result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                HabitId = "1234" ,
+                HabitId = "1234",
                 Date = "2025-05-22",
-                Completed=true
+                Completed = true
             }
         );
         Assert.IsType<OkResult>(result);
@@ -205,7 +216,7 @@ public class TestHabitController
         IActionResult result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                HabitId = "1234" ,
+                HabitId = "1234",
                 Date = "2025-05-22",
                 Completed = true
             }
@@ -217,23 +228,43 @@ public class TestHabitController
         result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                HabitId = "1233" ,
+                HabitId = "1233",
                 Date = "2025-05-22",
                 Completed = true
             }
         );
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
 
         result = await habitController.SetHabitCompletion(
             new CompleteHabitRequest
             {
-                HabitId = "1234" ,
+                HabitId = "1234",
                 Date = "2025-05-21",
                 Completed = true
             }
         );
-        Assert.IsType<UnauthorizedResult>(result);
+        Assert.IsType<NotFoundResult>(result);
 
     }
 
+    [Fact]
+    public async Task TestGetHabitHistoryByMonth()
+    {
+        SetValidSessionKey();
+        IActionResult result = await habitController.GetHabitHistoryByMonth("0000-00");
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.IsType<Dictionary<string, HistoricalDate>>(okResult.Value);
+    }
+
+    [Fact]
+    public async Task TestGetHabitHistoryByMonthInvalid()
+    {
+        SetValidSessionKey();
+        IActionResult result = await habitController.GetHabitHistoryByMonth("0000-01");
+        Assert.IsType<NotFoundResult>(result);
+
+        SetInvalidSessionKey();
+        result = await habitController.GetHabitHistoryByMonth("0000-00");
+        Assert.IsType<NotFoundResult>(result);
+    }
 }
