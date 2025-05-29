@@ -9,6 +9,7 @@ const Schedule = ()=>{
     const [year, setYear] = useState<number>(new Date().getFullYear());
     const [month, setMonth] = useState<number>(new Date().getMonth());
     const firtDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month, 0).getDate();
 
     //This will fetch the monthl habits
     useEffect(()=>{
@@ -23,13 +24,7 @@ const Schedule = ()=>{
         fetchMonth();
     },[])
 
-    const getDaysInCurrentMonth = (): number => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1; // 0-based, for proper month add 1
-        return new Date(year, month, 0).getDate();
-    }
-
+    //Depending on weather all habits were completed for a give day, return respective image
     const renderDay = (number:number):React.ReactNode=>{
         const day = monthlyHabits?.[number];
         if(day !== undefined){
@@ -40,7 +35,7 @@ const Schedule = ()=>{
                 return <img src="./RedX.png" alt="Monthly Habit CheckMark" className="h-6 w-6 absolute right-4 bottom-1"/>;
             }
         }
-        return "";
+        return <></>;
     }
 
     return(
@@ -48,7 +43,7 @@ const Schedule = ()=>{
             {/*Row span down one for all days prior to the first day to give that calender look */}
             {days.map((day,i)=><p className={"text-4xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
 
-            {Array.from({ length: getDaysInCurrentMonth() }, (_, i) => i+1).map((number) => (
+            {Array.from({ length: daysInMonth }, (_, i) => i+1).map((number) => (
                 <div key={number} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15">
                     <p className="text-3xl text-center">{number}</p>
                     <p>{renderDay(number)}</p>
