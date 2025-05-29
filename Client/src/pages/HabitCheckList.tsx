@@ -5,7 +5,8 @@ import ImageButton from "../components/ImageButton";
 import CreateHabit from "../components/CreateHabit";
 import HabitComponent from "./HabitComponet";
 
-const HabitCheckList = ()=>{
+const HabitCheckList = (props:{date:string})=>{
+    const {date} = props;
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
@@ -16,7 +17,7 @@ const HabitCheckList = ()=>{
     //On render grab the users habits
     useEffect(()=>{
         const fetchHabits = async ()=>{
-            const resp = await HabitService.getHabits();
+            const resp = await HabitService.getHabits(date);
             const data = await resp.json();
             setHabits(data);
             console.log(data);

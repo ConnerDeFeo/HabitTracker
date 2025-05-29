@@ -4,8 +4,8 @@ import API from "./API";
 const url = import.meta.env.VITE_SERVER_URL+"habits/";
 
 const HabitService ={
-    getHabits: async ()=>{
-        return await API.get(url);
+    getHabits: async (date:string)=>{
+        return await API.get(`${url}${date}`);
     },
     createHabit: async (habit:Habit)=>{
         return await API.post(url,habit);
