@@ -71,7 +71,7 @@ const Schedule = ()=>{
                 {days.map((day,i)=><p className={"text-4xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
 
                 {Array.from({ length: daysInMonth }, (_, i) => i+1).map((number) => (
-                    <div key={number} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15">
+                    <div key={number} className="border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-15 w-15 dropShadow">
                         <p className="text-3xl text-center">{number}</p>
                         <p>{renderDay(number)}</p>
                     </div>

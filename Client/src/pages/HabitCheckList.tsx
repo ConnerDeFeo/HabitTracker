@@ -68,7 +68,7 @@ const HabitCheckList = (props:{date:string})=>{
                 {/*This will only show if user is in edit mode */}
                 {addHabit}
             </div>
-            <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg drop-shadow-lg" 
+            <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
                 image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>
         </div>      
     );

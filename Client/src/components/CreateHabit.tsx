@@ -33,7 +33,7 @@ const CreateHabit = (props: {
 
     const valueInputStyling = "text-2xl text-center border-2 shadow-xl rounded-2xl h-9";
     const valueUnitStyling = "font-hand border-2 shadow-xl rounded-2xl h-9 text-center";
-    const buttonStyling = "border-2 border-black w-12 h-12 rounded-xl cursor-pointer mx-auto";
+    const buttonStyling = "border-2 border-black w-12 h-12 rounded-xl cursor-pointer mx-auto dropShadow";
 
     //Handles value changes for the numeric and time habits.    
     const handleValueChange = (number: string)=>{
