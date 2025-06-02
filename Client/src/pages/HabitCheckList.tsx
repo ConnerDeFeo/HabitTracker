@@ -12,11 +12,10 @@ import Button from "../components/Button";
 
 const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
     const {date, fetchMonth, setDate} = props;
-    const todaysDate = new Date();
+    const today = new Date();
     const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
     const postFix = postFixes[date.day%10]==undefined ? "th" : postFixes[date.day%10];
-
-    const dateIsToday = todaysDate.getFullYear()===date.year && todaysDate.getMonth() === date.month && todaysDate.getDate()===date.day;
+    const dateIsToday = today.getFullYear()===date.year && today.getMonth() === date.month && today.getDate()===date.day;
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
@@ -86,7 +85,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
         <div className="flex flex-col mx-auto mb-[50vh]">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8">
                 <p className="text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix}, ${date.year}`}</p>
-                <Button label="Today"/>
+                <Button label="Today" onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}/>
             </div>
             <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="mt-10"/>
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
@@ -97,7 +96,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
             {dateIsToday && 
                 <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
                     image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>}
-            <Arrow onClick={()=>setDate(DateService.increaseDay(date))} inverse={true} className="mt-10"/>      
+            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="mt-10" show={!dateIsToday}/>      
         </div>      
     );
 }

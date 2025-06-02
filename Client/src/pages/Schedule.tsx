@@ -28,11 +28,22 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
     }
 
     const handleDateSelection = (day: number)=>{
-        setDate(({
-            day: day,
-            month: date.month,
-            year: date.year
-        }));
+        const today = new Date();
+        const selectedDate = new Date(date.year,date.month,day);
+
+        if(selectedDate<=today)
+            setDate(({
+                day: day,
+                month: date.month,
+                year: date.year
+            }));
+        else
+            setDate(({
+                day: today.getDate(),
+                month: today.getMonth(),
+                year: today.getFullYear()
+            }));
+
         navigate("/");
     }
 
