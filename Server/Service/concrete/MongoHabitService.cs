@@ -250,7 +250,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             return true;
         }
         return false;
-
     }
 
     /// <summary>
@@ -275,7 +274,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 .Project<HabitCollection>(proj)
                 .FirstOrDefaultAsync();
 
-            if (collection !=null && collection.HabitHistory.TryGetValue(yearMonth, out Dictionary<string, HistoricalDate>? month))
+            if (collection != null && collection.HabitHistory.TryGetValue(yearMonth, out Dictionary<string, HistoricalDate>? month))
                 return month;
             return null;
         }

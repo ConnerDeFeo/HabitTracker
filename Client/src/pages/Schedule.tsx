@@ -3,6 +3,7 @@ import HabitService from "../services/HabitService";
 import HistoricalDate from "../types/HistoricalDate";
 import DateInfo from "../types/DateInfo";
 import { useNavigate } from "react-router-dom";
+import GeneralService from "../services/GeneralService";
 
 const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
     const {setDate} = props;
@@ -14,7 +15,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
     const [year, setYear] = useState<number>(new Date().getFullYear());
     const [month, setMonth] = useState<number>(new Date().getMonth());
     const firtDayOfMonth = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
 
     //This will fetch the monthl habits
     useEffect(()=>{
@@ -25,6 +26,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
             const resp = await HabitService.getMonth(yyyyMM);
             if(resp.status==200){
                 const habits = await resp.json();
+                console.log(habits);
                 setMonthlyHabits(habits);
             }
         }
@@ -34,8 +36,9 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
 
     //Depending on weather all habits were completed for a give day, return respective image
     const renderDay = (number:number):React.ReactNode=>{
-        const day = monthlyHabits?.[number];
+        const day = monthlyHabits?.[GeneralService.padZero(number)];
         if(day !== undefined){
+            console.log(day);
             if(day?.allHabitsCompleted){
                 return <img src="./checkMark.webp" alt="Monthly Habit CheckMark" className="h-7 w-7 absolute right-[0.9rem] bottom-1"/>;
             }

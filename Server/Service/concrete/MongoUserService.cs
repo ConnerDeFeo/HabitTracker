@@ -111,7 +111,10 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 throw new Exception("Date was not parsed properly");
             lastLogin = lastLogin.Date;
 
-            HistoricalDate datedHabits = new();
+            HistoricalDate datedHabits = new()
+            { 
+                AllHabitsCompleted=false
+            };
             foreach (Habit habit in collection.Habits)
                 datedHabits.Habits[habit.Id!] = habit;
 

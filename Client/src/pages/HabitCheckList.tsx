@@ -5,6 +5,7 @@ import ImageButton from "../components/ImageButton";
 import CreateHabit from "../components/CreateHabit";
 import HabitComponent from "./HabitComponet";
 import DateInfo from "../types/DateInfo";
+import GeneralService from "../services/GeneralService";
 
 const HabitCheckList = (props:{date:DateInfo})=>{
     const {date} = props;
@@ -27,12 +28,11 @@ const HabitCheckList = (props:{date:DateInfo})=>{
     const [addHabit, setAddHabit] = useState<React.ReactNode>(<></>);
     const [inEditMode,setInEditMode] = useState<boolean>(false);
 
-    const padZero = (num: number): string => String(num).padStart(2, '0');
 
     //On render grab the users habits
     useEffect(()=>{
         const fetchHabits = async ()=>{
-            const resp = await HabitService.getHabits(`${date.year}-${padZero(date.month)}-${padZero(date.day)}`);
+            const resp = await HabitService.getHabits(`${date.year}-${GeneralService.padZero(date.month)}-${GeneralService.padZero(date.day)}`);
             if(resp.status===200){
                 const data = await resp.json();
                 setHabits(data);
@@ -81,7 +81,7 @@ const HabitCheckList = (props:{date:DateInfo})=>{
     return(
         <div className="flex flex-col  mx-auto mb-[50vh]">
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
-                {habits.map((habit)=><HabitComponent habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits}/>)}
+                {habits.map((habit)=><HabitComponent habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits} date={date}/>)}
                 {/*This will only show if user is in edit mode */}
                 {addHabit}
             </div>
