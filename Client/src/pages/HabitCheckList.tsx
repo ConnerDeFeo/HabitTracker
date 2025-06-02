@@ -13,7 +13,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     const {date, fetchMonth, setDate} = props;
     const todaysDate = new Date();
     const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
-    const postFix = postFixes[date.day]==undefined ? "th" : postFixes[date.day];
+    const postFix = postFixes[date.day%10]==undefined ? "th" : postFixes[date.day%10];
 
     const dateIsToday = todaysDate.getFullYear()===date.year && todaysDate.getMonth() === date.month && todaysDate.getDate()===date.day;
 
