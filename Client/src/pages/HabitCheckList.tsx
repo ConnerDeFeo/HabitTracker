@@ -7,8 +7,8 @@ import HabitComponent from "./HabitComponet";
 import DateInfo from "../types/DateInfo";
 import GeneralService from "../services/GeneralService";
 
-const HabitCheckList = (props:{date:DateInfo})=>{
-    const {date} = props;
+const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
+    const {date, fetchMonth} = props;
     const todaysDate = new Date();
 
     const today: DateInfo = {
@@ -16,10 +16,6 @@ const HabitCheckList = (props:{date:DateInfo})=>{
         month: todaysDate.getMonth()+1,
         day: todaysDate.getDate()
     }
-
-    console.log(today);
-    console.log(date);
-
     const dateIsToday = today.year===date.year && today.month === date.month && today.day===date.day;
 
     const [habits,setHabits] = useState<Habit[]>([]);
@@ -28,11 +24,15 @@ const HabitCheckList = (props:{date:DateInfo})=>{
     const [addHabit, setAddHabit] = useState<React.ReactNode>(<></>);
     const [inEditMode,setInEditMode] = useState<boolean>(false);
 
+    useEffect(()=>{
+        fetchMonth();
+    },[habits])
 
     //On render grab the users habits
     useEffect(()=>{
         const fetchHabits = async ()=>{
-            const resp = await HabitService.getHabits(`${date.year}-${GeneralService.padZero(date.month)}-${GeneralService.padZero(date.day)}`);
+            //month+1 becasue month is 0 indexed based
+            const resp = await HabitService.getHabits(`${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`);
             if(resp.status===200){
                 const data = await resp.json();
                 setHabits(data);
@@ -81,7 +81,7 @@ const HabitCheckList = (props:{date:DateInfo})=>{
     return(
         <div className="flex flex-col  mx-auto mb-[50vh]">
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
-                {habits.map((habit)=><HabitComponent habit={habit} inEditMode={inEditMode} key={habit.id} setHabits={setHabits} date={date}/>)}
+                {habits.map((habit)=><HabitComponent key={habit.id} habit={habit} inEditMode={inEditMode} setHabits={setHabits} date={date}/>)}
                 {/*This will only show if user is in edit mode */}
                 {addHabit}
             </div>

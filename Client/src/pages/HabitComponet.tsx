@@ -48,7 +48,7 @@ const HabitComponet = (props: {habit: Habit, inEditMode: boolean, setHabits: Rea
     //when a habit is completed
     const handleHabitCompletionChange = async()=>{
         const habitCompleted = !habit.completed;
-        const resp = await HabitService.completeHabit(habit.id!, `${date.year}-${GeneralService.padZero(date.month)}-${GeneralService.padZero(date.day)}`, habitCompleted);
+        const resp = await HabitService.completeHabit(habit.id!, `${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`, habitCompleted);
 
         if(resp.status==200){
             habit.completed = habitCompleted;

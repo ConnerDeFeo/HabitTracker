@@ -6,40 +6,20 @@ import { useNavigate } from "react-router-dom";
 import GeneralService from "../services/GeneralService";
 import Arrow from "../components/Arrow";
 
-const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
-    const {setDate} = props;
+const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>, monthlyHabits?: Record<string,HistoricalDate>, date: DateInfo})=>{
+    const {setDate,monthlyHabits, date} = props;
     const navigate = useNavigate();
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-    const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
-    const [year, setYear] = useState<number>(new Date().getFullYear());
-    const [month, setMonth] = useState<number>(new Date().getMonth());
-    const firtDayOfMonth = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const firtDayOfMonth = new Date(date.year, date.month, 1).getDay();
+    const daysInMonth = new Date(date.year, date.month+1, 0).getDate();
 
-    //This will fetch the monthl habits
-    useEffect(()=>{
-        const fetchMonth = async ()=>{
-            setMonthlyHabits({});
-            const yyyyMM: string = `${year}-${String(month+1).padStart(2,'0')}`;
-
-            const resp = await HabitService.getMonth(yyyyMM);
-            if(resp.status==200){
-                const habits = await resp.json();
-                console.log(habits);
-                setMonthlyHabits(habits);
-            }
-        }
-
-        fetchMonth();
-    },[month])
 
     //Depending on weather all habits were completed for a give day, return respective image
     const renderDay = (number:number):React.ReactNode=>{
         const day = monthlyHabits?.[GeneralService.padZero(number)];
         if(day !== undefined){
-            console.log(day);
             if(day?.allHabitsCompleted){
                 return <img src="./checkMark.webp" alt="Monthly Habit CheckMark" className="h-7 w-7 absolute right-[0.9rem] bottom-1"/>;
             }
@@ -51,30 +31,40 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
     }
 
     const handleTimeDecrease = ()=>{
-        let newMonth = month-1;
+        let newMonth = date.month-1;
+        let newYear = date.year; 
 
         if(newMonth<0){
-            setYear(year-1);
+            newYear = date.year-1;
             newMonth=11;
         }
-        setMonth(newMonth);
+        setDate(({
+            day: date.day,
+            month: newMonth,
+            year: newYear
+        }));
     }
 
     const handleTimeIncrease = ()=>{
-        const newMonth = month+1;
+        const newMonth = date.month+1;
         const remainder = newMonth/12;
+        let newYear = date.year;
 
         if(remainder>=1)
-            setYear(year+1);
+            newYear = date.year+1;
         
-        setMonth(newMonth%12);
+        setDate(({
+            day: date.day,
+            month: newMonth%12,
+            year: newYear
+        }));
     }
 
     const handleDateSelection = (day: number)=>{
         setDate(({
             day: day,
-            month: month+1,
-            year: year
+            month: date.month,
+            year: date.year
         }));
         navigate("/");
     }
@@ -82,7 +72,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
     return(
         <div className="relative">
             <Arrow onClick={handleTimeDecrease}/>
-            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${months[month]} ${year}`}</p>
+            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${months[date.month]} ${date.year}`}</p>
             <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto justify-items-center">   
                 {/*Row span down one for all days prior to the first day to give that calender look */}
                 {days.map((day,i)=><p className={"text-4xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
