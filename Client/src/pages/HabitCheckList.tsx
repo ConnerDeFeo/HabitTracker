@@ -88,7 +88,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                 <Button label="Today" onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}/>
             </div>
             <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="mt-10"/>
-            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
+            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10" >
                 {habits.map((habit)=><HabitComponent key={habit.id} habit={habit} inEditMode={inEditMode} setHabits={setHabits} date={date}/>)}
                 {/*This will only show if user is in edit mode */}
                 {addHabit}

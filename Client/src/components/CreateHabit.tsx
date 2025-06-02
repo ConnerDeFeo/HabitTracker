@@ -39,10 +39,14 @@ const CreateHabit = (props: {
     const handleValueChange = (number: string)=>{
         const num = Number.parseInt(number);
         
-        if(num<0)
-            return;
+        if(num<0 || Number.isNaN(num)){
+            setHabit((prevHabit)=>({
+                    ...prevHabit,
+                    value:0
+            }));
+        }
         //If habit type is "Time"
-        if(habit.type==2){
+        else if(habit.type==2){
             if(num<=600){
                 setHabit((prevHabit)=>({
                     ...prevHabit,
@@ -73,7 +77,7 @@ const CreateHabit = (props: {
                             type="number" 
                             name="type" 
                             className={valueInputStyling} 
-                            value={habit.value}
+                            value={habit.value == 0 ? "": habit.value}
                             onChange={(e)=>handleValueChange(e.target.value)}
                         />
                         <span className={valueUnitStyling+" text-4xl"}>Minutes</span>
@@ -90,7 +94,7 @@ const CreateHabit = (props: {
                             title=""
                             className={valueInputStyling}
                             onChange={(e)=>handleValueChange(e.target.value)}
-                            value={habit.value}
+                            value={habit.value == 0 ? "": habit.value}
                         />
                         <input 
                             id="valueUnitType" 
