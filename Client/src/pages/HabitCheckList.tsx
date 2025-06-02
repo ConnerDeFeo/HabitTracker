@@ -6,17 +6,15 @@ import CreateHabit from "../components/CreateHabit";
 import HabitComponent from "./HabitComponet";
 import DateInfo from "../types/DateInfo";
 import GeneralService from "../services/GeneralService";
+import DateData from "../data/DateData";
 
 const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
     const {date, fetchMonth} = props;
     const todaysDate = new Date();
+    const postFixes = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
+    // const postFix = postFixes[date.day]!=undefined ? 
 
-    const today: DateInfo = {
-        year: todaysDate.getFullYear(),
-        month: todaysDate.getMonth()+1,
-        day: todaysDate.getDate()
-    }
-    const dateIsToday = today.year===date.year && today.month === date.month && today.day===date.day;
+    const dateIsToday = todaysDate.getFullYear()===date.year && todaysDate.getMonth() === date.month && todaysDate.getDate()===date.day;
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
@@ -33,7 +31,6 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
         const fetchHabits = async ()=>{
             //month+1 becasue month is 0 indexed based
             const resp = await HabitService.getHabits(`${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`);
-            console.log(`${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`);
             if(resp.status===200){
                 const data = await resp.json();
                 setHabits(data);
@@ -81,6 +78,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
     }
     return(
         <div className="flex flex-col  mx-auto mb-[50vh]">
+            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${DateData.months[date.month]} ${date.year}`}</p>
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
                 {habits.map((habit)=><HabitComponent key={habit.id} habit={habit} inEditMode={inEditMode} setHabits={setHabits} date={date}/>)}
                 {/*This will only show if user is in edit mode */}

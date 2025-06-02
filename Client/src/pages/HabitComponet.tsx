@@ -65,7 +65,6 @@ const HabitComponet = (props: {habit: Habit, inEditMode: boolean, setHabits: Rea
         setInEditHabitMode(false);
     }
 
-    console.log(habit.completed);
     //User puts whole screen in edit mode
     return inEditMode ? 
                 //Edits this habit specifically
