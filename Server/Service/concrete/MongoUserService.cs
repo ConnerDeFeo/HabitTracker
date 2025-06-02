@@ -94,8 +94,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         if (user is not null && PasswordHasher.VerifyPassword(password, user.Password))
         {
-    
-
             //Get habit collection for updating missing dates
             var filter = Builders<HabitCollection>.Filter.Eq(hc => hc.Id, user.Id);
             HabitCollection collection = await _habitCollections
@@ -111,36 +109,39 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 throw new Exception("Date was not parsed properly");
             lastLogin = lastLogin.Date;
 
-            HistoricalDate datedHabits = new()
-            { 
-                AllHabitsCompleted=false
-            };
-            foreach (Habit habit in collection.Habits)
-                datedHabits.Habits[habit.Id!] = habit;
-
-            /*For every day there has not been a login and today, set the habit history as the blank slate
-            of incomplete haibts*/
-            while (lastLogin <= today)
+            if(lastLogin!=today)
             {
-                string thisMonth = lastLogin.ToString("yyyy-MM");
-                string thisDay = lastLogin.ToString("dd");
-                //add the dict to the db
-                habitHistoryUpdates.Add(
-                    updateHabitCollection.Set($"HabitHistory.{thisMonth}.{thisDay}", datedHabits)
-                );
+                HistoricalDate datedHabits = new()
+                { 
+                    AllHabitsCompleted=false
+                };
+                foreach (Habit habit in collection.Habits)
+                    datedHabits.Habits[habit.Id!] = habit;
 
-                lastLogin = lastLogin.AddDays(1);
-            }
-            //complete all updated on the dictionary
-            await _habitCollections.UpdateOneAsync(filter, updateHabitCollection.Combine(habitHistoryUpdates));
+                /*For every day there has not been a login and today, set the habit history as the blank slate
+                of incomplete haibts*/
+                while (lastLogin <= today)
+                {
+                    string thisMonth = lastLogin.ToString("yyyy-MM");
+                    string thisDay = lastLogin.ToString("dd");
+                    //add the dict to the db
+                    habitHistoryUpdates.Add(
+                        updateHabitCollection.Set($"HabitHistory.{thisMonth}.{thisDay}", datedHabits)
+                    );
 
-            string sessionKey = GenerateSessionKey();
-            await _users.UpdateOneAsync(
-                u => u.Username.Equals(username),
-                update.Combine(
-                    update.Set(u => u.SessionKey, sessionKey),
-                    update.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
-                )
+                    lastLogin = lastLogin.AddDays(1);
+                }
+                //complete all updated on the dictionary
+                await _habitCollections.UpdateOneAsync(filter, updateHabitCollection.Combine(habitHistoryUpdates));
+                }
+
+                string sessionKey = GenerateSessionKey();
+                await _users.UpdateOneAsync(
+                    u => u.Username.Equals(username),
+                    update.Combine(
+                        update.Set(u => u.SessionKey, sessionKey),
+                        update.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
+                    )
             );
 
             return new LoginResult { Success = true, SessionKey = sessionKey };

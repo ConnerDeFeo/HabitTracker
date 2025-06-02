@@ -33,6 +33,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
         const fetchHabits = async ()=>{
             //month+1 becasue month is 0 indexed based
             const resp = await HabitService.getHabits(`${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`);
+            console.log(`${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`);
             if(resp.status===200){
                 const data = await resp.json();
                 setHabits(data);
