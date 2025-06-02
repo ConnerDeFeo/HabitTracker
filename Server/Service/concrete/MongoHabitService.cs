@@ -225,7 +225,15 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
         if (userId is not null)
         {
-            if (await HabitIdExists(userId, habitId) is null)
+            var habitIsReal = await _habitCollections
+            .Find(hc => hc.Id == userId && (
+                hc.Habits.Any(h => h.Id == habitId)
+                ||
+                hc.DeletedHabits.Any(h => h.Id == habitId)
+            ))
+            .FirstOrDefaultAsync();
+
+            if (habitIsReal is null)
                 return false;
 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");

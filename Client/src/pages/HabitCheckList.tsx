@@ -8,6 +8,7 @@ import DateInfo from "../types/DateInfo";
 import DateService from "../services/DateService";
 import DateData from "../data/DateData";
 import Arrow from "../components/Arrow";
+import Button from "../components/Button";
 
 const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
     const {date, fetchMonth, setDate} = props;
@@ -82,8 +83,11 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     }
 
     return(
-        <div className="flex flex-col  mx-auto mb-[50vh]">
-            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${DateData.months[date.month]} ${date.day}${postFix}, ${date.year}`}</p>
+        <div className="flex flex-col mx-auto mb-[50vh]">
+            <div className="flex justify-between items-center w-[75%] mx-auto mt-8">
+                <p className="text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix}, ${date.year}`}</p>
+                <Button label="Today"/>
+            </div>
             <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="mt-10"/>
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
                 {habits.map((habit)=><HabitComponent key={habit.id} habit={habit} inEditMode={inEditMode} setHabits={setHabits} date={date}/>)}
