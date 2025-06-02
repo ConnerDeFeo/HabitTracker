@@ -4,6 +4,7 @@ import HistoricalDate from "../types/HistoricalDate";
 import DateInfo from "../types/DateInfo";
 import { useNavigate } from "react-router-dom";
 import GeneralService from "../services/GeneralService";
+import Arrow from "../components/Arrow";
 
 const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
     const {setDate} = props;
@@ -80,7 +81,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
 
     return(
         <div className="relative">
-            <p className="text-9xl absolute left-35 top-50 cursor-pointer" onClick={handleTimeDecrease}>{"<"}</p>
+            <Arrow onClick={handleTimeDecrease}/>
             <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${months[month]} ${year}`}</p>
             <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto justify-items-center">   
                 {/*Row span down one for all days prior to the first day to give that calender look */}
@@ -95,7 +96,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
                     </div>
                 ))}
             </div>
-            <p className="text-9xl absolute right-35 top-50 cursor-pointer" onClick={handleTimeIncrease}>{">"}</p>
+            <Arrow onClick={handleTimeIncrease} inverse={true}/>
         </div>
     );
 }

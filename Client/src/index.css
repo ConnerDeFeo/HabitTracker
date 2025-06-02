@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-h1,p{
+h1,p,span{
     font-family: 'Just Another Hand', Courier, monospace;
 }
 
