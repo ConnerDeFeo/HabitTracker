@@ -1,7 +1,7 @@
 import Habit from "./Habit";
 
 type HistoricalDate = {
-    habits: Record<number,Habit>,
+    habits: Record<string,Habit>,
     allHabitsCompleted: boolean
 }
 

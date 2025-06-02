@@ -4,7 +4,7 @@ import CreateHabit from "../components/CreateHabit";
 import HabitService from "../services/HabitService";
 import Button from "../components/Button";
 import DateInfo from "../types/DateInfo";
-import GeneralService from "../services/GeneralService";
+import DateService from "../services/DateService";
 
 const HabitComponet = (props: {habit: Habit, inEditMode: boolean, setHabits: React.Dispatch<React.SetStateAction<Habit[]>>, date:DateInfo})=>{
     const {habit, inEditMode, setHabits, date} = props;
@@ -48,7 +48,7 @@ const HabitComponet = (props: {habit: Habit, inEditMode: boolean, setHabits: Rea
     //when a habit is completed
     const handleHabitCompletionChange = async()=>{
         const habitCompleted = !habit.completed;
-        const resp = await HabitService.completeHabit(habit.id!, `${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`, habitCompleted);
+        const resp = await HabitService.completeHabit(habit.id!, `${date.year}-${DateService.padZero(date.month+1)}-${DateService.padZero(date.day)}`, habitCompleted);
 
         if(resp.status==200){
             habit.completed = habitCompleted;

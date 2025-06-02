@@ -5,14 +5,15 @@ import ImageButton from "../components/ImageButton";
 import CreateHabit from "../components/CreateHabit";
 import HabitComponent from "./HabitComponet";
 import DateInfo from "../types/DateInfo";
-import GeneralService from "../services/GeneralService";
+import DateService from "../services/DateService";
 import DateData from "../data/DateData";
+import Arrow from "../components/Arrow";
 
-const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
-    const {date, fetchMonth} = props;
+const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
+    const {date, fetchMonth, setDate} = props;
     const todaysDate = new Date();
-    const postFixes = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
-    // const postFix = postFixes[date.day]!=undefined ? 
+    const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
+    const postFix = postFixes[date.day]==undefined ? "th" : postFixes[date.day];
 
     const dateIsToday = todaysDate.getFullYear()===date.year && todaysDate.getMonth() === date.month && todaysDate.getDate()===date.day;
 
@@ -30,14 +31,17 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
     useEffect(()=>{
         const fetchHabits = async ()=>{
             //month+1 becasue month is 0 indexed based
-            const resp = await HabitService.getHabits(`${date.year}-${GeneralService.padZero(date.month+1)}-${GeneralService.padZero(date.day)}`);
+            const resp = await HabitService.getHabits(`${date.year}-${DateService.padZero(date.month+1)}-${DateService.padZero(date.day)}`);
             if(resp.status===200){
                 const data = await resp.json();
                 setHabits(data);
             }
+            else{
+                setHabits([]);
+            }
         }
         fetchHabits();
-    },[])
+    },[date])
 
     //When the user completes a new habit
     const handleNewHabitCompletion = async (habit:Habit)=>{
@@ -76,9 +80,11 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
             setAddHabit(addHabitButton);
         setInEditMode(!inEditMode);
     }
+
     return(
         <div className="flex flex-col  mx-auto mb-[50vh]">
-            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${DateData.months[date.month]} ${date.year}`}</p>
+            <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${DateData.months[date.month]} ${date.day}${postFix}, ${date.year}`}</p>
+            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="mt-10"/>
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10">
                 {habits.map((habit)=><HabitComponent key={habit.id} habit={habit} inEditMode={inEditMode} setHabits={setHabits} date={date}/>)}
                 {/*This will only show if user is in edit mode */}
@@ -87,7 +93,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void})=>{
             {dateIsToday && 
                 <ImageButton onClick={toggleEdit} className="ml-[80%] mt-5 drop-shadow-lg" 
                     image={<img src="./EditHabits.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}/>}
-            
+            <Arrow onClick={()=>setDate(DateService.increaseDay(date))} inverse={true} className="mt-10"/>      
         </div>      
     );
 }

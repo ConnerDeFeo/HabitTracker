@@ -1,7 +1,7 @@
 import HistoricalDate from "../types/HistoricalDate";
 import DateInfo from "../types/DateInfo";
 import { useNavigate } from "react-router-dom";
-import GeneralService from "../services/GeneralService";
+import DateService from "../services/DateService";
 import Arrow from "../components/Arrow";
 import DateData from "../data/DateData";
 
@@ -15,9 +15,9 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
 
     //Depending on weather all habits were completed for a give day, return respective image
     const renderDay = (number:number):React.ReactNode=>{
-        const day = monthlyHabits?.[GeneralService.padZero(number)];
+        const day = monthlyHabits?.[DateService.padZero(number)];
         if(day !== undefined){
-            if(day?.allHabitsCompleted){
+            if(day.allHabitsCompleted){
                 return <img src="./checkMark.webp" alt="Monthly Habit CheckMark" className="h-7 w-7 absolute right-[0.9rem] bottom-1"/>;
             }
             else{
@@ -25,36 +25,6 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
             }
         }
         return <></>;
-    }
-
-    const handleTimeDecrease = ()=>{
-        let newMonth = date.month-1;
-        let newYear = date.year; 
-
-        if(newMonth<0){
-            newYear = date.year-1;
-            newMonth=11;
-        }
-        setDate(({
-            day: date.day,
-            month: newMonth,
-            year: newYear
-        }));
-    }
-
-    const handleTimeIncrease = ()=>{
-        const newMonth = date.month+1;
-        const remainder = newMonth/12;
-        let newYear = date.year;
-
-        if(remainder>=1)
-            newYear = date.year+1;
-        
-        setDate(({
-            day: date.day,
-            month: newMonth%12,
-            year: newYear
-        }));
     }
 
     const handleDateSelection = (day: number)=>{
@@ -68,7 +38,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
 
     return(
         <div className="relative">
-            <Arrow onClick={handleTimeDecrease}/>
+            <Arrow onClick={()=>setDate(DateService.decreaseMonth(date))}/>
             <p className="text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${DateData.months[date.month]} ${date.year}`}</p>
             <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto justify-items-center">   
                 {/*Row span down one for all days prior to the first day to give that calender look */}
@@ -83,7 +53,7 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
                     </div>
                 ))}
             </div>
-            <Arrow onClick={handleTimeIncrease} inverse={true}/>
+            <Arrow onClick={()=>setDate(DateService.increaseMonth(date))} inverse={true}/>
         </div>
     );
 }
