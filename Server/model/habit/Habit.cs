@@ -26,5 +26,16 @@ public class Habit
     public double? Value { get; set; }
 
     public string? ValueUnitType { get; set; }
+
+    // override object.Equals
+    public override bool Equals(object? obj)
+    {
+        return obj is Habit other && Name == other.Name;
+    }
+    
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode();
+    }
     
 }

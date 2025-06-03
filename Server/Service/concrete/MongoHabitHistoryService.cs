@@ -6,12 +6,11 @@ using Server.model.habit;
 using Server.model.user;
 using Server.service;
 
-public class MongoHabitService(IMongoDatabase _database) : IHabitHistoryService
+public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryService
 { 
   
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
-
     private readonly BuilderUtils builder = new();
   
     public async Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed)

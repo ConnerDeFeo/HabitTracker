@@ -74,11 +74,17 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         user.Id=id;
         string thisMonth = DateTime.Today.ToString("yyyy-MM");
         string thisDay = DateTime.Today.ToString("dd");
+        string[] days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
         await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
         collection.HabitHistory[thisMonth] = [];
         collection.HabitHistory[thisMonth][thisDay] = new();
+        foreach (string day in days)
+        {
+            collection.ActiveHabits[day] = [];
+            collection.NonActiveHabits[day] = [];
+        }
         await _habitCollections.InsertOneAsync(collection);
         return new LoginResult { Success = true, SessionKey = sessionKey };
     }

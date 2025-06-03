@@ -10,6 +10,7 @@ public class BuilderUtils
     public readonly FilterDefinitionBuilder<HabitCollection> habitFilter = Builders<HabitCollection>.Filter;
     public readonly UpdateDefinitionBuilder<HabitCollection> habitUpdate = Builders<HabitCollection>.Update;
     public readonly UpdateDefinitionBuilder<User> userUpdate = Builders<User>.Update;
-    public readonly FindOneAndUpdateOptions<HabitCollection> options = new();
-    public readonly ProjectionDefinitionBuilder<HabitCollection> projection = Builders<HabitCollection>.Projection;
+    public readonly FindOneAndUpdateOptions<HabitCollection> habitOptions = new();
+    public readonly ProjectionDefinitionBuilder<HabitCollection> habitProjection = Builders<HabitCollection>.Projection;
+
 }

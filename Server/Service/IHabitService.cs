@@ -8,7 +8,7 @@ namespace Server.service;
 public interface IHabitService
 {
     Task<List<Habit>?> GetHabits(string sessionKey, string date);
-    Task<Habit?> CreateHabit(string sessionKey, Habit habit);
+    Task<Habit?> CreateHabit(string sessionKey, List<string> daysOfWeek, Habit habit);
     Task<bool> DeactivateHabit(string sessionKey, string habitId);
     Task<bool> DeleteHabit(string sessionKey, string habitId);
     Task<Habit?> EditHabit(string sessionKey, Habit habit);
