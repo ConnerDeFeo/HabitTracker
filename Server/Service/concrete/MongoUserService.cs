@@ -14,23 +14,22 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
-    private readonly UpdateDefinitionBuilder<User> update = Builders<User>.Update;
-
+    private readonly BuilderUtils builder = new();
 
     private static string GenerateSessionKey()
-    { 
+    {
         byte[] key = RandomNumberGenerator.GetBytes(32);
         return Convert.ToBase64String(key);
     }
     private async Task<User> GetUserByUsername(string username)
     {
-        var Filter = Builders<User>.Filter.Eq(u => u.Username, username);
+        var Filter = builder.userFilter.Eq(u => u.Username, username);
 
         return await _users.Find(Filter).FirstOrDefaultAsync();
     }
 
     private async Task<User> GetUserBySessionKey(string sessionKey){
-        var Filter = Builders<User>.Filter.Eq(u => u.SessionKey, sessionKey);
+        var Filter = builder.userFilter.Eq(u => u.SessionKey, sessionKey);
 
         return await _users.Find(Filter).FirstOrDefaultAsync();
     }
@@ -158,7 +157,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     public async Task<bool> Logout(string sessionKey){
         User user = await GetUserBySessionKey(sessionKey);
         if(user is not null && user.SessionKey.Equals(sessionKey)){
-            await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),update.Set(u=>u.SessionKey, ""));
+            await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),builder.userUpdate.Set(u=>u.SessionKey, ""));
             return true;
         }
         return false;

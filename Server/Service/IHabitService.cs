@@ -12,7 +12,4 @@ public interface IHabitService
     Task<bool> DeactivateHabit(string sessionKey, string habitId);
     Task<bool> DeleteHabit(string sessionKey, string habitId);
     Task<Habit?> EditHabit(string sessionKey, Habit habit);
-    Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed);
-    Task<HabitCollection?> GetHabitCollection(string sessionKey);
-    Task<Dictionary<string, HistoricalDate>?> GetHabitHistoryByMonth(string sessionKey, string month);
 }
