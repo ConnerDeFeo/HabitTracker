@@ -74,7 +74,6 @@ const CreateHabit = (props: {
                         <label htmlFor="timeValue" className="font-hand text-4xl text-left col-span-2">Value: </label>
                         <input 
                             id="timeValue" 
-                            type="number" 
                             name="type" 
                             className={valueInputStyling} 
                             value={habit.value == 0 ? "": habit.value}
@@ -89,7 +88,6 @@ const CreateHabit = (props: {
                         <label htmlFor="numericValue" className="font-hand text-4xl text-left col-span-2">Value: </label>
                         <input 
                             id="numericValue" 
-                            type="number" 
                             name="type" 
                             title=""
                             className={valueInputStyling}
