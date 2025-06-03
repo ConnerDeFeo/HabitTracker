@@ -14,6 +14,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
+    private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
+    private readonly string thisDay = DateTime.Today.ToString("dd");
 
     private static string GenerateSessionKey()
     {
@@ -47,21 +49,17 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         }
 
         string sessionKey = GenerateSessionKey();
-        string today = DateTime.Today.ToString("yyyy-MM-dd");
         User user = new()
         {
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
             SessionKey = sessionKey,
-            LastLoginDate = today
+            LastLoginDate = $"{thisMonth}-{thisDay}"
         };
 
         string id = ObjectId.GenerateNewId().ToString();
         user.Id=id;
-        string thisMonth = DateTime.Today.ToString("yyyy-MM");
-        string thisDay = DateTime.Today.ToString("dd");
-        string[] days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
         await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
@@ -114,9 +112,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                         if (habit.DaysOfTheWeek.Contains(lastLogin.DayOfWeek.ToString()))
                             daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
                     
-
-                    string thisMonth = lastLogin.ToString("yyyy-MM");
-                    string thisDay = lastLogin.ToString("dd");
                     //add the dict to the db
                     habitHistoryUpdates.Add(
                         updateHabitCollection.Set($"HabitHistory.{lastLogin:yyyy-MM}.{lastLogin:dd}", daysToHabits[lastLogin.DayOfWeek])

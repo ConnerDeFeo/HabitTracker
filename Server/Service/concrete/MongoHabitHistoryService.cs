@@ -16,15 +16,15 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
   
     public async Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed)
     {
-        string? userId = await GetUserIdBySessionKey(sessionKey);
-
-        if (userId is not null)
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
         {
+            string userId = user.Id;
             var habitIsReal = await _habitCollections
             .Find(hc => hc.Id == userId && (
-                hc.Habits.Any(h => h.Id == habitId)
+                hc.ActiveHabits.Any(h => h.Id == habitId)
                 ||
-                hc.DeletedHabits.Any(h => h.Id == habitId)
+                hc.NonActiveHabits.Any(h => h.Id == habitId)
             ))
             .FirstOrDefaultAsync();
 
@@ -32,22 +32,22 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
                 return false;
 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");
-            string thisMonth = date[..7];
-            string thisDay = date.Substring(8, 2);
+            string month = date[..7];
+            string day = date.Substring(8, 2);
 
 
-            options.Projection = projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
-            options.ReturnDocument = ReturnDocument.After;
+            BuilderUtils.habitOptions.Projection = BuilderUtils.habitProjection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
 
             //update and set the new date
             HabitCollection collection = await _habitCollections.FindOneAndUpdateAsync(
-                habitFilter.Eq(hc => hc.Id, userId),
-                update.Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}.Completed", completed),
-                options
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+                BuilderUtils.habitUpdate.Set($"HabitHistory.{month}.{day}.Habits.{habitId}.Completed", completed),
+                BuilderUtils.habitOptions
             );
 
             //If there was a change in all completed habit, set it. 
-            CheckAllHabitsCompleted(date, collection, userId);
+            HabitUtils.CheckAllHabitsCompleted($"{month}-${day}", collection, userId, _habitCollections);
 
 
             return true;
@@ -62,15 +62,15 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
     /// <returns></returns>
     public async Task<Dictionary<string, HistoricalDate>?> GetHabitHistoryByMonth(string sessionKey, string yearMonth)
     {
-        string? userId = await GetUserIdBySessionKey(sessionKey);
-
-        if (userId is not null)
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
         {
-            var filter = habitFilter.And(
-                habitFilter.Eq(hc => hc.Id, userId),
-                habitFilter.Exists($"HabitHistory.{yearMonth}")
+            string userId = user.Id;
+            var filter = BuilderUtils.habitFilter.And(
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+                BuilderUtils.habitFilter.Exists($"HabitHistory.{yearMonth}")
             );
-            var proj = projection.Include(hc => hc.HabitHistory);
+            var proj = BuilderUtils.habitProjection.Include(hc => hc.HabitHistory);
 
             HabitCollection collection = await _habitCollections
                 .Find(filter)

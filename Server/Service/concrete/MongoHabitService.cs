@@ -43,45 +43,24 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return habits;
     }
 
-    /// <summary>
-    /// Checks the current state of some given date to see if all habits for that date were
-    /// completed. Then update the AllHabitsCompleted variable in the respective
-    /// historical date if needed
-    /// </summary>
-    /// <param name="date">Date for this collection</param>
-    /// <param name="collection">habitcollection, generically should only contain the respective date in its habithistory</param>
-    /// <param name="userId">user for which this is occuring</param>
-    private  async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
-    {
-        //If there was a change in all completed habit, set it. 
-        HistoricalDate historicalDate = collection.HabitHistory[thisMonth][thisDay];
-            bool allCompleted = true;
-            foreach (Habit habit in historicalDate.Habits.Values)
-                if (!habit.Completed)
-                    allCompleted = false;
-
-            if (allCompleted != historicalDate.AllHabitsCompleted)
-                await _habitCollections.UpdateOneAsync(
-                    BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
-                    BuilderUtils.habitUpdate.Set($"HabitHistory.{thisMonth}.{thisDay}.AllHabitsCompleted", allCompleted)
-                );
-    }
-
     public async Task<List<Habit>?> GetHabits(string sessionKey, string date)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            ProjectionDefinition<HabitCollection> habitProjection = BuilderUtils.habitProjection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            string month = date[..7];
+            string day = date.Substring(8, 2);
+            ProjectionDefinition<HabitCollection> habitProjection = BuilderUtils.habitProjection.Include($"HabitHistory.{month}.{day}");
             HabitCollection collection = await _habitCollections
             .Find(
                 BuilderUtils.habitFilter.Eq(hc => hc.Id, userId) 
             )
             .Project<HabitCollection>(habitProjection)
             .FirstOrDefaultAsync();
+
             Dictionary<string, Dictionary<string, HistoricalDate>> history = collection.HabitHistory;
-            if (history.TryGetValue(thisMonth, out Dictionary<string, HistoricalDate>? value) && value.TryGetValue(thisDay, out HistoricalDate? historicalDate)) 
+            if (history.TryGetValue(month, out Dictionary<string, HistoricalDate>? value) && value.TryGetValue(day, out HistoricalDate? historicalDate)) 
                 return [.. historicalDate.Habits.Values];
             return null;
         }
@@ -123,7 +102,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 BuilderUtils.habitOptions
             );
 
-            CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId);
+            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId, _habitCollections);
 
             return habit;
         }
@@ -162,7 +141,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                BuilderUtils.habitOptions
            );
 
-            CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId);
+            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId, _habitCollections);
             return true;
         }
         return false;
