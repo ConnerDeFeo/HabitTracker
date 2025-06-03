@@ -218,7 +218,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-
     public async Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
