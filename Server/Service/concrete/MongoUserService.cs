@@ -80,11 +80,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         HabitCollection collection = new() { Id = id };
         collection.HabitHistory[thisMonth] = [];
         collection.HabitHistory[thisMonth][thisDay] = new();
-        foreach (string day in days)
-        {
-            collection.ActiveHabits[day] = [];
-            collection.NonActiveHabits[day] = [];
-        }
         await _habitCollections.InsertOneAsync(collection);
         return new LoginResult { Success = true, SessionKey = sessionKey };
     }
@@ -121,18 +116,15 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 of incomplete haibts*/
                 while (lastLogin <= today)
                 {
-                    //Associate each day with the date. Create an instance of historical date to be reused.
-                    DayOfWeek dayOfWeek = lastLogin.DayOfWeek;
-                    if (!dayToHabits.ContainsKey(dayOfWeek))
+                    dayToHabits[lastLogin.DayOfWeek] = new()
                     {
-                        dayToHabits[lastLogin.DayOfWeek] = new()
-                        {
-                            AllHabitsCompleted = false
-                        };
-                        foreach (Habit habit in collection.ActiveHabits[dayOfWeek.ToString()])
+                        AllHabitsCompleted = false
+                    };
+                    foreach (Habit habit in collection.ActiveHabits)
+                        if (habit.DaysOfTheWeek.Contains(lastLogin.DayOfWeek.ToString()))
                             dayToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
-                    }
                     
+
                     string thisMonth = lastLogin.ToString("yyyy-MM");
                     string thisDay = lastLogin.ToString("dd");
                     //add the dict to the db

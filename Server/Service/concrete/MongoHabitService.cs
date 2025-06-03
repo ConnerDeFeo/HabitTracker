@@ -39,13 +39,11 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
         HashSet<Habit> habits = [];
 
-        foreach (List<Habit> listOfHabits in collection.ActiveHabits.Values)
-            foreach (Habit habit in listOfHabits)
-                habits.Add(habit);
+        foreach (Habit habit in collection.ActiveHabits)
+            habits.Add(habit);
 
-        foreach (List<Habit> listOfHabits in collection.NonActiveHabits.Values)
-            foreach (Habit habit in listOfHabits)
-                habits.Add(habit);
+        foreach (Habit habit in collection.NonActiveHabits)
+            habits.Add(habit);
 
         return habits;
     }
@@ -99,7 +97,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return null;
     }
 
-    public async Task<Habit?> CreateHabit(string sessionKey,List<string> daysOfWeek, Habit habit)
+    public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
     {
         string? userId = await GetUserIdBySessionKey(sessionKey);
 
@@ -118,20 +116,14 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             string thisDay = todayString.Substring(8, 2);
 
             List<UpdateDefinition<HabitCollection>> updates = [];
-            foreach (string day in daysOfWeek)
-            {
+            updates.Add(
+                builder.habitUpdate.Push(hc => hc.ActiveHabits, habit)
+            );
+            if (habit.DaysOfTheWeek.Contains(today.DayOfWeek.ToString()))
                 updates.Add(
                     builder.habitUpdate
-                    .Push(hc => hc.ActiveHabits[day], habit)
+                    .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit)
                 );
-                if (day == today.DayOfWeek.ToString())
-                { 
-                    updates.Add(
-                        builder.habitUpdate
-                        .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit)
-                    );   
-                }
-            }
 
             builder.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
             builder.habitOptions.ReturnDocument = ReturnDocument.After;
@@ -146,11 +138,16 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             CheckAllHabitsCompleted(todayString, collection, userId);
 
             return habit;
-        }
+        }s
         return null;
     }
 
     public async Task<bool> DeactivateHabit(string sessionKey, string habitId)
+    {
+        return false;
+    }
+
+    public async Task<bool> RectivateHabit(string sessionKey, string habitId)
     {
         return false;
     }
@@ -161,25 +158,20 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         if (userId is not null)
         {
             HashSet<Habit> setOfHabits = await GetAllHabits(userId);
-            if (setOfHabits.FirstOrDefault(h=>h.Id==habitId) is null)
+            if (setOfHabits.FirstOrDefault(h => h.Id == habitId) is null)
                 return false;
-
-            var findHabit = builder.habitFilter.And(
-                builder.habitFilter.Eq(hc => hc.Id, userId),
-                builder.habitFilter.ElemMatch(hc => hc.ActiveHabits, kvp => kvp.Value.Any(h=>h.Id==habitId))
-            );
 
             string today = DateTime.Today.ToString("yyyy-MM-dd");
             string thisMonth = today[..7];
             string thisDay = today.Substring(8, 2);
-            string[] days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+            string[] days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
             List<UpdateDefinition<HabitCollection>> updates = [];
             foreach (string day in days)
             {
                 updates.Add(
                     builder.habitUpdate
-                    .PullFilter($"NonActiveHabits.{day}", builder.habitFilter.Eq(h=>h.Id,habitId))
+                    .PullFilter($"NonActiveHabits.{day}", builder.habitFilter.Eq(h => h.Id, habitId))
                 );
             }
             updates.Add(
@@ -191,7 +183,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             //remove from habits collection
             HabitCollection collection = await _habitCollections
            .FindOneAndUpdateAsync(
-               findHabit,
+               builder.habitFilter.Eq(hc => hc.Id, userId),
                builder.habitUpdate.Combine(updates),
                builder.habitOptions
            );
@@ -207,11 +199,12 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         string? userId = await GetUserIdBySessionKey(sessionKey);
         if (userId is not null)
         {
-            if (habit.Id is null || await HabitIdExists(userId, habit.Id) is null)
+            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            if (habit.Id is null || setOfHabits.FirstOrDefault(h=>h.Id==habit.Id) is null)
                 return null;
 
             var findHabit = habitFilter.And(
-                habitFilter.Eq(hc => hc.Id, userId),
+                builder.habitFilter.Eq(hc => hc.Id, userId),
                 habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
             );
 
@@ -219,13 +212,13 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             string thisMonth = today[..7];
             string thisDay = today.Substring(8,2);
 
-            var updateHabits = update
+            var updateHabits = builder.habitUpdate
                 .Set("Habits.$", habit)
                 .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit);
 
             await _habitCollections
             .UpdateOneAsync(
-                findHabit,
+                builder.habitFilter.Eq(hc => hc.Id, userId),
                 updateHabits
             );
             return habit;

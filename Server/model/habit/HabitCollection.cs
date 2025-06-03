@@ -11,7 +11,7 @@ public class HabitCollection
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
-    public Dictionary<string,List<Habit>> ActiveHabits { get; set; } = [];
-    public Dictionary<string,List<Habit>> NonActiveHabits { get; set; } = [];
+    public List<Habit> ActiveHabits { get; set; } = [];
+    public List<Habit> NonActiveHabits { get; set; } = [];
     public Dictionary<string, Dictionary<string, HistoricalDate>> HabitHistory { get; set; } = [];
 }

@@ -18,6 +18,8 @@ public class Habit
 
     public string DateCreated { get; set; } = null!;
 
+    public HashSet<string> DaysOfTheWeek { get; } = [];
+
     public bool Completed { get; set; } = false;
 
     public bool Skipped { get; set; } = false;
