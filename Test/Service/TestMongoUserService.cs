@@ -102,9 +102,9 @@ public class TestMongoUserService{
         HabitCollection habitCollection = new()
         {
             Id = id,
-            Habits = [],
+            ActiveHabits = [],
             HabitHistory = [],
-            DeletedHabits = []
+            NonActiveHabits = []
         };
 
         await users.InsertOneAsync(user);
@@ -116,7 +116,7 @@ public class TestMongoUserService{
         //in case i test at the begining of a month
         int total = 0;
         foreach (var kvp in habitCollectionUpdated!.HabitHistory.Values) 
-            total += kvp.Values.Count;
+            total += 1;
         
 
         Assert.Equal(6, total);

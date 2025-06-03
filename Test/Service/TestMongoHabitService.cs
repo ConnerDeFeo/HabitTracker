@@ -44,7 +44,7 @@ public class TestMongoHabitService
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
-        List<Habit>? habits = await habitService.GetHabits("INVALID",DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? habits = await habitService.GetHabits("InvalidSessionKey",DateTime.Today.ToString("yyyy-MM-dd"));
 
         Assert.Null(habits);
     }
