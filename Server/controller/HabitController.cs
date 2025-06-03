@@ -74,34 +74,4 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         return Unauthorized();
     }
 
-    [HttpPut("habitCompletion")]
-    public async Task<IActionResult> SetHabitCompletion([FromBody] CompleteHabitRequest habitRequest)
-    {
-        string? sesionKey = Request.Cookies["sessionKey"];
-        if (sesionKey != null)
-        {
-            //Note this will be the list of habits that correspond with the date
-            bool changed = await _habitService.SetHabitCompletion(sesionKey, habitRequest.Date, habitRequest.HabitId, habitRequest.Completed);
-            if (changed)
-                return Ok();
-            return NotFound();
-        }
-        return Unauthorized();
-    }
-
-    [HttpGet("month/{yyyyMM}")]
-    public async Task<IActionResult> GetHabitHistoryByMonth(string yyyyMM)
-    {
-        string? sesionKey = Request.Cookies["sessionKey"];
-        if (sesionKey != null)
-        {
-            //Note this will be the list of habits that correspond with the date
-            Dictionary<string, HistoricalDate>? month = await _habitService.GetHabitHistoryByMonth(sesionKey, yyyyMM);
-            if (month != null)
-                return Ok(month);
-            return NotFound();
-        }
-        return Unauthorized();
-    }
-
 }
