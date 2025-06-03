@@ -143,9 +143,9 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 string sessionKey = GenerateSessionKey();
                 await _users.UpdateOneAsync(
                     u => u.Username.Equals(username),
-                    update.Combine(
-                        update.Set(u => u.SessionKey, sessionKey),
-                        update.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
+                    builder.userUpdate.Combine(
+                        builder.userUpdate.Set(u => u.SessionKey, sessionKey),
+                        builder.userUpdate.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
                     )
             );
 
