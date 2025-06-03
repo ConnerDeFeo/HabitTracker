@@ -64,7 +64,8 @@ public class TestHabitController
             {
                 if (habit.Equals(new Habit { Name = "TestHabit", Id = "1234" }))
                     return Task.FromResult<Habit?>(habit);
-                else return Task.FromResult<Habit?>(null);
+                else
+                    return Task.FromResult<Habit?>(null);
             }
             else
                 return Task.FromResult<Habit?>(null);
