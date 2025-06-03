@@ -17,21 +17,16 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
     //The followiong are stored filters, updates, and projections that are rather common in the methods for HabitService
-    private readonly BuilderUtils builder = new();
 
-
-    private async Task<string?> GetUserIdBySessionKey(string sessionKey)
-    {
-        User user = await _users.Find(builder.userFilter.Eq(u => u.SessionKey, sessionKey)).FirstOrDefaultAsync();
-        return user?.Id;
-    }
+    private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
+    private readonly string thisDay = DateTime.Today.ToString("dd");
 
     private async Task<HashSet<Habit>> GetAllHabits(string userId)
     {
         HabitCollection collection = await _habitCollections
             .Find(hc => hc.Id == userId)
             .Project<HabitCollection>(
-                builder.habitProjection
+                BuilderUtils.habitProjection
                 .Include("ActiveHabits")
                 .Include("NonActiveHabits")
             )
@@ -58,8 +53,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     /// <param name="userId">user for which this is occuring</param>
     private  async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId)
     {
-        string thisMonth = date[..7];
-        string thisDay = date.Substring(8, 2);
         //If there was a change in all completed habit, set it. 
         HistoricalDate historicalDate = collection.HabitHistory[thisMonth][thisDay];
             bool allCompleted = true;
@@ -69,28 +62,26 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             if (allCompleted != historicalDate.AllHabitsCompleted)
                 await _habitCollections.UpdateOneAsync(
-                    builder.habitFilter.Eq(hc => hc.Id, userId),
-                    builder.habitUpdate.Set($"HabitHistory.{thisMonth}.{thisDay}.AllHabitsCompleted", allCompleted)
+                    BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+                    BuilderUtils.habitUpdate.Set($"HabitHistory.{thisMonth}.{thisDay}.AllHabitsCompleted", allCompleted)
                 );
     }
 
     public async Task<List<Habit>?> GetHabits(string sessionKey, string date)
     {
-        string? userId = await GetUserIdBySessionKey(sessionKey);
-        if (userId is not null)
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
         {
-            string thisMonth = date[..7];
-            string today = date.Substring(8, 2);
-
-            ProjectionDefinition<HabitCollection> habitProjection = builder.habitProjection.Include($"HabitHistory.{thisMonth}.{today}");
+            string userId = user.Id;
+            ProjectionDefinition<HabitCollection> habitProjection = BuilderUtils.habitProjection.Include($"HabitHistory.{thisMonth}.{thisDay}");
             HabitCollection collection = await _habitCollections
             .Find(
-                builder.habitFilter.Eq(hc => hc.Id, userId) 
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId) 
             )
             .Project<HabitCollection>(habitProjection)
             .FirstOrDefaultAsync();
             Dictionary<string, Dictionary<string, HistoricalDate>> history = collection.HabitHistory;
-            if (history.TryGetValue(thisMonth, out Dictionary<string, HistoricalDate>? value) && value.TryGetValue(today, out HistoricalDate? historicalDate)) 
+            if (history.TryGetValue(thisMonth, out Dictionary<string, HistoricalDate>? value) && value.TryGetValue(thisDay, out HistoricalDate? historicalDate)) 
                 return [.. historicalDate.Habits.Values];
             return null;
         }
@@ -99,10 +90,10 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<Habit?> CreateHabit(string sessionKey, Habit habit)
     {
-        string? userId = await GetUserIdBySessionKey(sessionKey);
-
-        if (userId is not null)
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
         {
+            string userId = user.Id;
             HashSet<Habit> setOfHabits = await GetAllHabits(userId);
 
             if (setOfHabits.Contains(habit))
@@ -111,34 +102,31 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             habit.Id = ObjectId.GenerateNewId().ToString();
 
             DateTime today = DateTime.Today;
-            string todayString = today.ToString("yyyy-MM-dd");
-            string thisMonth = todayString[..7];
-            string thisDay = todayString.Substring(8, 2);
 
             List<UpdateDefinition<HabitCollection>> updates = [];
             updates.Add(
-                builder.habitUpdate.Push(hc => hc.ActiveHabits, habit)
+                BuilderUtils.habitUpdate.Push(hc => hc.ActiveHabits, habit)
             );
             if (habit.DaysOfTheWeek.Contains(today.DayOfWeek.ToString()))
                 updates.Add(
-                    builder.habitUpdate
+                    BuilderUtils.habitUpdate
                     .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit)
                 );
 
-            builder.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
-            builder.habitOptions.ReturnDocument = ReturnDocument.After;
+            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
 
             HabitCollection collection = await _habitCollections
             .FindOneAndUpdateAsync(
-                builder.habitFilter.Eq(hc => hc.Id, userId),
-                builder.habitUpdate.Combine(updates),
-                builder.habitOptions
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+                BuilderUtils.habitUpdate.Combine(updates),
+                BuilderUtils.habitOptions
             );
 
-            CheckAllHabitsCompleted(todayString, collection, userId);
+            CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId);
 
             return habit;
-        }s
+        }
         return null;
     }
 
@@ -154,41 +142,27 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<bool> DeleteHabit(string sessionKey, string habitId)
     {
-        string? userId = await GetUserIdBySessionKey(sessionKey);
-        if (userId is not null)
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
         {
+            string userId = user.Id;
             HashSet<Habit> setOfHabits = await GetAllHabits(userId);
-            if (setOfHabits.FirstOrDefault(h => h.Id == habitId) is null)
+            if(setOfHabits.FirstOrDefault(h => h.Id == habitId) is null)
                 return false;
 
-            string today = DateTime.Today.ToString("yyyy-MM-dd");
-            string thisMonth = today[..7];
-            string thisDay = today.Substring(8, 2);
-            string[] days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-            List<UpdateDefinition<HabitCollection>> updates = [];
-            foreach (string day in days)
-            {
-                updates.Add(
-                    builder.habitUpdate
-                    .PullFilter($"NonActiveHabits.{day}", builder.habitFilter.Eq(h => h.Id, habitId))
-                );
-            }
-            updates.Add(
-                builder.habitUpdate.Unset($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}")
-            );
-
-            builder.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
-            builder.habitOptions.ReturnDocument = ReturnDocument.After;
+            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
             //remove from habits collection
             HabitCollection collection = await _habitCollections
            .FindOneAndUpdateAsync(
-               builder.habitFilter.Eq(hc => hc.Id, userId),
-               builder.habitUpdate.Combine(updates),
-               builder.habitOptions
+               BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+               BuilderUtils.habitUpdate
+               .PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId)
+               .Unset($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}"),
+               BuilderUtils.habitOptions
            );
 
-            CheckAllHabitsCompleted(today, collection, userId);
+            CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId);
             return true;
         }
         return false;
@@ -196,29 +170,21 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<Habit?> EditHabit(string sessionKey, Habit habit)
     {
-        string? userId = await GetUserIdBySessionKey(sessionKey);
-        if (userId is not null)
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
         {
+            string userId = user.Id;
             HashSet<Habit> setOfHabits = await GetAllHabits(userId);
             if (habit.Id is null || setOfHabits.FirstOrDefault(h=>h.Id==habit.Id) is null)
                 return null;
 
-            var findHabit = habitFilter.And(
-                builder.habitFilter.Eq(hc => hc.Id, userId),
-                habitFilter.ElemMatch(hc => hc.Habits, h => h.Id == habit.Id)
-            );
-
-            string today = DateTime.Today.ToString("yyyy-MM-dd");
-            string thisMonth = today[..7];
-            string thisDay = today.Substring(8,2);
-
-            var updateHabits = builder.habitUpdate
-                .Set("Habits.$", habit)
+            var updateHabits = BuilderUtils.habitUpdate
+                .Set("ActiveHabits.$", habit)
                 .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit);
 
             await _habitCollections
             .UpdateOneAsync(
-                builder.habitFilter.Eq(hc => hc.Id, userId),
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
                 updateHabits
             );
             return habit;

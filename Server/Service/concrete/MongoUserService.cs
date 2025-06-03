@@ -14,31 +14,18 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
-    private readonly BuilderUtils builder = new();
 
     private static string GenerateSessionKey()
     {
         byte[] key = RandomNumberGenerator.GetBytes(32);
         return Convert.ToBase64String(key);
     }
-    private async Task<User> GetUserByUsername(string username)
-    {
-        var Filter = builder.userFilter.Eq(u => u.Username, username);
-
-        return await _users.Find(Filter).FirstOrDefaultAsync();
-    }
-
-    private async Task<User> GetUserBySessionKey(string sessionKey){
-        var Filter = builder.userFilter.Eq(u => u.SessionKey, sessionKey);
-
-        return await _users.Find(Filter).FirstOrDefaultAsync();
-    }
 
     //This is the public version of getUser, not exposing any sensitive info
     public async Task<UserDto?> GetUser(string sessionKey)
     {
 
-        User user = await GetUserBySessionKey(sessionKey);
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
         if (user != null)
             return new UserDto
             {
@@ -55,7 +42,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     public async Task<LoginResult> CreateUser(string username, string password){
 
         //username and password valid, User does not exists, password long enough 
-        if(username is null || username.Equals("") || password is null || password.Length<8 || await GetUserByUsername(username)is not null){
+        if(username is null || username.Equals("") || password is null || password.Length<8 || await UserUtils.GetUserByUsername(username,_users) is not null){
             return new LoginResult{Success = false};
         }
 
@@ -90,7 +77,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     /// </summary>
     /// <returns>LoginRefult containing sessionKey if succsesful</returns>
     public async Task<LoginResult> Login(string username, string password){
-        User user = await GetUserByUsername(username);
+        User? user = await UserUtils.GetUserByUsername(username,_users);
 
         if (user is not null && PasswordHasher.VerifyPassword(password, user.Password))
         {
@@ -111,25 +98,28 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
             if (lastLogin != today)
             {
-                Dictionary<DayOfWeek, HistoricalDate> dayToHabits = [];
+                Dictionary<DayOfWeek, HistoricalDate> daysToHabits = [];
                 /*For every day there has not been a login and today, set the habit history as the blank slate
                 of incomplete haibts*/
                 while (lastLogin <= today)
                 {
-                    dayToHabits[lastLogin.DayOfWeek] = new()
-                    {
-                        AllHabitsCompleted = false
-                    };
+                    DayOfWeek dayOfWeek = lastLogin.DayOfWeek;
+                    if (!daysToHabits.ContainsKey(dayOfWeek))
+                        daysToHabits[dayOfWeek] = new()
+                        { 
+                            AllHabitsCompleted=false
+                        };
+                    
                     foreach (Habit habit in collection.ActiveHabits)
                         if (habit.DaysOfTheWeek.Contains(lastLogin.DayOfWeek.ToString()))
-                            dayToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
+                            daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
                     
 
                     string thisMonth = lastLogin.ToString("yyyy-MM");
                     string thisDay = lastLogin.ToString("dd");
                     //add the dict to the db
                     habitHistoryUpdates.Add(
-                        updateHabitCollection.Set($"HabitHistory.{thisMonth}.{thisDay}", dayToHabits[lastLogin.DayOfWeek])
+                        updateHabitCollection.Set($"HabitHistory.{lastLogin:yyyy-MM}.{lastLogin:dd}", daysToHabits[lastLogin.DayOfWeek])
                     );
 
                     lastLogin = lastLogin.AddDays(1);
@@ -141,9 +131,9 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 string sessionKey = GenerateSessionKey();
                 await _users.UpdateOneAsync(
                     u => u.Username.Equals(username),
-                    builder.userUpdate.Combine(
-                        builder.userUpdate.Set(u => u.SessionKey, sessionKey),
-                        builder.userUpdate.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
+                    BuilderUtils.userUpdate.Combine(
+                        BuilderUtils.userUpdate.Set(u => u.SessionKey, sessionKey),
+                        BuilderUtils.userUpdate.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
                     )
             );
 
@@ -153,9 +143,9 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     }
 
     public async Task<bool> Logout(string sessionKey){
-        User user = await GetUserBySessionKey(sessionKey);
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
         if(user is not null && user.SessionKey.Equals(sessionKey)){
-            await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),builder.userUpdate.Set(u=>u.SessionKey, ""));
+            await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),BuilderUtils.userUpdate.Set(u=>u.SessionKey, ""));
             return true;
         }
         return false;
