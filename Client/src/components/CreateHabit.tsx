@@ -22,17 +22,19 @@ const CreateHabit = (props: {
     initialHabit?: Habit,
 })=>{
     const {handleCancelation, handleHabitCompletion, initialHabit,} = props;
+    const daysOfTheWeek =["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
     const defaultHabit: Habit = initialHabit??{
         name: "",
         //Type is set default to "Binary"
         type: 0,
-        completed:false
+        completed:false,
+        skipped:false,
+        daysActive:[],
+        valueUnitType:"",
+        value: 0
     }
     const [habit, setHabit] = useState<Habit>(defaultHabit);
-
-    const valueInputStyling = "text-2xl text-center border-2 shadow-xl rounded-2xl h-9";
-    const valueUnitStyling = "font-hand border-2 shadow-xl rounded-2xl h-9 text-center";
     const buttonStyling = "border-2 border-black w-12 h-12 rounded-xl cursor-pointer mx-auto dropShadow";
 
     //Handles value changes for the numeric and time habits.    
@@ -64,60 +66,7 @@ const CreateHabit = (props: {
         
     }
 
-    /*Renders the different creation components based on the type of habit being created.
-        Directly tied to the current habit.type*/
-    const renderValueOutput = ()=>{
-        switch(habit.type){
-            case 2:
-                return(
-                    <div className="grid grid-cols-2 grid-rows-2 gap-x-1">
-                        <label htmlFor="timeValue" className="font-hand text-4xl text-left col-span-2">Value: </label>
-                        <input 
-                            id="timeValue" 
-                            name="type" 
-                            className={valueInputStyling} 
-                            value={habit.value == 0 ? "": habit.value}
-                            onChange={(e)=>handleValueChange(e.target.value)}
-                        />
-                        <span className={valueUnitStyling+" text-4xl"}>Minutes</span>
-                    </div>
-                );
-            case 3:
-                return(
-                    <div className="grid grid-cols-2 grid-rows-2 gap-x-1">
-                        <label htmlFor="numericValue" className="font-hand text-4xl text-left col-span-2">Value: </label>
-                        <input 
-                            id="numericValue" 
-                            name="type" 
-                            title=""
-                            className={valueInputStyling}
-                            onChange={(e)=>handleValueChange(e.target.value)}
-                            value={habit.value == 0 ? "": habit.value}
-                        />
-                        <input 
-                            id="valueUnitType" 
-                            className={valueUnitStyling+" text-3xl"}
-                            value={habit.valueUnitType}
-                            onChange={(e)=>setHabit((prevHabit)=>{
-                                    const value = e.target.value;
-                                    if(value.length<15){
-                                        return {
-                                            ...prevHabit,
-                                            valueUnitType: value
-                                        }
-                                    }
-                                    return prevHabit
-                                }
-                            )}
-                        />
-                    </div>
-                ); 
-            default:
-                return <></>;       
-        }
-    }
-
-    //Changes the habit type and in effect the above function renderValueOutput() is effected by this
+     //Changes the habit type and in effect the above function renderValueOutput() is effected by this
     const handleTypeChange = (event:string)=>{
         const num = Number.parseInt(event);
         const valueUnitType = num==2 ? "minutes" : "";
@@ -129,34 +78,107 @@ const CreateHabit = (props: {
         }))
     }
 
-    return(
-        <div className="grid">
-            <label htmlFor="name" className="font-hand text-4xl text-left">{"Habit Name: "}</label>
-            <input 
-                id="name"
-                name="name" 
-                className="resize-none border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 " 
-                value={habit.name}
-                onChange={(e) => {
-                    setHabit((prevHabit: Habit) => ({
+    const handleDateSelection = (day:string)=>{
+        const daysActive:string[] = habit.daysActive;
+        if(daysActive.includes(day))
+            setHabit((prevHabit)=>(
+                {
                     ...prevHabit,
-                    name: e.target.value,
-                    }));
-                }}
+                    daysActive: daysActive.filter(h=>h!==day)
+                }
+            ))
+        
+        else
+            setHabit((prevHabit)=>(
+                {
+                    ...prevHabit,
+                    daysActive: [...daysActive,day]
+                }
+            ))
+    }
+
+    /*Renders the different creation components based on the type of habit being created.
+        Directly tied to the current habit.type*/
+    const renderValueOutput = ()=>{
+        const valueInput = habit.type===1 ?
+            <></>
+            :
+            <input 
+                id="value"
+                name="value" 
+                className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
+                value={habit.value == 0 ? "" : habit.value}
+                onChange={(e) => handleValueChange(e.target.value)}
+            />;
+
+        const unitInput = habit.type === 3 ? 
+            <input 
+                id="unit"
+                name="unit" 
+                className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
+                value={habit.valueUnitType}
+                onChange={(e) => setHabit((prevHabit)=>({...prevHabit, valueUnitType:e.target.value}))}
             />
-            <div className="grid">
+            :
+            <p className="text-4xl mx-auto">{habit.type===2 && "Minutes"}</p>;
+
+        return (
+            <>
+                <div className="flex justify-between">
+                    <label htmlFor="value" className="font-hand text-4xl text-left">Value: </label>
+                    {valueInput}
+                </div>
+                <div className="flex justify-between">
+                    <label htmlFor="unitType" className="font-hand text-4xl text-left">Unit: </label>
+                    {unitInput}
+                </div>
+            </>
+        );
+    }
+
+    return(
+        <div className="grid p-2 gap-y-2">
+            <div className="flex justify-between">
+                <label htmlFor="name" className="font-hand text-4xl text-left ">{"Name: "}</label>
+                <input 
+                    id="name"
+                    name="name" 
+                    className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
+                    value={habit.name}
+                    onChange={(e) => {
+                        setHabit((prevHabit: Habit) => ({
+                        ...prevHabit,
+                        name: e.target.value,
+                        }));
+                    }}
+                />
+            </div>
+            <div className="flex justify-between">
                 <label htmlFor="type" className="font-hand text-4xl text-left">Type: </label>
                 <select 
                     id="type" 
                     name="type" 
-                    className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3" 
+                    className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 w-[80%]" 
                     onChange={(e)=>handleTypeChange(e.target.value)}
                 >
                     <option value={1}>Binary</option>
                     <option value={2}>Time</option>
                     <option value={3}>Numeric</option>
                 </select>
-                {renderValueOutput()}
+            </div>
+            {renderValueOutput()}
+            <div className="flex">
+                <label htmlFor="days" className="font-hand text-4xl text-left">Days: </label>
+                <div id="days" className="flex text-3xl justify-between m-auto w-[75%]">
+                    {daysOfTheWeek.map((day)=>
+                        <p 
+                        key={day} 
+                        onClick={()=>handleDateSelection(day)} 
+                        className={"cursor-pointer "+(!habit.daysActive.includes(day) && "text-gray-500")}>
+                            {day.substring(0,3)}
+                        </p>
+                    )}
+                </div>
             </div>
             <div className="grid grid-cols-2 mt-5">
                 <button className={buttonStyling}>

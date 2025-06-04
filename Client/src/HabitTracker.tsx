@@ -15,7 +15,8 @@ import UserService from './services/UserService';
 import Schedule from './pages/Schedule';
 import DateInfo from './types/DateInfo';
 import HistoricalDate from './types/HistoricalDate';
-import HabitService from './services/HabitService';
+import HabitHistoryService from './services/HabitHistoryService';
+import MyHabits from './pages/MyHabits';
 
 const HabitTracker = ()=>{
 
@@ -36,7 +37,7 @@ const HabitTracker = ()=>{
         setMonthlyHabits({});
         const yyyyMM: string = `${date.year}-${String(date.month+1).padStart(2,'0')}`;
 
-        const resp = await HabitService.getMonth(yyyyMM);
+        const resp = await HabitHistoryService.getMonth(yyyyMM);
         if(resp.status==200){
             const habits = await resp.json();
             setMonthlyHabits(habits);
@@ -74,6 +75,7 @@ const HabitTracker = ()=>{
                 <Route path='Login' element={<Login setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Profile' element={sessionUsername==""? <HomePage/> : <Profile sessionUsername={sessionUsername} setSessionUsername={setSessionUserName}/>}/>
                 <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
+                <Route path='MyHabits' element={<MyHabits />}/>
             </Routes>
             <Footer/>
         </Router>
