@@ -13,4 +13,6 @@ public interface IHabitService
     Task<bool> ReactivateHabit(string sessionKey, string habitId);
     Task<bool> DeleteHabit(string sessionKey, string habitId);
     Task<Habit?> EditHabit(string sessionKey, Habit habit);
+
+    Task<Dictionary<string, List<Habit>>?> GetExistingHabits(string sessionKey);
 }

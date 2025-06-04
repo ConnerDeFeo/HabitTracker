@@ -39,6 +39,17 @@ public class TestHabitController
         );
 
         mockHabitService
+        .Setup(hs => hs.GetExistingHabits(It.IsAny<string>()))
+        .Returns<string>((sessionKey) =>
+        {
+            if (sessionKey.Equals("TestSessionKey"))
+                return Task.FromResult<Dictionary<string, List<Habit>>?>(new Dictionary<string, List<Habit>>());
+            return Task.FromResult<Dictionary<string, List<Habit>>?>(null);
+
+        }
+        );
+
+        mockHabitService
         .Setup(hs => hs.DeleteHabit(It.IsAny<string>(), It.IsAny<string>()))
         .Returns<string, string>((sessionKey, habitId) =>
         {
@@ -240,6 +251,25 @@ public class TestHabitController
         SetValidSessionKey();
 
         result = await habitController.ReactivateHabit("4321");
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task TestGetExistingHabits()
+    {
+        SetValidSessionKey();
+
+        IActionResult result = await habitController.GetExistingHabits();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.IsType<Dictionary<string,List<Habit>>>(okResult.Value);
+    }
+
+    [Fact]
+    public async Task TestGetExistingHabitsInavlid()
+    {
+        SetInvalidSessionKey();
+
+        IActionResult result = await habitController.GetExistingHabits();
         Assert.IsType<NotFoundResult>(result);
     }
 

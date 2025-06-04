@@ -201,7 +201,7 @@ public class TestMongoHabitService
     }
     [Fact]
     public async Task TestReactivateHabit()
-    { 
+    {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
@@ -216,7 +216,7 @@ public class TestMongoHabitService
     }
     [Fact]
     public async Task TestReactivateHabitInvalid()
-    { 
+    {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
@@ -228,5 +228,39 @@ public class TestMongoHabitService
         Assert.False(reactivated);
         Assert.Empty(collection.ActiveHabits);
         Assert.Single(collection.NonActiveHabits);
+    }
+
+    [Fact]
+    public async Task TestGetExistingHabits()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        string sessionKey = result.SessionKey;
+
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        await habitService.DeactivateHabit(sessionKey, habit!.Id!);
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2" });
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3" });
+
+        Dictionary<string, List<Habit>>? existingHabits = await habitService.GetExistingHabits(sessionKey);
+        List<Habit> activeHabits = existingHabits!["ActiveHabits"];
+        List<Habit> nonActiveHabits = existingHabits!["NonActiveHabits"];
+
+        Assert.Equal(2, activeHabits.Count);
+        Assert.Single(nonActiveHabits);
+    }
+
+    [Fact]
+    public async Task TestGetExistingHabitsInvalid()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        string sessionKey = result.SessionKey;
+
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        await habitService.DeactivateHabit(sessionKey, habit!.Id!);
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2" });
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3" });
+
+        Dictionary<string, List<Habit>>? existingHabits = await habitService.GetExistingHabits(ObjectId.GenerateNewId().ToString());
+        Assert.Null(existingHabits);
     }
 }
