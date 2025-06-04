@@ -21,6 +21,16 @@ public class TestMongoUserService{
         habitService = new MongoHabitService(database);
     }
 
+    private async Task<HabitCollection> GetHabitCollection(string sessionKey)
+    {
+        User user = await database.GetCollection<User>("Users")
+        .Find(BuilderUtils.userFilter.Eq(u => u.SessionKey, sessionKey))
+        .FirstOrDefaultAsync();
+        return await database.GetCollection<HabitCollection>("HabitCollection")
+        .Find(BuilderUtils.habitFilter.Eq(hc => hc.Id, user.Id))
+        .FirstOrDefaultAsync();
+    }
+
     [Fact]
     public async Task TestGetUser()
     {
@@ -111,7 +121,7 @@ public class TestMongoUserService{
         await collection.InsertOneAsync(habitCollection);
         LoginResult result = await userService.Login(username, password);
 
-        HabitCollection? habitCollectionUpdated = await habitService.GetHabitCollection(result.SessionKey);
+        HabitCollection? habitCollectionUpdated = await GetHabitCollection(result.SessionKey);
 
         //in case i test at the begining of a month
         int total = 0;

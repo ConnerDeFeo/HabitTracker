@@ -14,11 +14,9 @@ public class TestHabitController
 
     public TestHabitController()
     {
-        var MockHabitService = new Mock<IHabitService>();
+        var mockHabitService = new Mock<IHabitService>();
 
-
-
-        MockHabitService
+        mockHabitService
         .Setup(hs => hs.CreateHabit(It.IsAny<string>(), It.IsAny<Habit>()))
         .Returns<string, Habit>((sessionKey, habit) =>
         {
@@ -29,9 +27,9 @@ public class TestHabitController
         }
         );
 
-        MockHabitService
-        .Setup(hs => hs.GetHabits(It.IsAny<string>(),It.IsAny<string>()))
-        .Returns<string,string>((sessionKey,date) =>
+        mockHabitService
+        .Setup(hs => hs.GetHabits(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, date) =>
         {
             if (sessionKey.Equals("TestSessionKey") && date.Equals("0000-00-00"))
                 return Task.FromResult<List<Habit>?>(new List<Habit> { new Habit { Name = "TestHabit" } });
@@ -39,9 +37,8 @@ public class TestHabitController
 
         }
         );
-        habitController = new HabitController(MockHabitService.Object);
 
-        MockHabitService
+        mockHabitService
         .Setup(hs => hs.DeleteHabit(It.IsAny<string>(), It.IsAny<string>()))
         .Returns<string, string>((sessionKey, habitId) =>
         {
@@ -56,13 +53,13 @@ public class TestHabitController
         }
         );
 
-        MockHabitService
+        mockHabitService
         .Setup(hs => hs.EditHabit(It.IsAny<string>(), It.IsAny<Habit>()))
         .Returns<string, Habit>((sessionKey, habit) =>
         {
             if (sessionKey.Equals("TestSessionKey"))
             {
-                if (habit.Equals(new Habit { Name = "TestHabit", Id = "1234" }))
+                if (habit.Id.Equals("1234"))
                     return Task.FromResult<Habit?>(habit);
                 else
                     return Task.FromResult<Habit?>(null);
@@ -72,36 +69,7 @@ public class TestHabitController
         }
         );
 
-        MockHabitService
-        .Setup(hs => hs.SetHabitCompletion(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-        .Returns<string, string, string, bool>((sessionKey, date, habitId, completed) =>
-            {
-                if (sessionKey.Equals("TestSessionKey"))
-                {
-                    if (habitId.Equals("1234") && date.Equals("2025-05-22"))
-                        return Task.FromResult<bool>(true);
-                    return Task.FromResult<bool>(false);
-                }
-                else
-                    return Task.FromResult<bool>(false);
-            }
-        );
-
-        MockHabitService
-        .Setup(hs => hs.GetHabitHistoryByMonth(It.IsAny<string>(), It.IsAny<string>()))
-        .Returns<string, string>((sessionKey, yyyyMM) =>
-            {
-                if (sessionKey.Equals("TestSessionKey"))
-                {
-                    if (yyyyMM.Equals("0000-00"))
-                        return Task.FromResult<Dictionary<string,HistoricalDate>?>(new());
-                        
-                    return Task.FromResult<Dictionary<string, HistoricalDate>?>(null);
-                }
-                else
-                    return Task.FromResult<Dictionary<string,HistoricalDate>?>(null);
-            }
-        );
+        habitController = new HabitController(mockHabitService.Object);
     }
 
     private void SetValidSessionKey()

@@ -45,7 +45,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<List<Habit>?> GetHabits(string sessionKey, string date)
     {
-        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
@@ -111,11 +111,19 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<bool> DeactivateHabit(string sessionKey, string habitId)
     {
+        HabitCollection collection = await _habitCollections
+            .Find(
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, habitId)
+            ).FirstOrDefaultAsync();
         return false;
     }
 
     public async Task<bool> RectivateHabit(string sessionKey, string habitId)
     {
+        HabitCollection collection = await _habitCollections
+            .Find(
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, habitId)
+            ).FirstOrDefaultAsync();
         return false;
     }
 
