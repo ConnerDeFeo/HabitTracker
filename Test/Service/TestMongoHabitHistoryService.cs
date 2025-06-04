@@ -62,13 +62,18 @@ public class TestMongoHabitHistory
         LoginResult result = await userService.CreateUser("Conner", "12341234");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit"});
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
         bool completed = await habitHistoryService.SetHabitCompletion(sessionKey, $"{monthKey}-{dayKey}", habit!.Id!, true);
         HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.False(completed);
-        Assert.False(collection!.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Completed);
 
+        habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "NewTestHabit", DaysActive = daysOfWeek });
+        completed = await habitHistoryService.SetHabitCompletion(sessionKey, $"{monthKey}-{dayKey}", ObjectId.GenerateNewId().ToString(), true);
+        collection = await GetHabitCollection(sessionKey);
+
+        Assert.False(completed);
+        Assert.False(collection.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Completed);
     }
 
     [Fact]

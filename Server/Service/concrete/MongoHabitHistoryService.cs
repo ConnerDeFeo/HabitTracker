@@ -22,10 +22,12 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             string userId = user.Id;
             HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
 
-            if (setOfHabits.FirstOrDefault(h => h.Id == habitId) is null)
+            Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
+            if(habit is null)
                 return false;
 
-            date ??= DateTime.Today.ToString("yyyy-MM-dd");
+            if (!DateTime.TryParse(date, out DateTime convertedDate) || !habit.DaysActive.Contains(convertedDate.DayOfWeek.ToString()))
+                return false;
             string month = date[..7];
             string day = date.Substring(8, 2);
 
@@ -44,7 +46,10 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             HabitUtils.CheckAllHabitsCompleted($"{month}-{day}", collection, userId, _habitCollections);
 
 
-            return true;
+            if (!collection.HabitHistory.TryGetValue(month, out var monthDict) || !monthDict.TryGetValue(day, out var dayDict))
+                return false;
+
+            return dayDict.Habits.ContainsKey(habitId);
         }
         return false;
     }
