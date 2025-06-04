@@ -27,7 +27,7 @@ public class TestMongoHabitService
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
-        daysOfWeek = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     }
 
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
@@ -56,7 +56,7 @@ public class TestMongoHabitService
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
-        List<Habit>? habits = await habitService.GetHabits("InvalidSessionKey",$"{monthKey}-{dayKey}");
+        List<Habit>? habits = await habitService.GetHabits("InvalidSessionKey", $"{monthKey}-{dayKey}");
 
         Assert.Null(habits);
     }
@@ -98,7 +98,7 @@ public class TestMongoHabitService
 
         Assert.Null(habit);
         Assert.Empty(habits!);
-        
+
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
         string id = ObjectId.GenerateNewId().ToString();
 
-        Habit habit = new Habit { Name = "TestHabit", Id = id, DaysActive = daysOfWeek};
+        Habit habit = new Habit { Name = "TestHabit", Id = id, DaysActive = daysOfWeek };
         await habitService.CreateHabit(sessionKey, habit);
         await habitService.DeactivateHabit(sessionKey, habit.Id);
         bool deleted = await habitService.DeleteHabit(sessionKey, habit.Id);
@@ -116,7 +116,7 @@ public class TestMongoHabitService
 
         Assert.True(deleted);
         Assert.Empty(collection!.NonActiveHabits);
-        
+
 
     }
 
@@ -126,10 +126,10 @@ public class TestMongoHabitService
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitService.DeactivateHabit(sessionKey, habit!.Id!);
         bool deleted = await habitService.DeleteHabit(sessionKey, ObjectId.GenerateNewId().ToString());
-        HabitCollection? collection = await  GetHabitCollection(sessionKey);
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.False(deleted);
         Assert.NotEmpty(collection!.NonActiveHabits);
@@ -147,8 +147,8 @@ public class TestMongoHabitService
 
         string id = habit!.Id!;
         Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = id });
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,$"{monthKey}-{dayKey}");
-        HabitCollection? collection = await  GetHabitCollection(sessionKey);
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.Equal("TestHabitUpdated", habits![0].Name);
         Assert.Equal("TestHabitUpdated", habitAfter!.Name);
@@ -161,14 +161,72 @@ public class TestMongoHabitService
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
-        Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = ObjectId.GenerateNewId().ToString()});
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,$"{monthKey}-{dayKey}");
-        HabitCollection? collection = await  GetHabitCollection(sessionKey);
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
+        Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = ObjectId.GenerateNewId().ToString() });
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.Null(habitAfter);
         Assert.Equal("TestHabit", habits![0].Name);
         Assert.Equal("TestHabit", collection!.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Name);
     }
 
+    [Fact]
+    public async Task TestDeactivateHabit()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        string sessionKey = result.SessionKey;
+
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
+        bool deactivated = await habitService.DeactivateHabit(sessionKey, habit!.Id!);
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
+
+        Assert.True(deactivated);
+        Assert.Empty(collection.ActiveHabits);
+        Assert.Single(collection.NonActiveHabits);
+    }
+    [Fact]
+    public async Task TestDeactivateHabitInvalid()
+    {
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        string sessionKey = result.SessionKey;
+
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
+        bool deactivated = await habitService.DeactivateHabit(sessionKey, ObjectId.GenerateNewId().ToString());
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
+
+        Assert.False(deactivated);
+        Assert.Single(collection.ActiveHabits);
+        Assert.Empty(collection.NonActiveHabits);
+    }
+    [Fact]
+    public async Task TestReactivateHabit()
+    { 
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        string sessionKey = result.SessionKey;
+
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
+        await habitService.DeactivateHabit(sessionKey, habit!.Id!);
+        bool reactivated = await habitService.RectivateHabit(sessionKey, habit!.Id!);
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
+
+        Assert.True(reactivated);
+        Assert.Single(collection.ActiveHabits);
+        Assert.Empty(collection.NonActiveHabits);
+    }
+    [Fact]
+    public async Task TestReactivateHabitInvalid()
+    { 
+        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        string sessionKey = result.SessionKey;
+
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
+        await habitService.DeactivateHabit(sessionKey, habit!.Id!);
+        bool reactivated = await habitService.RectivateHabit(sessionKey, ObjectId.GenerateNewId().ToString());
+        HabitCollection? collection = await GetHabitCollection(sessionKey);
+
+        Assert.False(reactivated);
+        Assert.Empty(collection.ActiveHabits);
+        Assert.Single(collection.NonActiveHabits);
+    }
 }
