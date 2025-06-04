@@ -69,6 +69,38 @@ public class TestHabitController
         }
         );
 
+        mockHabitService
+        .Setup(hs => hs.DeactivateHabit(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, habitId) =>
+        {
+            if (sessionKey.Equals("TestSessionKey"))
+            {
+                if (habitId.Equals("1234"))
+                    return Task.FromResult<bool>(true);
+                else
+                    return Task.FromResult<bool>(false);
+            }
+            else
+                return Task.FromResult<bool>(false);
+        }
+        );
+
+        mockHabitService
+        .Setup(hs => hs.ReactivateHabit(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, habitId) =>
+        {
+            if (sessionKey.Equals("TestSessionKey"))
+            {
+                if (habitId.Equals("1234"))
+                    return Task.FromResult<bool>(true);
+                else
+                    return Task.FromResult<bool>(false);
+            }
+            else
+                return Task.FromResult<bool>(false);
+        }
+        );
+
         habitController = new HabitController(mockHabitService.Object);
     }
 
@@ -164,4 +196,51 @@ public class TestHabitController
         result = await habitController.EditHabit(new Habit { Name = "TestHabit", Id = "InvalidId" });
         Assert.IsType<NotFoundResult>(result);
     }
+
+    [Fact]
+    public async Task TestDeactivateHabit()
+    {
+        SetValidSessionKey();
+
+        IActionResult result = await habitController.DeactivateHabit("1234");
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task TestDeactivateHabitInvalid()
+    {
+        SetInvalidSessionKey();
+
+        IActionResult result = await habitController.DeactivateHabit("1234");
+        Assert.IsType<NotFoundResult>(result);
+
+        SetValidSessionKey();
+
+        result = await habitController.DeactivateHabit("4321");
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task TestReactivateHabit()
+    {
+        SetValidSessionKey();
+
+        IActionResult result = await habitController.ReactivateHabit("1234");
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task TestReactivateHabitInvalid()
+    {
+        SetInvalidSessionKey();
+
+        IActionResult result = await habitController.ReactivateHabit("1234");
+        Assert.IsType<NotFoundResult>(result);
+
+        SetValidSessionKey();
+
+        result = await habitController.ReactivateHabit("4321");
+        Assert.IsType<NotFoundResult>(result);
+    }
+
 }

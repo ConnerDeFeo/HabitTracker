@@ -74,4 +74,31 @@ public class HabitController(IHabitService _habitService) : ControllerBase
         return Unauthorized();
     }
 
+    [HttpDelete("deactivate/{habitId}")]
+    public async Task<IActionResult> DeactivateHabit(string habitId)
+    {
+        string? sesionKey = Request.Cookies["sessionKey"];
+        if (sesionKey != null)
+        {
+            bool deactivated = await _habitService.DeactivateHabit(sesionKey, habitId);
+            if (deactivated)
+                return Ok();
+            return NotFound();
+        }
+        return Unauthorized();
+    }
+
+    [HttpPost("reactivate/{habitId}")]
+    public async Task<IActionResult> ReactivateHabit(string habitId)
+    { 
+        string? sesionKey = Request.Cookies["sessionKey"];
+        if (sesionKey != null)
+        {
+            bool reactivated = await _habitService.ReactivateHabit(sesionKey, habitId);
+            if (reactivated)
+                return Ok();
+            return NotFound();
+        }
+        return Unauthorized();
+    }
 }

@@ -116,7 +116,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         return false;
     }
 
-    public async Task<bool> RectivateHabit(string sessionKey, string habitId)
+    public async Task<bool> ReactivateHabit(string sessionKey, string habitId)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
         if (user is not null && user.Id is not null)

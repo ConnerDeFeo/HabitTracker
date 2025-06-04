@@ -207,7 +207,7 @@ public class TestMongoHabitService
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitService.DeactivateHabit(sessionKey, habit!.Id!);
-        bool reactivated = await habitService.RectivateHabit(sessionKey, habit!.Id!);
+        bool reactivated = await habitService.ReactivateHabit(sessionKey, habit!.Id!);
         HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.True(reactivated);
@@ -222,7 +222,7 @@ public class TestMongoHabitService
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitService.DeactivateHabit(sessionKey, habit!.Id!);
-        bool reactivated = await habitService.RectivateHabit(sessionKey, ObjectId.GenerateNewId().ToString());
+        bool reactivated = await habitService.ReactivateHabit(sessionKey, ObjectId.GenerateNewId().ToString());
         HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.False(reactivated);
