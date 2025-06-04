@@ -20,15 +20,9 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            var habitIsReal = await _habitCollections
-            .Find(hc => hc.Id == userId && (
-                hc.ActiveHabits.Any(h => h.Id == habitId)
-                ||
-                hc.NonActiveHabits.Any(h => h.Id == habitId)
-            ))
-            .FirstOrDefaultAsync();
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
 
-            if (habitIsReal is null)
+            if (setOfHabits.FirstOrDefault(h => h.Id == habitId) is null)
                 return false;
 
             date ??= DateTime.Today.ToString("yyyy-MM-dd");

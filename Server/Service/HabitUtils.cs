@@ -34,4 +34,26 @@ public static class HabitUtils
                 BuilderUtils.habitUpdate.Set($"HabitHistory.{month}.{day}.AllHabitsCompleted", allCompleted)
             );
     }
+
+    public static async Task<HashSet<Habit>> GetAllHabits(string userId, IMongoCollection<HabitCollection> habitCollections)
+    {
+        HabitCollection collection = await habitCollections
+            .Find(hc => hc.Id == userId)
+            .Project<HabitCollection>(
+                BuilderUtils.habitProjection
+                .Include("ActiveHabits")
+                .Include("NonActiveHabits")
+            )
+            .FirstOrDefaultAsync();
+
+        HashSet<Habit> habits = [];
+
+        foreach (Habit habit in collection.ActiveHabits)
+            habits.Add(habit);
+
+        foreach (Habit habit in collection.NonActiveHabits)
+            habits.Add(habit);
+
+        return habits;
+    }
 }

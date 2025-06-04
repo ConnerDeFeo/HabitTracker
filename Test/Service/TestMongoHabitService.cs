@@ -78,6 +78,11 @@ public class TestMongoHabitService
         Assert.NotNull(historyHabit);
         Assert.Equal("TestHabit", historyHabit.Name);
 
+        habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "NewTestHabit" });
+        collection = await GetHabitCollection(sessionKey);
+
+        Assert.Single(collection!.HabitHistory[monthKey][dayKey]!.Habits);
+
     }
 
     [Fact]

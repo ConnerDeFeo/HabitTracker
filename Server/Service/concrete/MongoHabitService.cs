@@ -21,28 +21,6 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
     private readonly string thisDay = DateTime.Today.ToString("dd");
 
-    private async Task<HashSet<Habit>> GetAllHabits(string userId)
-    {
-        HabitCollection collection = await _habitCollections
-            .Find(hc => hc.Id == userId)
-            .Project<HabitCollection>(
-                BuilderUtils.habitProjection
-                .Include("ActiveHabits")
-                .Include("NonActiveHabits")
-            )
-            .FirstOrDefaultAsync();
-
-        HashSet<Habit> habits = [];
-
-        foreach (Habit habit in collection.ActiveHabits)
-            habits.Add(habit);
-
-        foreach (Habit habit in collection.NonActiveHabits)
-            habits.Add(habit);
-
-        return habits;
-    }
-
     public async Task<List<Habit>?> GetHabits(string sessionKey, string date)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
@@ -73,7 +51,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
 
             if (setOfHabits.Contains(habit))
                 return null;
@@ -114,7 +92,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
             if(habit is null)
                 return false;
@@ -144,7 +122,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
             if(habit is null)
                 return false;
@@ -174,19 +152,33 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
             if(setOfHabits.FirstOrDefault(h => h.Id == habitId) is null)
                 return false;
 
-            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            var filter = BuilderUtils.habitFilter.Eq(hc => hc.Id, userId);
+
+            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory");
             BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
             //remove from habits collection
             HabitCollection collection = await _habitCollections
            .FindOneAndUpdateAsync(
-               BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+               filter,
                BuilderUtils.habitUpdate.PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId),
                BuilderUtils.habitOptions
            );
+            List<UpdateDefinition<HabitCollection>> updates = [];
+
+            foreach (var (month, days) in collection.HabitHistory)
+                foreach (var (day, record) in days)
+                    if (record.Habits.ContainsKey(habitId))
+                        updates.Add(BuilderUtils.habitUpdate.Unset($"HabitHistory.{month}.{day}.Habits.{habitId}"));
+
+            if (updates.Count!=0)
+                await _habitCollections.UpdateOneAsync(
+                    filter,
+                    BuilderUtils.habitUpdate.Combine(updates)
+                );
 
             HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
             return true;
@@ -200,7 +192,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
-            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
             if (habit.Id is null || setOfHabits.FirstOrDefault(h=>h.Id!.Equals(habit.Id)) is null)
                 return null;
 
