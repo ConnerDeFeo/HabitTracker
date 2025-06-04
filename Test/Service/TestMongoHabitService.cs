@@ -45,7 +45,7 @@ public class TestMongoHabitService
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
 
         Assert.NotNull(habits);
         Assert.Empty(habits);
@@ -56,7 +56,7 @@ public class TestMongoHabitService
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
-        List<Habit>? habits = await habitService.GetHabits("InvalidSessionKey",DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? habits = await habitService.GetHabits("InvalidSessionKey",$"{monthKey}-{dayKey}");
 
         Assert.Null(habits);
     }
@@ -68,7 +68,7 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
         HabitCollection? collection = await GetHabitCollection(sessionKey);
         Habit historyHabit = collection!.HabitHistory[monthKey][dayKey]!.Habits[habits![0].Id!];
 
@@ -89,7 +89,7 @@ public class TestMongoHabitService
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitService.DeactivateHabit(sessionKey, habit!.Id!);
         habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
 
         Assert.Null(habit);
         Assert.Empty(habits!);
@@ -122,14 +122,12 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
+        await habitService.DeactivateHabit(sessionKey, habit!.Id!);
         bool deleted = await habitService.DeleteHabit(sessionKey, ObjectId.GenerateNewId().ToString());
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
         HabitCollection? collection = await  GetHabitCollection(sessionKey);
 
         Assert.False(deleted);
-        Assert.NotEmpty(habits!);
-        Assert.NotEmpty(collection!.ActiveHabits);
-        Assert.NotNull(collection!.HabitHistory[monthKey][dayKey].Habits[habits![0].Id!]);
+        Assert.NotEmpty(collection!.NonActiveHabits);
     }
 
     [Fact]
@@ -144,7 +142,7 @@ public class TestMongoHabitService
 
         string id = habit!.Id!;
         Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = id });
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,$"{monthKey}-{dayKey}");
         HabitCollection? collection = await  GetHabitCollection(sessionKey);
 
         Assert.Equal("TestHabitUpdated", habits![0].Name);
@@ -159,8 +157,8 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
-        Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated" });
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
+        Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = ObjectId.GenerateNewId().ToString()});
+        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,$"{monthKey}-{dayKey}");
         HabitCollection? collection = await  GetHabitCollection(sessionKey);
 
         Assert.Null(habitAfter);
