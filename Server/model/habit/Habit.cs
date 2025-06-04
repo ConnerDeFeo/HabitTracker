@@ -18,7 +18,7 @@ public class Habit
 
     public string DateCreated { get; set; } = null!;
 
-    public HashSet<string> DaysOfTheWeek { get; } = [];
+    public HashSet<string> DaysActive { get; set; } = [];
 
     public bool Completed { get; set; } = false;
 

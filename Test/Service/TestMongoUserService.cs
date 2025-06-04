@@ -125,8 +125,8 @@ public class TestMongoUserService{
 
         //in case i test at the begining of a month
         int total = 0;
-        foreach (var kvp in habitCollectionUpdated!.HabitHistory.Values) 
-            total += 1;
+        foreach (var dayDict in habitCollectionUpdated!.HabitHistory.Values) 
+            total += dayDict.Values.Count;
         
 
         Assert.Equal(6, total);

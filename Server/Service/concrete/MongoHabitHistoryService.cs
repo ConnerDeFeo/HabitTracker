@@ -47,7 +47,7 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             );
 
             //If there was a change in all completed habit, set it. 
-            HabitUtils.CheckAllHabitsCompleted($"{month}-${day}", collection, userId, _habitCollections);
+            HabitUtils.CheckAllHabitsCompleted($"{month}-{day}", collection, userId, _habitCollections);
 
 
             return true;

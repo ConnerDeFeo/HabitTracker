@@ -16,6 +16,7 @@ public class TestMongoHabitHistory
     IUserService userService;
     IHabitService habitService;
     IHabitHistoryService habitHistoryService;
+    HashSet<string> daysOfWeek;
 
     public TestMongoHabitHistory()
     {
@@ -27,6 +28,7 @@ public class TestMongoHabitHistory
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
+        daysOfWeek = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
     }
     
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
@@ -60,7 +62,7 @@ public class TestMongoHabitHistory
         LoginResult result = await userService.CreateUser("Conner", "12341234");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
         bool completed = await habitHistoryService.SetHabitCompletion(sessionKey, DateTime.Today.ToString("yyyy-MM-dd"), ObjectId.GenerateNewId().ToString(), true);
         HabitCollection? collection = await GetHabitCollection(sessionKey);
 
@@ -76,37 +78,29 @@ public class TestMongoHabitHistory
         string sessionKey = result.SessionKey;
         string today = DateTime.Today.ToString("yyyy-MM-dd");
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitHistoryService.SetHabitCompletion(sessionKey, today, habit!.Id!, true);
         HabitCollection? collection = await GetHabitCollection(sessionKey);
-
         HistoricalDate date = collection!.HabitHistory[monthKey][dayKey];
-
         Assert.True(date.AllHabitsCompleted);
 
         //Remove habit
-        await habitService.DeleteHabit(sessionKey, habit!.Id!);
-
+        await habitService.DeactivateHabit(sessionKey, habit!.Id!);
         collection = await GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[monthKey][dayKey];
-
         Assert.True(date.AllHabitsCompleted);
 
         //Add a new habit
-        await habitService.CreateHabit(sessionKey, habit!);
-
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "NewTestHabit", DaysActive = daysOfWeek });
         collection = await GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[monthKey][dayKey];
-
         Assert.False(date.AllHabitsCompleted);
 
         //Complete then add new habit
         await habitHistoryService.SetHabitCompletion(sessionKey, today, habit!.Id!, true);
-        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2" });
-
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2", DaysActive = daysOfWeek });
         collection = await GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[monthKey][dayKey];
-
         Assert.False(date.AllHabitsCompleted);
 
     }

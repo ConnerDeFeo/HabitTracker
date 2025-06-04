@@ -19,9 +19,7 @@ public static class HabitUtils
         string month = date[..7];
         string day = date.Substring(8, 2);
 
-        if (!collection.HabitHistory.TryGetValue(month, out var monthData) ||
-        !monthData.TryGetValue(day, out var historicalDate))
-            return;
+        HistoricalDate historicalDate = collection.HabitHistory[month][day];
         bool allCompleted = true;
         foreach (Habit habit in historicalDate.Habits.Values)
             if (!habit.Completed)

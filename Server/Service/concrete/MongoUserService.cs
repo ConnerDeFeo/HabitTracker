@@ -49,17 +49,16 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         }
 
         string sessionKey = GenerateSessionKey();
+        string id = ObjectId.GenerateNewId().ToString();
         User user = new()
         {
+            Id = id,
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
             SessionKey = sessionKey,
             LastLoginDate = $"{thisMonth}-{thisDay}"
         };
-
-        string id = ObjectId.GenerateNewId().ToString();
-        user.Id=id;
 
         await _users.InsertOneAsync(user);
         HabitCollection collection = new() { Id = id };
@@ -109,7 +108,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                         };
                     
                     foreach (Habit habit in collection.ActiveHabits)
-                        if (habit.DaysOfTheWeek.Contains(lastLogin.DayOfWeek.ToString()))
+                        if (habit.DaysActive.Contains(lastLogin.DayOfWeek.ToString()))
                             daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
                     
                     //add the dict to the db

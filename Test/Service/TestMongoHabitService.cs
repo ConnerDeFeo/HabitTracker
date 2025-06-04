@@ -16,6 +16,7 @@ public class TestMongoHabitService
     IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
+    HashSet<string> daysOfWeek;
 
     public TestMongoHabitService()
     {
@@ -26,6 +27,7 @@ public class TestMongoHabitService
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
+        daysOfWeek = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
     }
 
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
@@ -65,7 +67,7 @@ public class TestMongoHabitService
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive=daysOfWeek });
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
         HabitCollection? collection = await GetHabitCollection(sessionKey);
         Habit historyHabit = collection!.HabitHistory[monthKey][dayKey]!.Habits[habits![0].Id!];
@@ -103,7 +105,7 @@ public class TestMongoHabitService
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
         bool deleted = await habitService.DeleteHabit(sessionKey, ObjectId.GenerateNewId().ToString());
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
         HabitCollection? collection = await  GetHabitCollection(sessionKey);
@@ -140,7 +142,7 @@ public class TestMongoHabitService
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek});
         Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated" });
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
         HabitCollection? collection = await  GetHabitCollection(sessionKey);

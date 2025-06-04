@@ -79,14 +79,13 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 return null;
 
             habit.Id = ObjectId.GenerateNewId().ToString();
-
             DateTime today = DateTime.Today;
 
             List<UpdateDefinition<HabitCollection>> updates = [];
             updates.Add(
                 BuilderUtils.habitUpdate.Push(hc => hc.ActiveHabits, habit)
             );
-            if (habit.DaysOfTheWeek.Contains(today.DayOfWeek.ToString()))
+            if (habit.DaysActive.Contains(today.DayOfWeek.ToString()))
                 updates.Add(
                     BuilderUtils.habitUpdate
                     .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit)
@@ -102,7 +101,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 BuilderUtils.habitOptions
             );
 
-            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId, _habitCollections);
+            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
 
             return habit;
         }
@@ -111,19 +110,61 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
     public async Task<bool> DeactivateHabit(string sessionKey, string habitId)
     {
-        HabitCollection collection = await _habitCollections
-            .Find(
-                BuilderUtils.habitFilter.Eq(hc => hc.Id, habitId)
-            ).FirstOrDefaultAsync();
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
+        {
+            string userId = user.Id;
+            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
+            if(habit is null)
+                return false;
+
+            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
+            //remove from habits collection
+            HabitCollection collection = await _habitCollections
+           .FindOneAndUpdateAsync(
+               BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+               BuilderUtils.habitUpdate
+               .PullFilter(hc => hc.ActiveHabits, h => h.Id == habitId)
+               .Unset($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}")
+               .Push(hc=>hc.NonActiveHabits, habit),
+               BuilderUtils.habitOptions
+           );
+
+            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            return true;
+        }
         return false;
     }
 
     public async Task<bool> RectivateHabit(string sessionKey, string habitId)
     {
-        HabitCollection collection = await _habitCollections
-            .Find(
-                BuilderUtils.habitFilter.Eq(hc => hc.Id, habitId)
-            ).FirstOrDefaultAsync();
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        if (user is not null && user.Id is not null)
+        {
+            string userId = user.Id;
+            HashSet<Habit> setOfHabits = await GetAllHabits(userId);
+            Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
+            if(habit is null)
+                return false;
+
+            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
+            //remove from habits collection
+            HabitCollection collection = await _habitCollections
+           .FindOneAndUpdateAsync(
+               BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+               BuilderUtils.habitUpdate
+               .PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId)
+               .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}", habit)
+               .Push(hc=>hc.ActiveHabits, habit),
+               BuilderUtils.habitOptions
+           );
+
+            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            return true;
+        }
         return false;
     }
 
@@ -143,13 +184,11 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             HabitCollection collection = await _habitCollections
            .FindOneAndUpdateAsync(
                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
-               BuilderUtils.habitUpdate
-               .PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId)
-               .Unset($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}"),
+               BuilderUtils.habitUpdate.PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId),
                BuilderUtils.habitOptions
            );
 
-            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-${thisDay}", collection, userId, _habitCollections);
+            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
             return true;
         }
         return false;
@@ -162,8 +201,13 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
         {
             string userId = user.Id;
             HashSet<Habit> setOfHabits = await GetAllHabits(userId);
-            if (habit.Id is null || setOfHabits.FirstOrDefault(h=>h.Id==habit.Id) is null)
+            if (habit.Id is null || setOfHabits.FirstOrDefault(h=>h.Id!.Equals(habit.Id)) is null)
                 return null;
+
+            var filterHabits = BuilderUtils.habitFilter.And(
+                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+                BuilderUtils.habitFilter.Eq("ActiveHabits.Id", habit.Id)
+            );
 
             var updateHabits = BuilderUtils.habitUpdate
                 .Set("ActiveHabits.$", habit)
@@ -171,7 +215,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             await _habitCollections
             .UpdateOneAsync(
-                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
+                filterHabits,
                 updateHabits
             );
             return habit;

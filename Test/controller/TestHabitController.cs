@@ -59,7 +59,7 @@ public class TestHabitController
         {
             if (sessionKey.Equals("TestSessionKey"))
             {
-                if (habit.Id.Equals("1234"))
+                if (habit.Id!.Equals("1234"))
                     return Task.FromResult<Habit?>(habit);
                 else
                     return Task.FromResult<Habit?>(null);
