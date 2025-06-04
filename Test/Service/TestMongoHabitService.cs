@@ -103,15 +103,14 @@ public class TestMongoHabitService
         string sessionKey = result.SessionKey;
         string id = ObjectId.GenerateNewId().ToString();
 
-        Habit habit = new Habit { Name = "TestHabit", Id = id };
+        Habit habit = new Habit { Name = "TestHabit", Id = id, DaysActive = daysOfWeek};
         await habitService.CreateHabit(sessionKey, habit);
+        await habitService.DeactivateHabit(sessionKey, habit.Id);
         bool deleted = await habitService.DeleteHabit(sessionKey, habit.Id);
-        List<Habit>? habits = await habitService.GetHabits(result.SessionKey,DateTime.Today.ToString("yyyy-MM-dd"));
         HabitCollection? collection = await GetHabitCollection(sessionKey);
 
         Assert.True(deleted);
-        Assert.Empty(habits!);
-        Assert.Empty(collection!.HabitHistory[monthKey][dayKey].Habits);
+        Assert.Empty(collection!.NonActiveHabits);
         
 
     }
