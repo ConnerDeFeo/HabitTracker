@@ -42,7 +42,7 @@ const MyHabits = ()=>{
         <div className="flex w-[60%] mx-auto justify-between mt-7 mb-[20vh]">
             <div className="grid">
                 <h1 className="border-b-6 text-7xl text-center w-85 text-center mb-5">Active Habits</h1>
-                {activeHabits.map((habit)=><RenderHabit key={habit.name} habit={habit} active={true} setHabits={setActiveHabits}/>)}
+                {activeHabits.map((habit)=><RenderHabit key={habit.name} habit={habit} setHabits={setActiveHabits}/>)}
                 {addHabit ?
                     <CreateHabit
                         handleCancelation={()=>setAddHabit(false)}
