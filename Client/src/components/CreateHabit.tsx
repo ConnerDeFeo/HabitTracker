@@ -27,7 +27,7 @@ const CreateHabit = (props: {
     const defaultHabit: Habit = initialHabit??{
         name: "",
         //Type is set default to "Binary"
-        type: 0,
+        type: 1,
         completed:false,
         skipped:false,
         daysActive:[],

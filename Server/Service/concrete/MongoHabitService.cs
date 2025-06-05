@@ -58,6 +58,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             habit.Id = ObjectId.GenerateNewId().ToString();
             DateTime today = DateTime.Today;
+            habit.DateCreated = today.ToString("yyyy-MM-dd");
 
             List<UpdateDefinition<HabitCollection>> updates = [];
             updates.Add(
@@ -79,7 +80,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 BuilderUtils.habitOptions
             );
 
-            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
 
             return habit;
         }
@@ -110,7 +111,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                BuilderUtils.habitOptions
            );
 
-            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
             return true;
         }
         return false;
@@ -140,7 +141,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                BuilderUtils.habitOptions
            );
 
-            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
             return true;
         }
         return false;
@@ -180,7 +181,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                     BuilderUtils.habitUpdate.Combine(updates)
                 );
 
-            HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
             return true;
         }
         return false;
@@ -201,14 +202,25 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 BuilderUtils.habitFilter.Eq("ActiveHabits.Id", habit.Id)
             );
 
-            var updateHabits = BuilderUtils.habitUpdate
-                .Set("ActiveHabits.$", habit)
-                .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit);
+            List<UpdateDefinition<HabitCollection>> updates = [];
+            updates.Add(
+                BuilderUtils.habitUpdate.Set("ActiveHabits.$", habit)
+            );
+            
+            if (habit.DaysActive.Contains(DateTime.Today.DayOfWeek.ToString()))
+                updates.Add(
+                    BuilderUtils.habitUpdate.Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit)
+                );
+            else
+               updates.Add(
+                    BuilderUtils.habitUpdate.Unset($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}")
+                );
+
 
             await _habitCollections
             .UpdateOneAsync(
                 filterHabits,
-                updateHabits
+                BuilderUtils.habitUpdate.Combine(updates)
             );
             return habit;
         }

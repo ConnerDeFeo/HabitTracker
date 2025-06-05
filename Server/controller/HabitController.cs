@@ -47,6 +47,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
 
     }
 
+    
     [HttpPost]
     public async Task<IActionResult> CreateHabit([FromBody] Habit habit)
     {

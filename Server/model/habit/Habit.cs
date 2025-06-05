@@ -16,7 +16,7 @@ public class Habit
 
     public HabitType Type { get; set; } = HabitType.BINARY;
 
-    public string DateCreated { get; set; } = null!;
+    public string? DateCreated { get; set; }
 
     public HashSet<string> DaysActive { get; set; } = [];
 

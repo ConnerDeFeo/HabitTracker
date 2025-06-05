@@ -14,7 +14,7 @@ public static class HabitUtils
     /// <param name="date">Date for this collection</param>
     /// <param name="collection">habitcollection, generically should only contain the respective date in its habithistory</param>
     /// <param name="userId">user for which this is occuring</param>
-    public static async void CheckAllHabitsCompleted(string date, HabitCollection collection, string userId, IMongoCollection<HabitCollection> _habitCollections)
+    public static async Task CheckAllHabitsCompleted(string date, HabitCollection collection, string userId, IMongoCollection<HabitCollection> _habitCollections)
     {
         string month = date[..7];
         string day = date.Substring(8, 2);

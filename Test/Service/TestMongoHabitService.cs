@@ -141,18 +141,18 @@ public class TestMongoHabitService
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
         string sessionKey = result.SessionKey;
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitService.CreateHabit(sessionKey, new Habit { Name = "1" });
         await habitService.CreateHabit(sessionKey, new Habit { Name = "2" });
 
         string id = habit!.Id!;
         Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = id });
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
-        HabitCollection? collection = await GetHabitCollection(sessionKey);
+        Dictionary<string, List<Habit>>? existingHabits = await habitService.GetExistingHabits(sessionKey);
 
-        Assert.Equal("TestHabitUpdated", habits![0].Name);
+        Assert.Empty(habits!);
         Assert.Equal("TestHabitUpdated", habitAfter!.Name);
-        Assert.Equal("TestHabitUpdated", collection!.HabitHistory[monthKey][dayKey].Habits[id].Name);
+        Assert.Equal("TestHabitUpdated",existingHabits!["ActiveHabits"][0].Name);
     }
 
     [Fact]
@@ -164,11 +164,11 @@ public class TestMongoHabitService
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         Habit? habitAfter = await habitService.EditHabit(sessionKey, new Habit { Name = "TestHabitUpdated", Id = ObjectId.GenerateNewId().ToString() });
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
-        HabitCollection? collection = await GetHabitCollection(sessionKey);
+        Dictionary<string, List<Habit>>? existingHabits = await habitService.GetExistingHabits(sessionKey);
 
         Assert.Null(habitAfter);
         Assert.Equal("TestHabit", habits![0].Name);
-        Assert.Equal("TestHabit", collection!.HabitHistory[monthKey][dayKey].Habits[habit!.Id!].Name);
+        Assert.Equal("TestHabit",existingHabits!["ActiveHabits"][0].Name);
     }
 
     [Fact]
