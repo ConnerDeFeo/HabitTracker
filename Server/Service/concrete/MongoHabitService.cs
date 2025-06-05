@@ -227,6 +227,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             );
 
             await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+            
             return habit;
         }
         return null;

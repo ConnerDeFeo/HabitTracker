@@ -45,7 +45,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
             </div>
             <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="mt-10"/>
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10" >
-                {habits.map((habit)=><p>{habit.name}</p>)}
+                {habits.map((habit)=><p key={habit.name}>{habit.name}</p>)}
             </div>
             <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="mt-10" show={!dateIsToday}/>      
         </div>      
