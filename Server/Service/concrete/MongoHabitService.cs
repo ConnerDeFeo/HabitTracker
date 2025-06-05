@@ -216,12 +216,17 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                     BuilderUtils.habitUpdate.Unset($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}")
                 );
 
+            BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory");
+            BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
 
-            await _habitCollections
-            .UpdateOneAsync(
+            HabitCollection collection = await _habitCollections
+            .FindOneAndUpdateAsync(
                 filterHabits,
-                BuilderUtils.habitUpdate.Combine(updates)
+                BuilderUtils.habitUpdate.Combine(updates),
+                BuilderUtils.habitOptions
             );
+
+            await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
             return habit;
         }
         return null;

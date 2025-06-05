@@ -96,17 +96,22 @@ public class TestMongoHabitHistory
         Assert.True(date.AllHabitsCompleted);
 
         //Add a new habit
-        await habitService.CreateHabit(sessionKey, new Habit { Name = "NewTestHabit", DaysActive = daysOfWeek });
+        habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "NewTestHabit", DaysActive = daysOfWeek });
         collection = await GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[monthKey][dayKey];
         Assert.False(date.AllHabitsCompleted);
 
         //Complete then add new habit
         await habitHistoryService.SetHabitCompletion(sessionKey, today, habit!.Id!, true);
-        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2", DaysActive = daysOfWeek });
+        habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "NewNewTestHabit", DaysActive = daysOfWeek });
         collection = await GetHabitCollection(sessionKey);
         date = collection!.HabitHistory[monthKey][dayKey];
         Assert.False(date.AllHabitsCompleted);
+
+        await habitService.EditHabit(sessionKey, new Habit { Name = "NewNewTestHabit", Id=habit!.Id });
+        collection = await GetHabitCollection(sessionKey);
+        date = collection!.HabitHistory[monthKey][dayKey];
+        Assert.True(date.AllHabitsCompleted);
 
     }
 
