@@ -1,12 +1,17 @@
 import { useState } from "react";
 import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
-import CreateHabit from "./CreateHabit";
-import Button from "./Button";
+import CreateHabit from "../components/CreateHabit";
+import Button from "../components/Button";
 
-const RenderHabit = (props:{habit:Habit, setHabits:React.Dispatch<React.SetStateAction<Habit[]>>})=>{
-    const {habit,setHabits} = props;
-    const [inChangeMode,setInChangeMode] = useState<boolean>(false);
+const RenderActiveHabit = (props:
+    {habit:Habit, 
+        setActiveHabits:React.Dispatch<React.SetStateAction<Habit[]>>,
+        setNonActiveHabits:React.Dispatch<React.SetStateAction<Habit[]>>
+    }
+)=>{
+    const {habit,setActiveHabits,setNonActiveHabits} = props;
+    const [inEditMode,setInEditMode] = useState<boolean>(false);
     const [inRemovalMode,setInRemovalMode] = useState<boolean>(false);
 
     const typeConverstion: Record<number,string> = {1:"Binary",2:"Time",3:"Numeric"};
@@ -30,30 +35,40 @@ const RenderHabit = (props:{habit:Habit, setHabits:React.Dispatch<React.SetState
         const resp = await HabitService.editHabit(habit);
         const newHabit = await resp.json();
     
-        setHabits((prevHabits) =>
+        setActiveHabits((prevHabits) =>
             prevHabits.map((h) => (h.id === newHabit.id ? newHabit : h))
         );
-        setInChangeMode(false);
+        setInEditMode(false);
     }
 
-    return inChangeMode ? 
-        <CreateHabit handleCancelation={()=>setInChangeMode(false)} handleHabitCompletion={handleHabitEditCompletion}/>
+    const handleHabitDeactivation = async()=>{
+        const resp = await HabitService.deactivateHabit(habit.id!);
+
+        if(resp.status==200){
+            setActiveHabits((prevHabits)=>prevHabits.filter(h=>h.id!==habit.id));
+            setNonActiveHabits((prevHabits)=>[...prevHabits,habit]);
+            setInRemovalMode(false);
+        }  
+    }
+
+    return inEditMode ? 
+        <CreateHabit handleCancelation={()=>setInEditMode(false)} handleHabitCompletion={handleHabitEditCompletion}/>
         :
         inRemovalMode ? 
         <div className="habitBorder p-3 grid gap-y-4">
             <p className="text-4xl text-center">{habit.name}</p>
             <p className="text-4xl text-center">Deactivate?</p>
-            <div className="flex justify-between w-[70%]">
-                <Button label="Yes"/>
-                <Button label="No"/>
+            <div className="flex justify-between w-[70%] mx-auto">
+                <Button label="Yes" className="w-15" onClick={handleHabitDeactivation}/>
+                <Button label="No" className="w-15" onClick={()=>setInRemovalMode(false)}/>
             </div>
         </div>
         :
         <div className="habitBorder p-3 grid gap-y-4">
             <div className="flex justify-between">
-                <img src="EditHabits.svg" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInChangeMode(false)}/>
+                <img src="EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>
                 <p className="text-2xl">{getDaysActiveTitle(habit)}</p>
-                <img src="Minus.png" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(false)}/>
+                <img src="Minus.png" alt="deactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(true)}/>
             </div>
             <p className="text-4xl text-center">{habit.name}</p>
             <div className="flex justify-between">
@@ -64,4 +79,4 @@ const RenderHabit = (props:{habit:Habit, setHabits:React.Dispatch<React.SetState
     ;
 }
 
-export default RenderHabit;
+export default RenderActiveHabit;

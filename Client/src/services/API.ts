@@ -5,7 +5,7 @@ const API = {
         method: 'GET'
       });
     },
-    post: async (path: string, data: Record<string, any>): Promise<Response> => {
+    post: async (path: string, data: Record<string, any> = {}): Promise<Response> => {
       return await fetch(path, {
         credentials: 'include', 
         method: 'POST',  
@@ -15,7 +15,7 @@ const API = {
         body: JSON.stringify(data),
       });
     },
-    put: async (path: string, data: Record<string, any>): Promise<Response> => {
+    put: async (path: string, data: Record<string, any> = {}): Promise<Response> => {
       return await fetch(path, {
         credentials: 'include', 
         method: 'PUT',  

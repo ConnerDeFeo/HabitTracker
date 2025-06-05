@@ -13,6 +13,12 @@ const HabitService ={
     createHabit: async (habit:Habit)=>{
         return await API.post(url,habit);
     },
+    deactivateHabit: async (habitId: string )=>{
+        return await API.delete(`${url}deactivate/${habitId}`);
+    },
+    reactivateHabit: async (habitId: string )=>{
+        return await API.post(`${url}reactivate/${habitId}`);
+    },
     editHabit: async (habit: Habit)=>{
         return await API.put(url,habit);
     },

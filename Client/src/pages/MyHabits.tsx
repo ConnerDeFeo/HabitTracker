@@ -3,7 +3,8 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import ImageButton from "../components/ImageButton";
 import CreateHabit from "../components/CreateHabit";
-import RenderHabit from "../components/RenderHabit";
+import RenderActiveHabit from "./RenderActiveHabits";
+import RenderNonActiveHabits from "./RenderNonActiveHabits";
 
 const MyHabits = ()=>{
 
@@ -40,9 +41,16 @@ const MyHabits = ()=>{
 
     return(
         <div className="flex w-[60%] mx-auto justify-between mt-7 mb-[20vh]">
-            <div className="grid">
-                <h1 className="border-b-6 text-7xl text-center w-85 text-center mb-5">Active Habits</h1>
-                {activeHabits.map((habit)=><RenderHabit key={habit.name} habit={habit} setHabits={setActiveHabits}/>)}
+            <div className="flex flex-col gap-y-4">
+                <h1 className="border-b-6 text-7xl text-center w-85 text-center">Active Habits</h1>
+                {activeHabits.map((habit)=>
+                    <RenderActiveHabit 
+                        key={habit.name} 
+                        habit={habit} 
+                        setActiveHabits={setActiveHabits} 
+                        setNonActiveHabits={setNonActiveHabits}
+                    />
+                )}
                 {addHabit ?
                     <CreateHabit
                         handleCancelation={()=>setAddHabit(false)}
@@ -50,14 +58,22 @@ const MyHabits = ()=>{
                     />
                     :
                     <ImageButton
-                        className="mx-auto mt-10" 
+                        className="mx-auto mt-5"
                         onClick={()=>setAddHabit(true)}
                         image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}
                     />
                 }
             </div>
-            <div>
-                <h1 className="border-b-6 text-7xl w-85 text-center mb-5">NonActive Habits</h1>
+            <div className="flex flex-col gap-y-4">
+                <h1 className="border-b-6 text-7xl w-85 text-center">NonActive Habits</h1>
+                {nonActiveHabits.map((habit)=>
+                    <RenderNonActiveHabits 
+                        key={habit.name} 
+                        habit={habit}
+                        setActiveHabits={setActiveHabits}
+                        setNonActiveHabits={setNonActiveHabits}
+                    />
+                )}
             </div>
         </div>
     );
