@@ -5,12 +5,13 @@ import Input from "../components/Input";
 import Waiting from "../components/Waiting";
 import UserService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
+import UserDto from "../types/UserDto";
 
-const Login = (props: {setSessionUsername: (username:string)=>void})=>{
+const Login = (props: {setUser: (user:UserDto)=>void})=>{
 
     const navigate = useNavigate();
 
-    const {setSessionUsername} = props;
+    const {setUser} = props;
 
     //Determines if loading screen pops up
     const [waiting,setWaiting] = useState(false);
@@ -29,10 +30,10 @@ const Login = (props: {setSessionUsername: (username:string)=>void})=>{
             if(response.status!=200){
                 setMessage("Invalid Username or Password");
             }else{
-                const data = await response.json();
-                document.cookie = "sessionKey="+data.sessionKey;
-                localStorage.setItem("loggedIn","true");
-                setSessionUsername(username);
+                const loginResult = await response.json();
+                document.cookie = "sessionKey="+loginResult.sessionKey;
+                sessionStorage.setItem("loggedIn","true");
+                setUser(loginResult.User);
                 navigate('/');
             }
     }

@@ -58,10 +58,11 @@ public class TestMongoUserService{
         UserDto? user = await userService.GetUser(result.SessionKey);
 
         Assert.Equal("ConnerDeFeo", user!.Username);
+        Assert.Equal(DateTime.Today.ToString("yyyy-MM-dd"), user!.DateCreated);
 
         LoginResult Result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
-        Assert.False(Result.Success);
+        Assert.Equal("",Result.SessionKey);
 
     }
 
@@ -71,11 +72,11 @@ public class TestMongoUserService{
 
         LoginResult Result = await userService.CreateUser("ConnerDeFeo","12345678");
 
-        Assert.False(Result.Success);
+        Assert.Equal("",Result.SessionKey);
 
         Result = await userService.CreateUser("Jack","1234567");
 
-        Assert.False(Result.Success);
+        Assert.Equal("",Result.SessionKey);
     }
 
     [Fact]
@@ -84,7 +85,7 @@ public class TestMongoUserService{
         LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
 
         LoginResult Result = await userService.Login("ConnerDeFeo", "12345678");
-        Assert.True(Result.Success);
+        Assert.NotEqual("",Result.SessionKey);
         Assert.NotNull(Result.SessionKey);
 
     }
@@ -138,7 +139,7 @@ public class TestMongoUserService{
         await userService.CreateUser("ConnerDeFeo","12345678");
 
         LoginResult result = await userService.Login("ConnerDeFeo","Suk");
-        Assert.False(result.Success);
+        Assert.Equal("",result.SessionKey);
     }
 
     [Fact]

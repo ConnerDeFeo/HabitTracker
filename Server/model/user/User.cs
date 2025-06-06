@@ -21,4 +21,6 @@ public class User
 
     public string LastLoginDate { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
 
+    public string DateCreated { get; set; } = null!;
+
 }

@@ -17,10 +17,11 @@ import DateInfo from './types/DateInfo';
 import HistoricalDate from './types/HistoricalDate';
 import HabitHistoryService from './services/HabitHistoryService';
 import MyHabits from './pages/MyHabits';
+import UserDto from './types/UserDto';
 
 const HabitTracker = ()=>{
 
-    const [sessionUsername,setSessionUserName] = useState("");
+    const [user,setUser] = useState<UserDto>({username:"",dateCreated:""});
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
@@ -53,14 +54,14 @@ const HabitTracker = ()=>{
             const response = await UserService.GetUser();
             if(response.status==200){
                 const user = await response.json();
-                localStorage.setItem("loggedIn","true");
-                setSessionUserName(user.username);
+                sessionStorage.setItem("loggedIn","true");
+                setUser(user);
             }
             else
-                localStorage.setItem("loggedIn","false");
+                sessionStorage.setItem("loggedIn","false");
         }
         fetchUser();
-    },[])
+    },[]);
 
     useEffect(()=>{
         fetchMonth();
@@ -70,10 +71,10 @@ const HabitTracker = ()=>{
         <Router >
             <Navbar/>
             <Routes>
-                <Route path='' element={sessionUsername=="" ? <HomePage/> : <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/>}/>
-                <Route path='CreateAccount' element={<CreateAccount setSessionUsername={setSessionUserName}/>}/>
-                <Route path='Login' element={<Login setSessionUsername={setSessionUserName}/>}/>
-                <Route path='Profile' element={sessionUsername==""? <HomePage/> : <Profile sessionUsername={sessionUsername} setSessionUsername={setSessionUserName}/>}/>
+                <Route path='' element={user.username==="" ? <HomePage/> : <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/>}/>
+                <Route path='CreateAccount' element={<CreateAccount setUser={setUser}/>}/>
+                <Route path='Login' element={<Login setUser={setUser}/>}/>
+                <Route path='Profile' element={user.username==""? <HomePage/> : <Profile user={user} setUser={setUser}/>}/>
                 <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                 <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
             </Routes>

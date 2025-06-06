@@ -5,9 +5,10 @@ import Waiting from "../components/Waiting";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import UserDto from "../types/UserDto";
 
-const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void})=>{
-    const {setSessionUsername} = props;
+const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
+    const {setUser} = props;
 
     const navigate = useNavigate();
 
@@ -37,11 +38,11 @@ const CreateAccount = (props:{setSessionUsername: (sessionUsername:string)=>void
             if(response.status!=200){
                 setMessage("Username Taken");
             }else{
-                const data = await response.json();
+                const loginResult = await response.json();
                 //store session token so that user does not have to log in
-                document.cookie = "sessionKey="+data.sessionKey;
-                localStorage.setItem("loggedIn","true");
-                setSessionUsername(username);
+                document.cookie = "sessionKey="+loginResult.sessionKey;
+                sessionStorage.setItem("loggedIn","true");
+                setUser(loginResult.User);
                 navigate('/');
             }
         }

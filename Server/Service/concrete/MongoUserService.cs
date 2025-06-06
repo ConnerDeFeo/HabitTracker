@@ -32,6 +32,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             return new UserDto
             {
                 Username = user.Username,
+                DateCreated = user.DateCreated
             };
         return null;
     }
@@ -45,11 +46,12 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         //username and password valid, User does not exists, password long enough 
         if(username is null || username.Equals("") || password is null || password.Length<8 || await UserUtils.GetUserByUsername(username,_users) is not null){
-            return new LoginResult{Success = false};
+            return new LoginResult{SessionKey = ""};
         }
 
         string sessionKey = GenerateSessionKey();
         string id = ObjectId.GenerateNewId().ToString();
+        string today = $"{thisMonth}-{thisDay}";
         User user = new()
         {
             Id = id,
@@ -57,7 +59,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
             SessionKey = sessionKey,
-            LastLoginDate = $"{thisMonth}-{thisDay}"
+            LastLoginDate = today,
+            DateCreated = today
         };
 
         await _users.InsertOneAsync(user);
@@ -65,7 +68,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         collection.HabitHistory[thisMonth] = [];
         collection.HabitHistory[thisMonth][thisDay] = new();
         await _habitCollections.InsertOneAsync(collection);
-        return new LoginResult { Success = true, SessionKey = sessionKey };
+        return new LoginResult { SessionKey = sessionKey, User=new UserDto { Username = username, DateCreated = today } };
     }
 
     /// <summary>
@@ -131,9 +134,9 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                     )
             );
 
-            return new LoginResult { Success = true, SessionKey = sessionKey };
+            return new LoginResult {  SessionKey = sessionKey, User = new UserDto { Username = username, DateCreated = user.DateCreated} };
         }
-        return new LoginResult{Success = false};
+        return new LoginResult{SessionKey = ""};
     }
 
     public async Task<bool> Logout(string sessionKey){
