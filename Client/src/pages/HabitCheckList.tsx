@@ -39,7 +39,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
 
     return(
         <div className="flex flex-col mx-auto mb-[50vh]">
-            <div className="flex justify-between items-center w-[75%] mx-auto mt-8">
+            <div className="flex justify-between items-center w-[75%] mx-auto mt-8 ">
                 <p className="text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix}, ${date.year}`}</p>
                 <Button label="Go to Today" onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}/>
             </div>

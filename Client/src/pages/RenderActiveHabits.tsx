@@ -3,6 +3,7 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import CreateHabit from "../components/CreateHabit";
 import Button from "../components/Button";
+import RenderHabitUtils from "../utils/RenderHabitUtils";
 
 const RenderActiveHabit = (props:
     {habit:Habit, 
@@ -14,22 +15,6 @@ const RenderActiveHabit = (props:
     const [inEditMode,setInEditMode] = useState<boolean>(false);
     const [inRemovalMode,setInRemovalMode] = useState<boolean>(false);
 
-    const typeConverstion: Record<number,string> = {1:"Binary",2:"Time",3:"Numeric"};
-
-    const getDaysActiveTitle = (habit:Habit):string =>{
-            const daysActive: string[] = habit.daysActive;
-            if(daysActive.length==7)
-                return "Daily";
-            const includesSaturday = daysActive.includes("Saturday");
-            const includesSunday = daysActive.includes("Sunday");
-            if(daysActive.length==5 && !includesSaturday && !includesSunday)
-                return "Weekdays";
-            if(daysActive.length==2 && includesSaturday && includesSunday)
-                return "Weekends";
-            const order: string[] = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-            //filter by days that are actually there, then convert to 3 letter abreviations
-            return order.filter(day => daysActive.includes(day)).map((day)=>day.slice(0,3)).join(", ");
-    }
 
     const handleHabitEditCompletion = async (habit:Habit)=>{
         const resp = await HabitService.editHabit(habit);
@@ -67,13 +52,13 @@ const RenderActiveHabit = (props:
         <div className="drop-shadow-xl p-3 grid gap-y-4 habitBorder">
             <div className="flex justify-between">
                 <img src="EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>
-                <p className="text-2xl">{getDaysActiveTitle(habit)}</p>
+                <p className="text-2xl">{RenderHabitUtils.getDaysActiveTitle(habit)}</p>
                 <img src="Minus.png" alt="deactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(true)}/>
             </div>
             <p className="text-4xl text-center">{habit.name}</p>
             <div className="flex justify-between">
                 <p className="text-2xl">Date created: {habit.dateCreated}</p>
-                <p className="text-2xl">Type: {typeConverstion[habit.type]}</p>
+                <p className="text-2xl">Type: {RenderHabitUtils.typeConverstion[habit.type]}</p>
             </div>
         </div>
     ;
