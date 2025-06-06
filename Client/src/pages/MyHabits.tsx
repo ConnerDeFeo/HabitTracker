@@ -40,10 +40,10 @@ const MyHabits = ()=>{
     }
 
     return(
-        <div className="flex w-[60%] mx-auto justify-between mt-7 mb-[20vh]">
-            <div >
+        <div className="flex w-[60%] mx-auto justify-between mt-7 mb-[10vh]">
+            <div>
                 <h1 className="border-b-6 text-7xl text-center w-85 text-center mb-5">Active Habits</h1>
-                <div className="overflow-y-auto h-[70vh] p-2 flex flex-col gap-y-4 habitBorder">
+                <div className="overflow-y-auto h-[70vh] p-2 flex flex-col gap-y-4">
                     {activeHabits.map((habit)=>
                         <RenderActiveHabit 
                             key={habit.name} 
@@ -61,21 +61,23 @@ const MyHabits = ()=>{
                         <ImageButton
                             className="mx-auto mt-5"
                             onClick={()=>setAddHabit(true)}
-                            image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem]"/>}
+                            image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem] my-[0.45rem]"/>}
                         />
                     }
                 </div>
             </div>
-            <div className="flex flex-col gap-y-4">
-                <h1 className="border-b-6 text-7xl w-85 text-center">NonActive Habits</h1>
-                {nonActiveHabits.map((habit)=>
-                    <RenderNonActiveHabits 
-                        key={habit.name} 
-                        habit={habit}
-                        setActiveHabits={setActiveHabits}
-                        setNonActiveHabits={setNonActiveHabits}
-                    />
-                )}
+            <div>
+                <h1 className="border-b-6 text-7xl w-85 text-center mb-5">NonActive Habits</h1>
+                <div className="overflow-y-auto h-[70vh] flex flex-col gap-y-4">
+                    {nonActiveHabits.map((habit)=>
+                        <RenderNonActiveHabits 
+                            key={habit.name} 
+                            habit={habit}
+                            setActiveHabits={setActiveHabits}
+                            setNonActiveHabits={setNonActiveHabits}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );

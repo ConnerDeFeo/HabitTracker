@@ -55,7 +55,7 @@ const RenderActiveHabit = (props:
         <CreateHabit handleCancelation={()=>setInEditMode(false)} handleHabitCompletion={handleHabitEditCompletion}/>
         :
         inRemovalMode ? 
-        <div className="habitBorder p-3 grid gap-y-4">
+        <div className="border-b-3 p-3 grid gap-y-4">
             <p className="text-4xl text-center">{habit.name}</p>
             <p className="text-4xl text-center">Deactivate?</p>
             <div className="flex justify-between w-[70%] mx-auto">
@@ -64,7 +64,7 @@ const RenderActiveHabit = (props:
             </div>
         </div>
         :
-        <div className="habitBorder p-3 grid gap-y-4">
+        <div className="drop-shadow-xl p-3 grid gap-y-4 habitBorder">
             <div className="flex justify-between">
                 <img src="EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>
                 <p className="text-2xl">{getDaysActiveTitle(habit)}</p>

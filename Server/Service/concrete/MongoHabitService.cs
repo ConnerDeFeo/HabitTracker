@@ -128,6 +128,16 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             if (habit is null)
                 return false;
 
+            List<UpdateDefinition<HabitCollection>> updates = [];
+            updates.Add(
+                BuilderUtils.habitUpdate
+                .Push(hc => hc.ActiveHabits, habit)
+                .PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId)
+            );
+
+            if (habit.DaysActive.Contains(DateTime.Today.DayOfWeek.ToString()))
+                updates.Add(BuilderUtils.habitUpdate.Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}", habit));
+
             BuilderUtils.habitOptions.Projection = Builders<HabitCollection>.Projection.Include($"HabitHistory.{thisMonth}.{thisDay}");
             BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
             //remove from habits collection
