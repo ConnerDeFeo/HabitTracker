@@ -25,7 +25,7 @@ public class Habit
     public bool Skipped { get; set; } = false;
 
     //The following two only apply to numeric and time habits
-    public double? Value { get; set; }
+    public int Value { get; set; } = 1;
 
     public string? ValueUnitType { get; set; }
 
