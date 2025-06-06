@@ -6,11 +6,17 @@ import CreateHabit from "../components/CreateHabit";
 import RenderActiveHabit from "./RenderActiveHabits";
 import RenderNonActiveHabits from "./RenderNonActiveHabits";
 
-const MyHabits = ()=>{
+const MyHabits = (props:{fetchMonth: ()=>void})=>{
+
+    const {fetchMonth} = props;
 
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [addHabit, setAddHabit] = useState<boolean>(false);
+
+    useEffect(()=>{
+        fetchMonth();
+    },[activeHabits,nonActiveHabits])
 
     useEffect(()=>{
         const fetchHabits = async()=>{

@@ -37,7 +37,7 @@ const RenderActiveHabit = (props:
     }
 
     return inEditMode ? 
-        <CreateHabit handleCancelation={()=>setInEditMode(false)} handleHabitCompletion={handleHabitEditCompletion}/>
+        <CreateHabit handleCancelation={()=>setInEditMode(false)} handleHabitCompletion={handleHabitEditCompletion} initialHabit={habit}/>
         :
         inRemovalMode ? 
         <div className="border-b-3 p-3 grid gap-y-4">

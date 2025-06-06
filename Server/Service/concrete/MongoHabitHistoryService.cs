@@ -32,7 +32,7 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             string day = date.Substring(8, 2);
 
 
-            BuilderUtils.habitOptions.Projection = BuilderUtils.habitProjection.Include($"HabitHistory.{thisMonth}.{thisDay}");
+            BuilderUtils.habitOptions.Projection = BuilderUtils.habitProjection.Include($"HabitHistory.{month}.{day}");
             BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
 
             //update and set the new date
