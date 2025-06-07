@@ -23,7 +23,7 @@ public class HabitCollection
 
         foreach (var (month, monthData) in HabitHistory)
             foreach (var (day, HistoricalData) in monthData)
-                if (HistoricalData.Habits.TryGetValue(habitId, out Habit? h))
+                if (HistoricalData.Habits.TryGetValue(habitId, out Habit? h) && h.Completed)
                 {
                     total += h.Value;
                     ++daysCompleted;
@@ -33,43 +33,57 @@ public class HabitCollection
 
     }
 
-    public int GetCurrentStreak(Habit habit, DateTime? dateCreated)
+    public int GetCurrentStreak(Habit habit)
     {
-        DateTime today = DateTime.Today;
-        if (dateCreated is null && DateTime.TryParse(habit.DateCreated, out var parsed))
-            dateCreated = parsed;
-
-        List<string> monthsInOrder = [.. HabitHistory.Keys];
-        monthsInOrder.Sort();
-
+        HashSet<string> daysActive = habit.DaysActive;
+        DateTime currentDate = DateTime.Today.AddDays(-1);
         string habitId = habit.Id!;
         int currentStreak = 0;
 
-        while (HabitHistory.TryGetValue(today.ToString("yyyy-MM"), out var monthData))
+        while (HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var monthData))
         {
-            while (monthData.TryGetValue(today.ToString("dd"), out var date))
-            {
-                if (date.Habits.ContainsKey(habitId))
-                {
-                    if (date.Habits[habitId].Completed)
-                    {
-                        ++currentStreak;
-                        _ = today.AddDays(-1);
-                        continue;
-                    }
-                }
-                return currentStreak;
-
-            }
+            if (!daysActive.Contains(currentDate.DayOfWeek.ToString()))
+                continue;
+            if
+            (
+                !monthData.TryGetValue(currentDate.ToString("dd"), out var historicalDate) ||
+                !historicalDate.Habits.TryGetValue(habitId, out var h) ||
+                !h.Completed
+            )
+                break;
+            ++currentStreak;
+            currentDate = currentDate.AddDays(-1);
         }
+
         return currentStreak;
-        
-        
     }
-    
-    // public int GetLongestStreak(Habit habit, DateTime? dateCreated)
-    // { 
-    //     if (dateCreated is null && DateTime.TryParse(habit.DateCreated, out var parsed))
-    //         dateCreated = parsed;
-    // }
+
+    public int GetLongestStreak(Habit habit)
+    {
+        DateTime currentDate = DateTime.Today;
+        HashSet<string> daysActive = habit.DaysActive;
+        string habitId = habit.Id!;
+        int highestStreak = 0;
+        int currentStreak = 0;
+
+        while (HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var monthData))
+        {
+            if (!daysActive.Contains(currentDate.DayOfWeek.ToString()))
+                continue;
+            if
+            (
+                !monthData.TryGetValue(currentDate.ToString("dd"), out var date) ||
+                !date.Habits.TryGetValue(habitId, out Habit? h) ||
+                !h.Completed
+            )
+            {
+                highestStreak = Math.Max(highestStreak, currentStreak);
+                currentStreak = 0;
+            }
+            else
+                ++currentStreak;
+        }
+            
+        return Math.Max(highestStreak,currentStreak);
+    }
 }
