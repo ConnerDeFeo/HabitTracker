@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabitStatisticService
+public class TestMongoHabitStatistic
 {
     string monthKey;
     string dayKey;
@@ -19,7 +19,7 @@ public class TestMongoHabitStatisticService
     IHabitStatisticService habitStatisticService;
     HashSet<string> daysOfWeek;
 
-    public TestMongoHabitStatisticService()
+    public TestMongoHabitStatistic()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
         Client.DropDatabase("TestMongoStatisticService");

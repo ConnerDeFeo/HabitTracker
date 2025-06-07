@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoUserService{
+public class TestMongoUser{
     IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
-    public TestMongoUserService()
+    public TestMongoUser()
     {
         var client = new MongoClient("mongodb://localhost:27017");
         client.DropDatabase("TestMongoUserService");

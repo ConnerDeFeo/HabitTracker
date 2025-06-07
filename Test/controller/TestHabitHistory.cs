@@ -9,11 +9,11 @@ using Server.model.habit;
 using Moq;
 
 
-public class TestHabitHistoryController
+public class TestHabitHistory
 {
     HabitHistoryController habitHistoryController;
 
-    public TestHabitHistoryController()
+    public TestHabitHistory()
     {
         var mockHabitHistoryService = new Mock<IHabitHistoryService>();
         mockHabitHistoryService

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabitHistoryService
+public class TestMongoHabitHistory
 {
     string monthKey;
     string dayKey;
@@ -18,7 +18,7 @@ public class TestMongoHabitHistoryService
     IHabitHistoryService habitHistoryService;
     HashSet<string> daysOfWeek;
 
-    public TestMongoHabitHistoryService()
+    public TestMongoHabitHistory()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
         Client.DropDatabase("TestMongoHabitHistoryService");

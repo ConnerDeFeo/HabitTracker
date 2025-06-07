@@ -9,12 +9,12 @@ using Server.model.habit;
 using Moq;
 
 
-public class TestUserController{
+public class TestUser{
 
     UserController userController;
     string dateCreated;
 
-    public TestUserController()
+    public TestUser()
     {
         var MockUserService = new Mock<IUserService>();
         dateCreated = DateTime.Today.ToString("yyyy-MM-dd");

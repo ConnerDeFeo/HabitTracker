@@ -8,11 +8,11 @@ using Server.model.user;
 using Server.model.habit;
 using Moq;
 
-public class TestHabitController
+public class TestHabit
 {
     HabitController habitController;
 
-    public TestHabitController()
+    public TestHabit()
     {
         var mockHabitService = new Mock<IHabitService>();
 
