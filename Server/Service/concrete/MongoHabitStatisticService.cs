@@ -25,11 +25,12 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
             List<ProjectionDefinition<HabitCollection>> habitHistoryProjections = [];
             habitHistoryProjections.Add(BuilderUtils.habitProjection.Include($"HabitHistory.{thisMonth:yyyy-MM}"));
 
-            while (dateCreated <= thisMonth) {
+            while (dateCreated <= thisMonth)
+            {
                 habitHistoryProjections.Add(BuilderUtils.habitProjection.Include($"HabitHistory.{dateCreated:yyyy-MM}"));
                 dateCreated = dateCreated.AddMonths(1);
             }
-            
+
 
             HabitCollection? collection = await _habitCollections
                 .Find(filter)
@@ -37,7 +38,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
                 .FirstOrDefaultAsync();
 
             (int, int) totalValueAndDays = collection.GetTotalValueCompleted(habit.Id!);
-            HistoricalData data = new()
+            return new()
             {
                 Habit = habit,
                 TotalValueCompleted = totalValueAndDays.Item1,

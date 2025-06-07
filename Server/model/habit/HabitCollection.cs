@@ -43,7 +43,10 @@ public class HabitCollection
         while (HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var monthData))
         {
             if (!daysActive.Contains(currentDate.DayOfWeek.ToString()))
+            {
+                currentDate = currentDate.AddDays(-1);
                 continue;
+            }
             if
             (
                 !monthData.TryGetValue(currentDate.ToString("dd"), out var historicalDate) ||
@@ -69,7 +72,10 @@ public class HabitCollection
         while (HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var monthData))
         {
             if (!daysActive.Contains(currentDate.DayOfWeek.ToString()))
+            {
+                currentDate = currentDate.AddDays(-1);
                 continue;
+            }
             if
             (
                 !monthData.TryGetValue(currentDate.ToString("dd"), out var date) ||
@@ -82,6 +88,7 @@ public class HabitCollection
             }
             else
                 ++currentStreak;
+            currentDate = currentDate.AddDays(-1);
         }
             
         return Math.Max(highestStreak,currentStreak);

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabitHistory
+public class TestMongoHabitStatisticService
 {
     string monthKey;
     string dayKey;
@@ -19,11 +19,11 @@ public class TestMongoHabitHistory
     IHabitStatisticService habitStatisticService;
     HashSet<string> daysOfWeek;
 
-    public TestMongoHabitHistory()
+    public TestMongoHabitStatisticService()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
-        Client.DropDatabase("TestMongoHabitHistoryService");
-        database = Client.GetDatabase("TestMongoHabitHistoryService");
+        Client.DropDatabase("TestMongoStatisticService");
+        database = Client.GetDatabase("TestMongoStatisticService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
         habitHistoryService = new MongoHabitHistoryService(database);
@@ -56,18 +56,21 @@ public class TestMongoHabitHistory
             LastLoginDate = past
         };
 
+        Habit habit = new Habit
+        {
+            Id = ObjectId.GenerateNewId().ToString(),
+            Name = "Read 25 Pages",
+            DateCreated = past,
+            DaysActive = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            Type = HabitType.NUMERIC,
+            Value = 25,
+            ValueUnitType = "Pages"
+        };
+
         HabitCollection habitCollection = new()
         {
             Id = id,
-            ActiveHabits = [new Habit {
-                Id = ObjectId.GenerateNewId().ToString(),
-                Name = "Read 25 Pages",
-                DateCreated = past,
-                DaysActive = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-                Type = HabitType.Numeric,
-                Value = 25,
-                ValueUnitType = "Pages"
-            }],
+            ActiveHabits = [habit],
             HabitHistory = [],
             NonActiveHabits = []
         };
@@ -75,6 +78,31 @@ public class TestMongoHabitHistory
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
         LoginResult result = await userService.Login(username, password);
+        string sessionKey = result.SessionKey;
+        habit.Value = 50;
+        await habitService.EditHabit(sessionKey, habit);
+
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-1).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-2).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-3).ToString("yyyy-MM-dd"), habit!.Id!, true);
+
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-5).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-6).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-7).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-8).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-9).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-10).ToString("yyyy-MM-dd"), habit!.Id!, true);
+
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-12).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-13).ToString("yyyy-MM-dd"), habit!.Id!, true);
+
+        HistoricalData? data = await habitStatisticService.GetHistoricalData(sessionKey,habit);
+
+        Assert.Equal(3, data!.CurrentStreak);
+        Assert.Equal(6, data!.LongestStreak);
+        Assert.Equal(325, data!.TotalValueCompleted);
+        Assert.Equal(12, data!.DaysCompleted);
 
     }
 }
