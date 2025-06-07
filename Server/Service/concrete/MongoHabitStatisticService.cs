@@ -42,7 +42,8 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
                 Habit = habit,
                 TotalValueCompleted = totalValueAndDays.Item1,
                 DaysCompleted = totalValueAndDays.Item2,
-
+                LongestStreak = collection.GetLongestStreak(habit),
+                CurrentStreak = collection.GetCurrentStreak(habit)
             };
         }
         return null;
