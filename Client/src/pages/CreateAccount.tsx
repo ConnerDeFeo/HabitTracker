@@ -42,7 +42,7 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
                 //store session token so that user does not have to log in
                 document.cookie = "sessionKey="+loginResult.sessionKey;
                 sessionStorage.setItem("loggedIn","true");
-                setUser(loginResult.User);
+                setUser(loginResult.user);
                 navigate('/');
             }
         }
