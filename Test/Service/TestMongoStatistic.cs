@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabitStatistic
+public class TestMongoHabitStatistic : IAsyncLifetime
 {
     string monthKey;
     string dayKey;
@@ -33,6 +33,14 @@ public class TestMongoHabitStatistic
         daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     }
 
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        var Client = new MongoClient("mongodb://localhost:27017");
+        await Client.DropDatabaseAsync("TestMongoStatisticService");
+    }
+
     //This ones gonna be painful
     [Fact]
     public async Task TestGetHistoricalData()
@@ -45,7 +53,7 @@ public class TestMongoHabitStatistic
         string id = ObjectId.GenerateNewId().ToString();
         string past = DateTime.Today.AddDays(-15).ToString("yyyy-MM-dd");
         string password = "asdfasdf";
-        string username = "Jack";
+        string username = "Jack1";
 
         User user = new()
         {
@@ -111,5 +119,76 @@ public class TestMongoHabitStatistic
         Assert.Equal(3, data!.CurrentStreak);
         Assert.Equal(11, data!.DaysCompleted);
 
+    }
+
+    [Fact]
+    public async Task TestGetTotalValuesByMonth()
+    {
+        DateTime today = DateTime.Today;
+
+        IMongoCollection<User> users = database.GetCollection<User>("Users");
+        IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
+
+        string id = ObjectId.GenerateNewId().ToString();
+        string past = DateTime.Today.AddDays(-370).ToString("yyyy-MM-dd");
+        string password = "asdfasdf";
+        string username = "Jack2";
+
+        User user = new()
+        {
+            Id = id,
+            Username = username,
+            //Hash the password before storing in database
+            Password = PasswordHasher.HashPassword(password),
+            LastLoginDate = past
+        };
+
+        string habitId = ObjectId.GenerateNewId().ToString();
+        Habit habit = new Habit
+        {
+            Id = habitId,
+            Name = "Read 25 Pages",
+            DateCreated = past,
+            DaysActive = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            Type = HabitType.NUMERIC,
+            Value = 25,
+            ValueUnitType = "Pages"
+        };
+
+        HabitCollection habitCollection = new()
+        {
+            Id = id,
+            ActiveHabits = [habit],
+            HabitHistory = [],
+            NonActiveHabits = []
+        };
+
+        await users.InsertOneAsync(user);
+        await collection.InsertOneAsync(habitCollection);
+        LoginResult result = await userService.Login(username, password);
+        string sessionKey = result.SessionKey;
+
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-1).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-2).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-3).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-4).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-5).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-6).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-7).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-8).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-9).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-10).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-11).ToString("yyyy-MM-dd"), habit!.Id!, true);
+
+        Dictionary<string, int>? valuesPerMonth = await habitStatisticService.GetTotalValuesByMonth(sessionKey, habitId);
+
+        Assert.NotNull(valuesPerMonth);
+        Assert.Equal(12,valuesPerMonth.Keys.Count);
+        int total = 0;
+        foreach (int num in valuesPerMonth.Values)
+            total += num;
+
+        Assert.Equal(300, total);
     }
 }

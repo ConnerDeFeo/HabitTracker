@@ -8,7 +8,8 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoUser{
+public class TestMongoUser : IAsyncLifetime
+{
     IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
@@ -19,6 +20,14 @@ public class TestMongoUser{
         database = client.GetDatabase("TestMongoUserService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
+    }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        var Client = new MongoClient("mongodb://localhost:27017");
+        await Client.DropDatabaseAsync("TestMongoUserService");
     }
 
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
@@ -34,11 +43,11 @@ public class TestMongoUser{
     [Fact]
     public async Task TestGetUser()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo1", "12345678");
 
         UserDto? user = await userService.GetUser(result.SessionKey);
 
-        Assert.Equal("ConnerDeFeo", user!.Username);
+        Assert.Equal("ConnerDeFeo1", user!.Username);
     }
 
     [Fact]
@@ -51,16 +60,16 @@ public class TestMongoUser{
     [Fact]
     public async Task TestCreateUser()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo2", "12345678");
 
         string sessionKey = result.SessionKey;
 
         UserDto? user = await userService.GetUser(result.SessionKey);
 
-        Assert.Equal("ConnerDeFeo", user!.Username);
+        Assert.Equal("ConnerDeFeo2", user!.Username);
         Assert.Equal(DateTime.Today.ToString("yyyy-MM-dd"), user!.DateCreated);
 
-        LoginResult Result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult Result = await userService.CreateUser("ConnerDeFeo2", "12345678");
 
         Assert.Equal("",Result.SessionKey);
 
@@ -68,9 +77,9 @@ public class TestMongoUser{
 
     [Fact]
     public async Task TestCreateUserFalse(){
-        await userService.CreateUser("ConnerDeFeo","12345678");
+        await userService.CreateUser("ConnerDeFeo3","12345678");
 
-        LoginResult Result = await userService.CreateUser("ConnerDeFeo","12345678");
+        LoginResult Result = await userService.CreateUser("ConnerDeFeo3","12345678");
 
         Assert.Equal("",Result.SessionKey);
 
@@ -82,9 +91,9 @@ public class TestMongoUser{
     [Fact]
     public async Task TestLogin()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo4", "12345678");
 
-        LoginResult Result = await userService.Login("ConnerDeFeo", "12345678");
+        LoginResult Result = await userService.Login("ConnerDeFeo4", "12345678");
         Assert.NotEqual("",Result.SessionKey);
         Assert.NotNull(Result.SessionKey);
 
@@ -136,15 +145,15 @@ public class TestMongoUser{
 
     [Fact]
     public async Task TestLoginFaliure(){
-        await userService.CreateUser("ConnerDeFeo","12345678");
+        await userService.CreateUser("ConnerDeFeo5","12345678");
 
-        LoginResult result = await userService.Login("ConnerDeFeo","Suk");
+        LoginResult result = await userService.Login("ConnerDeFeo5","Suk");
         Assert.Equal("",result.SessionKey);
     }
 
     [Fact]
     public async Task TestLogout(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo6","12345678");
 
         bool logedOut = await userService.Logout(result.SessionKey);
 
@@ -153,7 +162,7 @@ public class TestMongoUser{
 
     [Fact]
     public async Task TestLogoutFaliure(){
-        LoginResult result = await userService.CreateUser("ConnerDeFeo","12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo6","12345678");
 
         bool logedIn = await userService.Logout("");
 

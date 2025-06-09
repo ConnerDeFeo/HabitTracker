@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabit
+public class TestMongoHabit : IAsyncLifetime
 {
 
     string monthKey;
@@ -21,13 +21,20 @@ public class TestMongoHabit
     public TestMongoHabit()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
-        Client.DropDatabase("TestMongoHabitService");
         database = Client.GetDatabase("TestMongoHabitService");
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
         daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        var Client = new MongoClient("mongodb://localhost:27017");
+        await Client.DropDatabaseAsync("TestMongoHabitService");
     }
 
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
@@ -43,7 +50,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestGetHabits()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo1", "12345678");
 
         List<Habit>? habits = await habitService.GetHabits(result.SessionKey, $"{monthKey}-{dayKey}");
 
@@ -54,7 +61,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestGetHabitsInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo2", "12345678");
 
         List<Habit>? habits = await habitService.GetHabits("InvalidSessionKey", $"{monthKey}-{dayKey}");
 
@@ -64,7 +71,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestCreateHabit()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo3", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -88,7 +95,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestCreateHabitInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo4", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -104,7 +111,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestDeleteHabit()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo5", "12345678");
         string sessionKey = result.SessionKey;
         string id = ObjectId.GenerateNewId().ToString();
 
@@ -123,7 +130,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestDeleteHabitInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo6", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -138,7 +145,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestEditHabit()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo7", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -158,7 +165,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestEditHabitInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo8", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -174,7 +181,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestDeactivateHabit()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo9", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -188,7 +195,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestDeactivateHabitInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo10", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -202,7 +209,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestReactivateHabit()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo11", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -217,7 +224,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestReactivateHabitInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo12", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -233,7 +240,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestGetExistingHabits()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo13", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
@@ -252,7 +259,7 @@ public class TestMongoHabit
     [Fact]
     public async Task TestGetExistingHabitsInvalid()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo", "12345678");
+        LoginResult result = await userService.CreateUser("ConnerDeFeo14", "12345678");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });

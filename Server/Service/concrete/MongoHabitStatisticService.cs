@@ -18,11 +18,11 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
 
             HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
-            if(habit is null)
+            if (habit is null)
                 return null;
 
             if (!DateTime.TryParse(habit.DateCreated, out DateTime dateCreated))
-                    throw new Exception("Date could not be parsed properly");
+                throw new Exception("Date could not be parsed properly");
             DateTime today = DateTime.Today;
             DateTime thisMonth = new(today.Year, today.Month, 1);
 
@@ -42,7 +42,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
                 .Project<HabitCollection>(BuilderUtils.habitProjection.Combine(habitHistoryProjections))
                 .FirstOrDefaultAsync();
 
-            (int,int ) totalValue = collection.GetTotalValueCompleted(habit.Id!);
+            (int, int) totalValue = collection.GetTotalValueCompleted(habit.Id!);
             return new()
             {
                 Habit = habit,
@@ -51,6 +51,16 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
                 LongestStreak = collection.GetLongestStreak(habit),
                 CurrentStreak = collection.GetCurrentStreak(habit)
             };
+        }
+        return null;
+    }
+
+    public async Task<Dictionary<string, int>?> GetTotalValuesByMonth(string sessionKey, string habitId)
+    {
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user != null)
+        {
+
         }
         return null;
     }

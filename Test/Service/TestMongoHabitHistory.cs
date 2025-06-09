@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-public class TestMongoHabitHistory
+public class TestMongoHabitHistory: IAsyncLifetime
 {
     string monthKey;
     string dayKey;
@@ -17,7 +17,7 @@ public class TestMongoHabitHistory
     IHabitService habitService;
     IHabitHistoryService habitHistoryService;
     HashSet<string> daysOfWeek;
-
+  
     public TestMongoHabitHistory()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
@@ -28,7 +28,15 @@ public class TestMongoHabitHistory
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
-        daysOfWeek = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        var Client = new MongoClient("mongodb://localhost:27017");
+        await Client.DropDatabaseAsync("TestMongoHabitHistoryService");
     }
     
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
@@ -45,7 +53,7 @@ public class TestMongoHabitHistory
     [Fact]
     public async Task TestSetHabitCompletion()
     {
-        LoginResult result = await userService.CreateUser("Conner", "12341234");
+        LoginResult result = await userService.CreateUser("Conner1", "12341234");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -59,7 +67,7 @@ public class TestMongoHabitHistory
     [Fact]
     public async Task TestSetHabitCompletionFailiure()
     {
-        LoginResult result = await userService.CreateUser("Conner", "12341234");
+        LoginResult result = await userService.CreateUser("Conner2", "12341234");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
@@ -79,7 +87,7 @@ public class TestMongoHabitHistory
     [Fact]
     public async Task TestAllHabitsCompleted()
     {
-        LoginResult result = await userService.CreateUser("Conner", "12341234");
+        LoginResult result = await userService.CreateUser("Conner3", "12341234");
         string sessionKey = result.SessionKey;
         string today = DateTime.Today.ToString("yyyy-MM-dd");
 
@@ -124,7 +132,7 @@ public class TestMongoHabitHistory
         string id = ObjectId.GenerateNewId().ToString();
         string today = DateTime.Today.ToString("yyyy-MM-dd");
         string password = "asdfasdf";
-        string username = "Jack";
+        string username = "Conner4";
 
         User user = new()
         {

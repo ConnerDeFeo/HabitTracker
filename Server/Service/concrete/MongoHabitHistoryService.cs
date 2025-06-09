@@ -11,8 +11,6 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
   
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
-    private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
-    private readonly string thisDay = DateTime.Today.ToString("dd");
   
     public async Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed)
     {
