@@ -98,12 +98,17 @@ public class TestMongoHabitStatistic
         await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-12).ToString("yyyy-MM-dd"), habit!.Id!, true);
         await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-13).ToString("yyyy-MM-dd"), habit!.Id!, true);
 
-        HistoricalData? data = await habitStatisticService.GetHistoricalData(sessionKey,habitId);
+        HistoricalData? data = await habitStatisticService.GetHistoricalData(sessionKey, habitId);
 
-        Assert.Equal(3, data!.CurrentStreak);
+        Assert.Equal(4, data!.CurrentStreak);
         Assert.Equal(6, data!.LongestStreak);
         Assert.Equal(325, data!.TotalValueCompleted);
         Assert.Equal(12, data!.DaysCompleted);
+
+        await habitHistoryService.SetHabitCompletion(sessionKey, today.ToString("yyyy-MM-dd"), habit!.Id!, false);
+        data = await habitStatisticService.GetHistoricalData(sessionKey, habitId);
+
+        Assert.Equal(3, data!.CurrentStreak);
 
     }
 }

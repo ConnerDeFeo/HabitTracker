@@ -1,11 +1,9 @@
-import Habit from "../types/Habit";
 import API from "./API";
-
-const url = import.meta.env.VITE_SERVER_URL+"habitStatistic/";
+const url = import.meta.env.VITE_SERVER_URL+"habitStatistics/";
 
 const HabitStatisticService = {
-    getHistoricalData: async (habit:Habit)=>{
-        return await API.get(url);
+    getHistoricalData: async (habitId: string)=>{
+        return await API.get(`${url}${habitId}`);
     },
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import HistoricalData from "../types/HistoricalData";
+import HabitStatisticService from "../services/HabitStatisticService";
 
 const Statistics = ()=>{
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
@@ -14,13 +15,22 @@ const Statistics = ()=>{
             const resp = await HabitService.getExistingHabits();
             if(resp.status==200){
                 const existingHabits = await resp.json();
+                const active = existingHabits["ActiveHabits"];
+                const nonActive = existingHabits["NonActiveHabits"];
+
                 setActiveHabits(existingHabits["ActiveHabits"]);
                 setNonActiveHabits(existingHabits["NonActiveHabits"]);
-            }
-            if(activeHabits.length>0){
-            }
-            else if(activeHabits.length>0){
-                
+
+                if(active.length>0){
+                    const dataResp = await HabitStatisticService.getHistoricalData(active[0].id!);
+                    const data: HistoricalData = await dataResp.json();
+                    setHistoricalData(data);
+                }
+                else if(nonActive.length>0){
+                    const dataResp = await HabitStatisticService.getHistoricalData(nonActive[0].id!);
+                    const data: HistoricalData = await dataResp.json();
+                    setHistoricalData(data);
+                }
             }
         }
         fetchHabits();
@@ -29,18 +39,31 @@ const Statistics = ()=>{
     return(
         <div className="flex w-[75%] mx-auto my-10 justify-between">
             <div className="habitBorder w-75 h-100 overflow-y-auto">
-                {activeHabits.map((habit)=><p className={habitNameStyling}>{habit.name}</p>)}
-                {nonActiveHabits.map((habit)=><p className={habitNameStyling}>{habit.name}</p>)}
+                {activeHabits.map((habit)=><p key={habit.name} className={habitNameStyling}>{habit.name}</p>)}
+                {nonActiveHabits.map((habit)=><p key={habit.name} className={habitNameStyling}>{habit.name}</p>)}
             </div>
-            <div>
-                <div className=" h-25 mb-5">
+            <div className="w-150">
+                <div className="h-25 mb-5">
                     {historicalData === undefined ? 
                         <p className="text-6xl text-center">No habits to view!</p>
                         :
-                        <></>
+                        <div className="flex justify-between w-[90%] mx-auto">
+                            <div>
+                                <p className="text-4xl mb-5">{historicalData.habit.name}</p>
+                                <p className="text-4xl">
+                                    {`${historicalData.totalValueCompleted} 
+                                    ${historicalData.habit.valueUnitType} 
+                                    sense ${historicalData.habit.dateCreated}`}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-4xl mb-5">Longest Streak: {historicalData.longestStreak}</p>
+                                <p className="text-4xl">Current Streak: {historicalData.currentStreak}</p>
+                            </div>
+                        </div>
                     }
                 </div>
-                <div className="habitBorder w-150 h-70">
+                <div className="habitBorder h-70">
                     {historicalData !== undefined &&
                         <></>
                     }

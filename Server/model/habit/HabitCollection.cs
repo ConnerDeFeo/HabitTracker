@@ -58,7 +58,17 @@ public class HabitCollection
             currentDate = currentDate.AddDays(-1);
         }
 
-        return currentStreak;
+        DateTime today = DateTime.Today;
+
+        if (
+            !daysActive.Contains(today.DayOfWeek.ToString()) ||
+            !HabitHistory.TryGetValue(today.ToString("yyyy-MM"), out var thisMonth) ||
+            !thisMonth.TryGetValue(today.ToString("dd"), out var thisDate) ||
+            !thisDate.Habits.TryGetValue(habitId, out var todaysHabit) ||
+            !todaysHabit.Completed
+        )
+            return currentStreak;
+        return currentStreak+1;
     }
 
     public int GetLongestStreak(Habit habit)
