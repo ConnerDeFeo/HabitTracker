@@ -18,6 +18,7 @@ import HistoricalDate from './types/HistoricalDate';
 import HabitHistoryService from './services/HabitHistoryService';
 import MyHabits from './pages/MyHabits';
 import UserDto from './types/UserDto';
+import Statistics from './pages/Statistics';
 
 const HabitTracker = ()=>{
 
@@ -77,6 +78,7 @@ const HabitTracker = ()=>{
                 <Route path='Profile' element={user.username==""? <HomePage/> : <Profile user={user} setUser={setUser}/>}/>
                 <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                 <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
+                <Route path='Statistics' element={<Statistics/>}/>
             </Routes>
             <Footer/>
         </Router>

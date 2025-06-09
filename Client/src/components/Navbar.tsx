@@ -20,6 +20,7 @@ const Navbar = ()=>{
                     <>
                         {navbarItem("MyHabits","Arrows.png","MyHabits","/MyHabits")}
                         {navbarItem("Schedule","Calender.png","calender","/Schedule")}
+                        {navbarItem("Statistics","Statistics.png","statistics","/Statistics")}
                     </>
                 }
             </div>

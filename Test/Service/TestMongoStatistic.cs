@@ -56,9 +56,10 @@ public class TestMongoHabitStatistic
             LastLoginDate = past
         };
 
+        string habitId = ObjectId.GenerateNewId().ToString();
         Habit habit = new Habit
         {
-            Id = ObjectId.GenerateNewId().ToString(),
+            Id = habitId,
             Name = "Read 25 Pages",
             DateCreated = past,
             DaysActive = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -97,7 +98,7 @@ public class TestMongoHabitStatistic
         await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-12).ToString("yyyy-MM-dd"), habit!.Id!, true);
         await habitHistoryService.SetHabitCompletion(sessionKey, today.AddDays(-13).ToString("yyyy-MM-dd"), habit!.Id!, true);
 
-        HistoricalData? data = await habitStatisticService.GetHistoricalData(sessionKey,habit);
+        HistoricalData? data = await habitStatisticService.GetHistoricalData(sessionKey,habitId);
 
         Assert.Equal(3, data!.CurrentStreak);
         Assert.Equal(6, data!.LongestStreak);

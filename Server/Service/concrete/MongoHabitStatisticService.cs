@@ -8,7 +8,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
-    public async Task<HistoricalData?> GetHistoricalData(string sessionKey, Habit habit)
+    public async Task<HistoricalData?> GetHistoricalData(string sessionKey, string habitId)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user != null)
@@ -16,8 +16,13 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
             string userId = user.Id!;
             var filter = BuilderUtils.habitFilter.Eq(hc => hc.Id, user.Id);
 
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
+            Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
+            if(habit is null)
+                return null;
+
             if (!DateTime.TryParse(habit.DateCreated, out DateTime dateCreated))
-                throw new Exception("Date could not be parsed properly");
+                    throw new Exception("Date could not be parsed properly");
             DateTime today = DateTime.Today;
             DateTime thisMonth = new(today.Year, today.Month, 1);
 

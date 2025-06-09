@@ -17,13 +17,13 @@ public class TestHabitStatistic
     {
         var mockHabitStatisticService = new Mock<IHabitStatisticService>();
         mockHabitStatisticService
-        .Setup(hs => hs.GetHistoricalData(It.IsAny<string>(), It.IsAny<Habit>()))
-        .Returns<string, Habit>((sessionKey, habit) =>
+        .Setup(hs => hs.GetHistoricalData(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, habitId) =>
             {
                 if (sessionKey.Equals("TestSessionKey"))
                 {
-                    if (habit.Id!.Equals("1234"))
-                        return Task.FromResult<HistoricalData?>(new() { Habit = habit });
+                    if (habitId.Equals("1234"))
+                        return Task.FromResult<HistoricalData?>(new() { Habit = new Habit{Id = "1233"} });
                     return Task.FromResult<HistoricalData?>(null);
                 }
                 else
@@ -52,12 +52,7 @@ public class TestHabitStatistic
     public async Task TestGetHistoricalData()
     {
         SetValidSessionKey();
-        IActionResult result = await habitStatisticController.GetHistoricalData(
-            new Habit
-            {
-                Id = "1234"
-            }
-        );
+        IActionResult result = await habitStatisticController.GetHistoricalData("1234");
         var okResult = Assert.IsType<OkObjectResult>(result);
         var dataResult = Assert.IsType<HistoricalData>(okResult.Value);
         Assert.NotNull(dataResult.Habit);
@@ -67,21 +62,11 @@ public class TestHabitStatistic
     public async Task TestGetHistoricalDataInvalid()
     {
         SetInvalidSessionKey();
-        IActionResult result = await habitStatisticController.GetHistoricalData(
-            new Habit
-            {
-                Id = "1234"
-            }
-        );
+        IActionResult result = await habitStatisticController.GetHistoricalData("1234");
         Assert.IsType<NotFoundResult>(result);
         
         SetValidSessionKey();
-        result = await habitStatisticController.GetHistoricalData(
-            new Habit
-            {
-                Id = "1233"
-            }
-        );
+        result = await habitStatisticController.GetHistoricalData("1233");
         Assert.IsType<NotFoundResult>(result);
     }
 
