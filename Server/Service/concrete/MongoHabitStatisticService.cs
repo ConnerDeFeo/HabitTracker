@@ -42,12 +42,12 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
                 .Project<HabitCollection>(BuilderUtils.habitProjection.Combine(habitHistoryProjections))
                 .FirstOrDefaultAsync();
 
-            (int, int) totalValueAndDays = collection.GetTotalValueCompleted(habit.Id!);
+            (int,int ) totalValue = collection.GetTotalValueCompleted(habit.Id!);
             return new()
             {
                 Habit = habit,
-                TotalValueCompleted = totalValueAndDays.Item1,
-                DaysCompleted = totalValueAndDays.Item2,
+                TotalValueCompleted = totalValue.Item1,
+                DaysCompleted = totalValue.Item2,
                 LongestStreak = collection.GetLongestStreak(habit),
                 CurrentStreak = collection.GetCurrentStreak(habit)
             };

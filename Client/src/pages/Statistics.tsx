@@ -3,6 +3,9 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import HistoricalData from "../types/HistoricalData";
 import HabitStatisticService from "../services/HabitStatisticService";
+import HistoricalDate from "../types/HistoricalDate";
+import HabitHistoryService from "../services/HabitHistoryService";
+import DateInfo from "../types/DateInfo";
 
 const Statistics = ()=>{
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
@@ -12,9 +15,10 @@ const Statistics = ()=>{
 
     useEffect(()=>{
         const fetchHabits = async()=>{
-            const resp = await HabitService.getExistingHabits();
-            if(resp.status==200){
-                const existingHabits = await resp.json();
+            const habitResp = await HabitService.getExistingHabits();
+
+            if(habitResp.status==200){
+                const existingHabits = await habitResp.json();
                 const active = existingHabits["ActiveHabits"];
                 const nonActive = existingHabits["NonActiveHabits"];
 
@@ -64,9 +68,11 @@ const Statistics = ()=>{
                     }
                 </div>
                 <div className="habitBorder h-70">
-                    {historicalData !== undefined &&
-                        <></>
-                    }
+                    <div className="flex justify-between text-2xl w-[80%] mx-auto">
+                        <p>arrow</p>
+                        <p>arrow</p>
+                        <p>arrow</p>
+                    </div>
                 </div>
             </div>
         </div>

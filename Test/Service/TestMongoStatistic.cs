@@ -101,14 +101,15 @@ public class TestMongoHabitStatistic
         HistoricalData? data = await habitStatisticService.GetHistoricalData(sessionKey, habitId);
 
         Assert.Equal(4, data!.CurrentStreak);
+        Assert.Equal(12, data!.DaysCompleted);
         Assert.Equal(6, data!.LongestStreak);
         Assert.Equal(325, data!.TotalValueCompleted);
-        Assert.Equal(12, data!.DaysCompleted);
 
         await habitHistoryService.SetHabitCompletion(sessionKey, today.ToString("yyyy-MM-dd"), habit!.Id!, false);
         data = await habitStatisticService.GetHistoricalData(sessionKey, habitId);
 
         Assert.Equal(3, data!.CurrentStreak);
+        Assert.Equal(11, data!.DaysCompleted);
 
     }
 }

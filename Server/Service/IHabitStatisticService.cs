@@ -5,4 +5,5 @@ namespace Server.service;
 public interface IHabitStatisticService
 {
     Task<HistoricalData?> GetHistoricalData(string sessionKey, string habitId);
+
 }
