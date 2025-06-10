@@ -24,7 +24,7 @@ public class HabitStatisticController(IHabitStatisticService _statisticService) 
     }
     
     [HttpGet("totalValues")]
-    public async Task<IActionResult> GetTotalValuesByMonth([FromQuery] string habitId, int? yearsBack)
+    public async Task<IActionResult> GetTotalValuesByMonth([FromQuery] string habitId, int yearsBack)
     { 
         string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)

@@ -3,15 +3,22 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import HistoricalData from "../types/HistoricalData";
 import HabitStatisticService from "../services/HabitStatisticService";
-import HistoricalDate from "../types/HistoricalDate";
-import HabitHistoryService from "../services/HabitHistoryService";
-import DateInfo from "../types/DateInfo";
 
 const Statistics = ()=>{
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
+    const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
     const habitNameStyling = "text-4xl text-center my-7 cursor-pointer"
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const [currentMonthSelection, setCurrentMonthSelection] = useState<[string, string, string]>(() => {
+        const currentMonth = new Date().getMonth();
+        const prevMonth = (currentMonth + 11) % 12;
+        const nextMonth = (currentMonth + 1) % 12;
+        return [months[prevMonth], months[currentMonth], months[nextMonth]];
+    });
+    
+
 
     useEffect(()=>{
         const fetchHabits = async()=>{
@@ -27,8 +34,11 @@ const Statistics = ()=>{
 
                 if(active.length>0){
                     const dataResp = await HabitStatisticService.getHistoricalData(active[0].id!);
+                    const totalValueByMonthResp = await HabitStatisticService.getTotalValueByMonth(active[0].id!);
                     const data: HistoricalData = await dataResp.json();
+                    const totalValueByMonth = await totalValueByMonthResp.json();
                     setHistoricalData(data);
+                    setTotalValuesByMonth(totalValueByMonth);
                 }
                 else if(nonActive.length>0){
                     const dataResp = await HabitStatisticService.getHistoricalData(nonActive[0].id!);
@@ -72,6 +82,9 @@ const Statistics = ()=>{
                         <p>arrow</p>
                         <p>arrow</p>
                         <p>arrow</p>
+                    </div>
+                    <div>
+                        {currentMonthSelection.map((month)=><p key={month}>{month}</p>)}
                     </div>
                 </div>
             </div>
