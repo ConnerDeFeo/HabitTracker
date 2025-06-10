@@ -3,22 +3,19 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import HistoricalData from "../types/HistoricalData";
 import HabitStatisticService from "../services/HabitStatisticService";
-
 const Statistics = ()=>{
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
     const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
+    const [centralDate, setCentralDate] = useState<Date>(new Date());
     const habitNameStyling = "text-4xl text-center my-7 cursor-pointer"
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    const [currentMonthSelection, setCurrentMonthSelection] = useState<[string, string, string]>(() => {
-        const currentMonth = new Date().getMonth();
-        const prevMonth = (currentMonth + 11) % 12;
-        const nextMonth = (currentMonth + 1) % 12;
-        return [months[prevMonth], months[currentMonth], months[nextMonth]];
-    });
-    
 
+    
+    const fetchHabitHistory = async ()=>{
+
+    }
 
     useEffect(()=>{
         const fetchHabits = async()=>{
@@ -66,7 +63,7 @@ const Statistics = ()=>{
                                 <p className="text-4xl mb-5">{historicalData.habit.name}</p>
                                 <p className="text-4xl">
                                     {`${historicalData.totalValueCompleted} 
-                                    ${historicalData.habit.valueUnitType} 
+                                    ${historicalData.habit.valueUnitType || "days completed"} 
                                     sense ${historicalData.habit.dateCreated}`}
                                 </p>
                             </div>
@@ -78,14 +75,24 @@ const Statistics = ()=>{
                     }
                 </div>
                 <div className="habitBorder h-70">
-                    <div className="flex justify-between text-2xl w-[80%] mx-auto">
-                        <p>arrow</p>
-                        <p>arrow</p>
-                        <p>arrow</p>
+                    <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4 ">
+                        <img src="./BasicArrow.png" className="rotate-180 h-7 w-7" />
+                        {centralDate.getFullYear()}
+                        <img src="./BasicArrow.png" className="h-7 w-7"/>
                     </div>
-                    <div className="flex justify-between w-[80%] mx-auto text-4xl">
-                        {currentMonthSelection.map((month)=>
-                            <p key={month} className="border-2 border-dashed rounded-md">{month}<br/>{totalValuesByMonth[month]}</p>
+                    <div className="overflow-y-auto h-50 grid grid-cols-3 gap-y-3 w-[80%] mx-auto text-center">
+                        {months.map((month)=>
+                            <div className="border-2 border-dashed rounded-md h-30 w-30 my-autogrid items-center cursor-pointer dropShadow">
+                                <p key={month} className="text-4xl mt-5">{month}</p>
+                                <p className="text-2xl">
+                                    {totalValuesByMonth[month] || ""}
+                                    {totalValuesByMonth[month] && 
+                                        historicalData?.habit.type ===1 ? " Days" 
+                                        : 
+                                        " "+historicalData?.habit.valueUnitType
+                                    }
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>
