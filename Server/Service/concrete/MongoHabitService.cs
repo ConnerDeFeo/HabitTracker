@@ -145,9 +145,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
            .FindOneAndUpdateAsync(
                BuilderUtils.habitFilter.Eq(hc => hc.Id, userId),
                BuilderUtils.habitUpdate
-               .PullFilter(hc => hc.NonActiveHabits, h => h.Id == habitId)
-               .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}", habit)
-               .Push(hc => hc.ActiveHabits, habit),
+               .Combine(updates),
                BuilderUtils.habitOptions
            );
 
