@@ -9,9 +9,10 @@ const Statistics = ()=>{
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
     const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
     const habitNameStyling = "text-4xl text-center my-7 cursor-pointer"
     const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
+    const parsedHabitCreatedDate = new Date(historicalData?.habit.dateCreated+"T00:00:01");
     
     const fetchHistoricalData = async (habitId:string)=>{
         const resp = await HabitStatisticService.getHistoricalData(habitId);
@@ -53,6 +54,12 @@ const Statistics = ()=>{
         }
         fetchHabits();
     },[]);
+
+    const compareMonth = (month:string, index:number):boolean =>{
+        const dateBeingChecked:number = new Date(currentDate.getFullYear(),index,1).getMonth();
+        const today:number = new Date().getMonth();
+        return dateBeingChecked >=parsedHabitCreatedDate.getMonth() && dateBeingChecked<=today;
+    }
 
     return(
         <div className="flex w-[75%] mx-auto my-10 justify-between">
@@ -110,11 +117,11 @@ const Statistics = ()=>{
                             <div key={month} className="border-2 border-dashed rounded-md h-30 w-30 my-autogrid items-center cursor-pointer dropShadow">
                                 <p className="text-4xl mt-5">{month}</p>
                                 <p className="text-2xl">
-                                    {totalValuesByMonth[month] || "0"}
-                                    {
-                                        historicalData?.habit.type ===1 ? " Days" 
-                                        : 
-                                        " "+historicalData?.habit.valueUnitType
+                                    {compareMonth(month,index) &&
+                                        `${totalValuesByMonth[month] || 0}\n
+                                        ${historicalData?.habit.type ===1 ? "Days" 
+                                            : 
+                                        historicalData?.habit.valueUnitType}`
                                     }
                                 </p>
                             </div>
