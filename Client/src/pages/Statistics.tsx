@@ -83,8 +83,10 @@ const Statistics = ()=>{
                         <p>arrow</p>
                         <p>arrow</p>
                     </div>
-                    <div>
-                        {currentMonthSelection.map((month)=><p key={month}>{month}</p>)}
+                    <div className="flex justify-between w-[80%] mx-auto text-4xl">
+                        {currentMonthSelection.map((month)=>
+                            <p key={month} className="border-2 border-dashed rounded-md">{month}<br/>{totalValuesByMonth[month]}</p>
+                        )}
                     </div>
                 </div>
             </div>
