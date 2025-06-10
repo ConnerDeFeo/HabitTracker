@@ -23,11 +23,26 @@ public class TestHabitStatistic
                 if (sessionKey.Equals("TestSessionKey"))
                 {
                     if (habitId.Equals("1234"))
-                        return Task.FromResult<HistoricalData?>(new() { Habit = new Habit{Id = "1233"} });
+                        return Task.FromResult<HistoricalData?>(new() { Habit = new Habit { Id = "1233" } });
                     return Task.FromResult<HistoricalData?>(null);
                 }
                 else
                     return Task.FromResult<HistoricalData?>(null);
+            }
+        );
+
+        mockHabitStatisticService
+        .Setup(hs => hs.GetTotalValuesByMonth(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>()))
+        .Returns<string, string, int?>((sessionKey, habitId, yearsBack) =>
+            {
+                if (sessionKey.Equals("TestSessionKey"))
+                {
+                    if (habitId.Equals("1234"))
+                        return Task.FromResult<Dictionary<string,int>?>([]);
+                    return Task.FromResult<Dictionary<string,int>?>(null);
+                }
+                else
+                    return Task.FromResult<Dictionary<string,int>?>(null);
             }
         );
 
@@ -64,9 +79,30 @@ public class TestHabitStatistic
         SetInvalidSessionKey();
         IActionResult result = await habitStatisticController.GetHistoricalData("1234");
         Assert.IsType<NotFoundResult>(result);
-        
+
         SetValidSessionKey();
         result = await habitStatisticController.GetHistoricalData("1233");
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task TestGetTotalValuesByMonth()
+    {
+        SetValidSessionKey();
+        IActionResult result = await habitStatisticController.GetTotalValuesByMonth("1234",null);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var dataResult = Assert.IsType<Dictionary<string,int>>(okResult.Value);
+    }
+
+    [Fact]
+    public async Task TestGetTotalValuesByMonthInvalid()
+    {
+        SetInvalidSessionKey();
+        IActionResult result = await habitStatisticController.GetTotalValuesByMonth("1234",null);
+        Assert.IsType<NotFoundResult>(result);
+
+        SetValidSessionKey();
+        result = await habitStatisticController.GetTotalValuesByMonth("1233",null);
         Assert.IsType<NotFoundResult>(result);
     }
 

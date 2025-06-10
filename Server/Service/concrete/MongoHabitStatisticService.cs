@@ -53,7 +53,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
         return null;
     }
 
-    public async Task<Dictionary<string, int>?> GetTotalValuesByMonth(string sessionKey, string habitId, int yearsBack)
+    public async Task<Dictionary<string, int>?> GetTotalValuesByMonth(string sessionKey, string habitId, int? yearsBack)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user != null)
