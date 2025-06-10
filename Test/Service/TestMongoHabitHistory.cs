@@ -52,7 +52,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
 
 
     [Fact]
-    public async Task TestSetHabitCompletion()
+    public async Task TestSetHabitCompletion1()
     {
         LoginResult result = await userService.CreateUser("Conner1", "12341234");
         string sessionKey = result.SessionKey;

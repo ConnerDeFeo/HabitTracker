@@ -23,8 +23,8 @@ public class TestMongoHabitStatistic : IAsyncLifetime
     public TestMongoHabitStatistic()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
-        dbName = $"TestMongoHabitHistoryService_{Guid.NewGuid().ToString()[..20]}";
-        database = Client.GetDatabase("TestMongoStatisticService");
+        dbName = $"TestMongoHabitStatisticService_{Guid.NewGuid().ToString()[..30]}";
+        database = Client.GetDatabase(dbName);
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
         habitHistoryService = new MongoHabitHistoryService(database);
@@ -130,7 +130,7 @@ public class TestMongoHabitStatistic : IAsyncLifetime
         IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
 
         string id = ObjectId.GenerateNewId().ToString();
-        string past = DateTime.Today.AddDays(-370).ToString("yyyy-MM-dd");
+        string past = DateTime.Today.AddYears(-2).ToString("yyyy-MM-dd");
         string password = "asdfasdf";
         string username = "Jack2";
 

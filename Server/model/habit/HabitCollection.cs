@@ -116,6 +116,7 @@ public class HabitCollection
             foreach (HistoricalDate date in monthData.Values)
                 if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
                     totalValuesByMonth[month] += habit.Value;
+            currentMonth = currentMonth.AddMonths(-1);
         }
 
         return totalValuesByMonth;
