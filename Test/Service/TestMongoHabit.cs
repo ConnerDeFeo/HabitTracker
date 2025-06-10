@@ -11,6 +11,7 @@ using MongoDB.Bson;
 public class TestMongoHabit : IAsyncLifetime
 {
 
+    string dbName;
     string monthKey;
     string dayKey;
     IMongoDatabase database;
@@ -21,7 +22,8 @@ public class TestMongoHabit : IAsyncLifetime
     public TestMongoHabit()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
-        database = Client.GetDatabase("TestMongoHabitService");
+        dbName = $"TestMongoHabitHistoryService_{Guid.NewGuid().ToString()[..20]}";
+        database = Client.GetDatabase(dbName);
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
@@ -34,7 +36,7 @@ public class TestMongoHabit : IAsyncLifetime
     public async Task DisposeAsync()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
-        await Client.DropDatabaseAsync("TestMongoHabitService");
+        await Client.DropDatabaseAsync(dbName);
     }
 
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)

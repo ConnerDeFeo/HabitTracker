@@ -16,20 +16,16 @@ public class HabitCollection
     public List<Habit> NonActiveHabits { get; set; } = [];
     public Dictionary<string, Dictionary<string, HistoricalDate>> HabitHistory { get; set; } = [];
 
-    public (int, int) GetTotalValueCompleted(string habitId)
+    public int GetTotalValueCompleted(string habitId)
     {
         int total = 0;
-        int daysCompleted = 0;
 
-        foreach (var (month, monthData) in HabitHistory)
-            foreach (var (day, HistoricalData) in monthData)
+        foreach (Dictionary<string,HistoricalDate> monthData in HabitHistory.Values)
+            foreach (HistoricalDate HistoricalData in monthData.Values)
                 if (HistoricalData.Habits.TryGetValue(habitId, out Habit? h) && h.Completed)
-                {
                     total += h.Value;
-                    ++daysCompleted;
-                }
 
-        return (total, daysCompleted);
+        return total;
 
     }
 
@@ -68,7 +64,7 @@ public class HabitCollection
             !todaysHabit.Completed
         )
             return currentStreak;
-        return currentStreak+1;
+        return currentStreak + 1;
     }
 
     public int GetLongestStreak(Habit habit)
@@ -100,7 +96,28 @@ public class HabitCollection
                 ++currentStreak;
             currentDate = currentDate.AddDays(-1);
         }
-            
-        return Math.Max(highestStreak,currentStreak);
+
+        return Math.Max(highestStreak, currentStreak);
+    }
+
+    public Dictionary<string, int> GetTotalValuesByMonth(string habitId, int? yearBackwards)
+    {
+        int yearsBack = yearBackwards ??  0;
+        Dictionary<string, int> totalValuesByMonth = [];
+        DateTime currentMonth = DateTime.Today.AddYears(-Math.Abs(yearsBack));
+
+        while (HabitHistory.TryGetValue(currentMonth.ToString("yyyy-MM"), out var monthData))
+        {
+            string month = currentMonth.ToString("MMMM");
+            if (totalValuesByMonth.ContainsKey(month))
+                break;
+
+            totalValuesByMonth[month] = 0;
+            foreach (HistoricalDate date in monthData.Values)
+                if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
+                    totalValuesByMonth[month] += habit.Value;
+        }
+
+        return totalValuesByMonth;
     }
 }

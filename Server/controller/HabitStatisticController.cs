@@ -10,6 +10,21 @@ public class HabitStatisticController(IHabitStatisticService _statisticService) 
 {
     [HttpGet("{habitId}")]
     public async Task<IActionResult> GetHistoricalData(string habitId)
+    {
+        string? sesionKey = Request.Cookies["sessionKey"];
+        if (sesionKey != null)
+        {
+            //Note this will be the list of habits that correspond with the date
+            HistoricalData? data = await _statisticService.GetHistoricalData(sesionKey, habitId);
+            if (data is not null)
+                return Ok(data);
+            return NotFound();
+        }
+        return Unauthorized();
+    }
+    
+    [HttpGet("totalValues")]
+    public async Task<IActionResult> GetTotalValuesByMonth([FromQuery] string habitId, int yearsBack)
     { 
         string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)

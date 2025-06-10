@@ -14,7 +14,6 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
         if (user != null)
         {
             string userId = user.Id!;
-            var filter = BuilderUtils.habitFilter.Eq(hc => hc.Id, user.Id);
 
             HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
@@ -26,6 +25,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
             DateTime today = DateTime.Today;
             DateTime thisMonth = new(today.Year, today.Month, 1);
 
+            var filter = BuilderUtils.habitFilter.Eq(hc => hc.Id, userId);
             //We only want to include the months where the habit could have existed
             List<ProjectionDefinition<HabitCollection>> habitHistoryProjections = [];
             habitHistoryProjections.Add(BuilderUtils.habitProjection.Include($"HabitHistory.{thisMonth:yyyy-MM}"));
@@ -42,12 +42,10 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
                 .Project<HabitCollection>(BuilderUtils.habitProjection.Combine(habitHistoryProjections))
                 .FirstOrDefaultAsync();
 
-            (int, int) totalValue = collection.GetTotalValueCompleted(habit.Id!);
             return new()
             {
                 Habit = habit,
-                TotalValueCompleted = totalValue.Item1,
-                DaysCompleted = totalValue.Item2,
+                TotalValueCompleted = collection.GetTotalValueCompleted(habit.Id!),
                 LongestStreak = collection.GetLongestStreak(habit),
                 CurrentStreak = collection.GetCurrentStreak(habit)
             };
@@ -55,12 +53,25 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
         return null;
     }
 
-    public async Task<Dictionary<string, int>?> GetTotalValuesByMonth(string sessionKey, string habitId)
+    public async Task<Dictionary<string, int>?> GetTotalValuesByMonth(string sessionKey, string habitId, int yearsBack)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user != null)
         {
+            string userId = user.Id!;
 
+            HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
+            Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
+
+            if (habit is null)
+                return null;
+
+            HabitCollection collection = await _habitCollections.
+            Find(BuilderUtils.habitFilter.Eq(hc=>hc.Id,userId))
+            .Project<HabitCollection>(BuilderUtils.habitProjection.Include("HabitHistory"))
+            .FirstOrDefaultAsync();
+
+            return collection.GetTotalValuesByMonth(habitId, yearsBack);
         }
         return null;
     }

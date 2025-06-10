@@ -10,14 +10,15 @@ using MongoDB.Bson;
 
 public class TestMongoUser : IAsyncLifetime
 {
+    string dbName;
     IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
     public TestMongoUser()
     {
+        dbName = $"TestMongoHabitHistoryService_{Guid.NewGuid().ToString()[..20]}";
         var client = new MongoClient("mongodb://localhost:27017");
-        client.DropDatabase("TestMongoUserService");
-        database = client.GetDatabase("TestMongoUserService");
+        database = client.GetDatabase(dbName);
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
     }
@@ -27,7 +28,7 @@ public class TestMongoUser : IAsyncLifetime
     public async Task DisposeAsync()
     {
         var Client = new MongoClient("mongodb://localhost:27017");
-        await Client.DropDatabaseAsync("TestMongoUserService");
+        await Client.DropDatabaseAsync(dbName);
     }
 
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
