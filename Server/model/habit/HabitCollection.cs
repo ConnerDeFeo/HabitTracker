@@ -105,18 +105,18 @@ public class HabitCollection
         Dictionary<string, int> totalValuesByMonth = [];
         DateTime today = DateTime.Today.Date;
 
-        while (startDate <= endDate && startDate <= today)
-        {
+        // while (startDate <= endDate && startDate <= today)
+        // {
             
-            string month = startDate.ToString("MMMM");
-            if (totalValuesByMonth.ContainsKey(month))
-                break;
-            totalValuesByMonth[month] = 0;
-            foreach (HistoricalDate date in monthData.Values)
-                if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
-                    totalValuesByMonth[month] += habit.Value;
-            currentMonth = currentMonth.AddMonths(-1);
-        }
+        //     string month = startDate.ToString("MMMM");
+        //     if (totalValuesByMonth.ContainsKey(month))
+        //         break;
+        //     totalValuesByMonth[month] = 0;
+        //     foreach (HistoricalDate date in monthData.Values)
+        //         if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
+        //             totalValuesByMonth[month] += habit.Value;
+        //     currentMonth = currentMonth.AddMonths(-1);
+        // }
 
             return totalValuesByMonth;
     }
