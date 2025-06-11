@@ -12,7 +12,14 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     const {date, fetchMonth, setDate} = props;
     const today = new Date();
     const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
-    const postFix = postFixes[date.day%10]==undefined ? "th" : postFixes[date.day%10];
+    const postFix = ()=>{
+        if(date.day>10 && date.day<15 )
+            return "th"
+        const fix = postFixes[date.day%10];
+        if(fix!==undefined)
+            return fix;
+        return "th"
+    }
     const dateIsToday = today.getFullYear()===date.year && today.getMonth() === date.month && today.getDate()===date.day;
     const [habits,setHabits] = useState<Habit[]>([]);
     const dayInStringFormat = `${date.year}-${DateService.padZero(date.month+1)}-${DateService.padZero(date.day)}`;
@@ -50,7 +57,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     return(
         <div className="flex flex-col mx-auto mb-[50vh]">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
-                <p className="text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix}, ${date.year}`}</p>
+                <p className="text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
                 <p className="text-6xl absolute left-1/2 -translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
                 {
                     !dateIsToday &&
