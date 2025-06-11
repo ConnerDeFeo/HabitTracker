@@ -61,7 +61,12 @@ const Statistics = ()=>{
 
     return(
         <div className="flex w-[75%] mx-auto my-10 justify-between">
-            <AllHabits activeHabits={activeHabits} nonActiveHabits={nonActiveHabits} handleHabitSelection={handleHabitSelection}/>
+            <AllHabits 
+                activeHabits={activeHabits} 
+                nonActiveHabits={nonActiveHabits} 
+                handleHabitSelection={handleHabitSelection} 
+                selectedHabitId={historicalData?.habit.id!}
+            />
             <div className="w-150">
                 <HabitData historicalData={historicalData}/>
                 <HabitDataByMonth totalValuesByMonth={totalValuesByMonth} historicalData={historicalData}/>
