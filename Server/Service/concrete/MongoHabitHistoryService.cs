@@ -12,23 +12,35 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
   
+    
+    /// <summary>
+    /// Sets habit completion for a given date
+    /// </summary>
+    /// <param name="sessionKey"> user sessionKey</param>
+    /// <param name="date">date of completion in yyyy-MM-dd format</param>
+    /// <param name="habitId">id of habit being completed</param>
+    /// <param name="completed">completed or not?</param>
+    /// <returns>Sets habit completion for a given date</returns>
     public async Task<bool> SetHabitCompletion(string sessionKey, string date, string habitId, bool completed)
     {
-        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is not null && user.Id is not null)
         {
             string userId = user.Id;
             HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
 
+            //Habit must exist in active or non active habits for completion to work
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
-            if(habit is null)
+            if (habit is null)
                 return false;
 
-            if (!DateTime.TryParse(date, out DateTime convertedDate) || !habit.DaysActive.Contains(convertedDate.DayOfWeek.ToString()))
+            //Parse incoming date into a datetime object
+            if (!DateTime.TryParse(date, out DateTime convertedDate))
                 return false;
+            
+            //Keys for accessing in mongoDb
             string month = date[..7];
             string day = date.Substring(8, 2);
-
 
             BuilderUtils.habitOptions.Projection = BuilderUtils.habitProjection.Include($"HabitHistory.{month}.{day}");
             BuilderUtils.habitOptions.ReturnDocument = ReturnDocument.After;
@@ -43,7 +55,6 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             //If there was a change in all completed habit, set it. 
             await HabitUtils.CheckAllHabitsCompleted($"{month}-{day}", collection, userId, _habitCollections);
 
-
             if (!collection.HabitHistory.TryGetValue(month, out var monthDict) || !monthDict.TryGetValue(day, out var dayDict))
                 return false;
 
@@ -56,7 +67,7 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
     /// Returns the habit hitory of a given month
     /// </summary>
     /// <param name="month">Should be in yyyy-MM format</param>
-    /// <returns></returns>
+    /// <returns>Gets all historical dates for a given month</returns>
     public async Task<Dictionary<string, HistoricalDate>?> GetHabitHistoryByMonth(string sessionKey, string yearMonth)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);

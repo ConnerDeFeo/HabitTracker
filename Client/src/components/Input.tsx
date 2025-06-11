@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+//Base input used for the application
 const Input = (props: { title: string; value: string; updateValue: (character: string) => void; type?:string })=>{
     const { title, value, updateValue, type } = props;
     

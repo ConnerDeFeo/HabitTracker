@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Container from '../components/Container';
 
+//First page you seen when not loggged in
 const Home = ()=>{
     const fontStyling = 'font-hand text-center text-5xl crossOut inline-block px-5 mx-auto';
     return(

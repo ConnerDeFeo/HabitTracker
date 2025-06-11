@@ -7,12 +7,15 @@ import Waiting from "../components/Waiting";
 import AllHabits from "../components/Statistics/AllHabits";
 import HabitData from "../components/Statistics/HabitData";
 import HabitDataByMonth from "../components/Statistics/HabitDataByMonth";
+
+//Statistics page, obviously
 const Statistics = ()=>{
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
     const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
     
+    //Historical data in relation to streaks and total value completed
     const fetchHistoricalData = async (habitId:string)=>{
         const resp = await HabitStatisticService.getHistoricalData(habitId);
         if(resp.status==200){
@@ -21,6 +24,7 @@ const Statistics = ()=>{
         }
     }
 
+    //This is the total value completed per month for the current year in relation to the habit
     const fetchTotalValueByMonth = async (habitId:string, yearsBack:number)=>{
         const resp = await HabitStatisticService.getTotalValueByMonth(habitId,yearsBack);
         if(resp.status==200){
@@ -29,6 +33,7 @@ const Statistics = ()=>{
         }
     }
 
+    //Grabs habits for the current year along with their respective data
     useEffect(()=>{
         const fetchHabits = async()=>{
             const resp = await HabitService.getExistingHabits();
@@ -54,6 +59,7 @@ const Statistics = ()=>{
         fetchHabits();
     },[]);
 
+    //On selection of one of the habits in the AllHabits component
     const handleHabitSelection = async (habitId:string)=>{
         await fetchHistoricalData(habitId);
         await fetchTotalValueByMonth(habitId,0);

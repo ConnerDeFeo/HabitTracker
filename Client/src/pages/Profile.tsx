@@ -4,6 +4,7 @@ import Container from "../components/Container";
 import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
 
+//Profile page the user sees
 const Profile =(props:{user: UserDto; setUser: (user:UserDto)=>void})=>{
     const navigate = useNavigate();
     const {user,setUser} = props;

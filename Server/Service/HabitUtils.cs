@@ -56,4 +56,40 @@ public static class HabitUtils
 
         return habits;
     }
+
+    public static async Task<HashSet<Habit>> GetNonActiveHabits(string userId, IMongoCollection<HabitCollection> habitCollections)
+    {
+        HabitCollection collection = await habitCollections
+            .Find(hc => hc.Id == userId)
+            .Project<HabitCollection>(
+                BuilderUtils.habitProjection
+                .Include("NonActiveHabits")
+            )
+            .FirstOrDefaultAsync();
+
+        HashSet<Habit> nonActiveHabits = [];
+
+        foreach (Habit habit in collection.NonActiveHabits)
+            nonActiveHabits.Add(habit);
+
+        return nonActiveHabits;
+    }
+    
+    public static async Task<HashSet<Habit>> GetActiveHabits(string userId, IMongoCollection<HabitCollection> habitCollections)
+    { 
+        HabitCollection collection = await habitCollections
+            .Find(hc => hc.Id == userId)
+            .Project<HabitCollection>(
+                BuilderUtils.habitProjection
+                .Include("ActiveHabits")
+            )
+            .FirstOrDefaultAsync();
+
+        HashSet<Habit> activeHabits = [];
+
+        foreach (Habit habit in collection.ActiveHabits)
+            activeHabits.Add(habit);
+
+        return activeHabits;
+    }
 }

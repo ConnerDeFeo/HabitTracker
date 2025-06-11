@@ -8,22 +8,31 @@ import Arrow from "../components/Arrow";
 import Button from "../components/Button";
 import HabitHistoryService from "../services/HabitHistoryService";
 
+//Base page that the Habit Tracker clickable leads to in the top left
 const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: React.Dispatch<React.SetStateAction<DateInfo>>})=>{
     const {date, fetchMonth, setDate} = props;
+
+    const [habits,setHabits] = useState<Habit[]>([]);
+
     const today = new Date();
+    //Post fixes for the various days, so 14th, or 1rst for instance
     const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
+    /*post fix has to bge checked like this due to 11-14 ending with "th" 
+    and other numbers ending with 1-4 containing the above post fixes*/
     const postFix = ()=>{
         if(date.day>10 && date.day<15 )
             return "th"
         const fix = postFixes[date.day%10];
-        if(fix!==undefined)
+        if(fix)
             return fix;
         return "th"
     }
+    //flag for if the upper right button "go to today" will be shown
     const dateIsToday = today.getFullYear()===date.year && today.getMonth() === date.month && today.getDate()===date.day;
-    const [habits,setHabits] = useState<Habit[]>([]);
+    //Used for habit completion, string of date in yyyy-MM-dd format to interact with the backend
     const dayInStringFormat = `${date.year}-${DateService.padZero(date.month+1)}-${DateService.padZero(date.day)}`;
 
+    //Anytime a habit is updated, fetch month as it means that habit completion has changed
     useEffect(()=>{
         fetchMonth();
     },[habits]);
@@ -42,8 +51,9 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
             }
         }
         fetchHabits();
-    },[date]);
+    },[date]);// On date change grab users habits as well
 
+    //When habit is completed for the given date
     const handleHabitCompletion = async (habit:Habit, completed: boolean)=>{
         const resp = await HabitHistoryService.completeHabit(habit.id!,dayInStringFormat,completed);
 

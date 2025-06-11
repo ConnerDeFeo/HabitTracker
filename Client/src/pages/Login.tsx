@@ -7,6 +7,7 @@ import UserService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import UserDto from "../types/UserDto";
 
+//Login page
 const Login = (props: {setUser: (user:UserDto)=>void})=>{
 
     const navigate = useNavigate();
@@ -22,8 +23,8 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
     const [username,setUsername] = useState("");
     const [password,setPassword] = useState("");
 
+    //When user attempt login
     const onSubmit = async ()=>{
-
             setWaiting(true);
             const response = await UserService.Login(username,password);
             setWaiting(false);

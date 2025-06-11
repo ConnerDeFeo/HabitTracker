@@ -6,18 +6,21 @@ import CreateHabit from "../components/MyHabits/CreateHabit";
 import RenderActiveHabit from "../components/MyHabits/RenderActiveHabits";
 import RenderNonActiveHabits from "../components/MyHabits/RenderNonActiveHabits";
 
+//MyHabits link leads to this
 const MyHabits = (props:{fetchMonth: ()=>void})=>{
-
     const {fetchMonth} = props;
 
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
+    //Flag for if a add button or habit creation form should be shown
     const [addHabit, setAddHabit] = useState<boolean>(false);
 
+    //anytime either list changed, monthly habits needs to be updated
     useEffect(()=>{
         fetchMonth();
     },[activeHabits,nonActiveHabits])
 
+    //All habits should be grabbed on load
     useEffect(()=>{
         const fetchHabits = async()=>{
             const resp = await HabitService.getExistingHabits();
@@ -45,6 +48,7 @@ const MyHabits = (props:{fetchMonth: ()=>void})=>{
         }
     }
 
+    
     return(
         <div className="flex w-[60%] mx-auto justify-between mt-7 mb-[10vh]">
             <div>

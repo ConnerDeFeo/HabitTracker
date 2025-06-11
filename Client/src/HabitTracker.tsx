@@ -20,9 +20,11 @@ import MyHabits from './pages/MyHabits';
 import UserDto from './types/UserDto';
 import Statistics from './pages/Statistics';
 
+//Overarching application
 const HabitTracker = ()=>{
-
+    //Current user being held
     const [user,setUser] = useState<UserDto>({username:"",dateCreated:""});
+    //Current monthly habits being viewed
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
@@ -64,6 +66,7 @@ const HabitTracker = ()=>{
         fetchUser();
     },[]);
 
+    //Anytime month changes, update the current monthly habits
     useEffect(()=>{
         fetchMonth();
     },[date.month]);

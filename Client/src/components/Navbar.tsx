@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
+//Navigation bar for the site
 const Navbar = ()=>{
     const navigate = useNavigate();
 
+    //each item generally comes with an image baring the leftmost home icon
     const navbarItem = (name:string, imagePath:string, alt:string, navigateTo:string)=>{
         return (
             <div className="cursor-pointer mt-auto flex gap-2 crossOut" onClick={()=>navigate(navigateTo)}>

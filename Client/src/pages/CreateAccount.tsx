@@ -7,6 +7,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import UserDto from "../types/UserDto";
 
+//Create account page
 const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
     const {setUser} = props;
 
@@ -22,6 +23,7 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
     const [password,setPassword] = useState<string>("");
     const [confirmPassword,setConfirmPassword] = useState<string>("");
 
+    //On submision of a new user being made
     const onSubmit = async ()=>{
         if(password!=confirmPassword){
             setMessage("Passwords do not match");

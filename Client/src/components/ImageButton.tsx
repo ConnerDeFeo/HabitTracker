@@ -1,3 +1,4 @@
+//All basic imge buttons such as the add icon in create habit for active habits in myhabits page user this
 const ImageButton = (props:{image?:React.ReactNode, onClick?: ()=>void, className?: string})=>{
     const {image, onClick,className} = props;
     return(

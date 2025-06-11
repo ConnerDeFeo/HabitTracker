@@ -5,6 +5,7 @@ import DateService from "../services/DateService";
 import Arrow from "../components/Arrow";
 import DateData from "../data/DateData";
 
+//Schedulue navbar item leads to this
 const Schedule = (props:{
     setDate: React.Dispatch<React.SetStateAction<DateInfo>>,
     monthlyHabits?: Record<string,HistoricalDate>, 
@@ -13,6 +14,7 @@ const Schedule = (props:{
     const {setDate,monthlyHabits, date} = props;
     const navigate = useNavigate();
 
+    //Used for to determine which days to show where and how many
     const firtDayOfMonth = new Date(date.year, date.month, 1).getDay();
     const daysInMonth = new Date(date.year, date.month+1, 0).getDate();
 
@@ -31,6 +33,7 @@ const Schedule = (props:{
         return <></>;
     }
 
+    //On a given date being clicked by user
     const handleDateSelection = (day: number)=>{
         const today = new Date();
         const selectedDate = new Date(date.year,date.month,day);

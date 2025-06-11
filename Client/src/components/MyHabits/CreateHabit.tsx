@@ -101,9 +101,8 @@ const CreateHabit = (props: {
     /*Renders the different creation components based on the type of habit being created.
         Directly tied to the current habit.type*/
     const renderValueOutput = ()=>{
-        const valueInput = habit.type===1 ?
-            <></>
-            :
+        //If habit type is binary
+        const valueInput = habit.type!==1 &&
             <input 
                 id="value"
                 name="value" 
@@ -112,6 +111,7 @@ const CreateHabit = (props: {
                 onChange={(e) => handleValueChange(e.target.value)}
             />;
 
+        //If habit type is numeric
         const unitInput = habit.type === 3 ? 
             <input 
                 id="unit"

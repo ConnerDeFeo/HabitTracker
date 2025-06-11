@@ -100,18 +100,17 @@ public class HabitCollection
         return Math.Max(highestStreak, currentStreak);
     }
 
-    public Dictionary<string, int> GetTotalValuesByMonth(string habitId, int? yearBackwards)
+    public Dictionary<string, int> GetTotalValuesByMonth(string habitId, DateTime startDate, DateTime endDate)
     {
-        int yearsBack = yearBackwards ??  0;
         Dictionary<string, int> totalValuesByMonth = [];
-        DateTime currentMonth = DateTime.Today.AddYears(-Math.Abs(yearsBack));
+        DateTime today = DateTime.Today.Date;
 
-        while (HabitHistory.TryGetValue(currentMonth.ToString("yyyy-MM"), out var monthData))
+        while (startDate <= endDate && startDate <= today)
         {
-            string month = currentMonth.ToString("MMMM");
+            
+            string month = startDate.ToString("MMMM");
             if (totalValuesByMonth.ContainsKey(month))
                 break;
-
             totalValuesByMonth[month] = 0;
             foreach (HistoricalDate date in monthData.Values)
                 if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
@@ -119,6 +118,6 @@ public class HabitCollection
             currentMonth = currentMonth.AddMonths(-1);
         }
 
-        return totalValuesByMonth;
+            return totalValuesByMonth;
     }
 }
