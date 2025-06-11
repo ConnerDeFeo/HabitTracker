@@ -34,3 +34,6 @@ Navigate to the backend project folder `/Server`:
     npm install
     npm run dev
 ```
+
+#### 3. Open Application
+Go to http://localhost:5173/
