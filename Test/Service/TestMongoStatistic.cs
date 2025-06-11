@@ -124,13 +124,13 @@ public class TestMongoHabitStatistic : IAsyncLifetime
     [Fact]
     public async Task TestGetTotalValuesByMonth()
     {
-        DateTime today = DateTime.Today;
+        DateTime date = new DateTime(2024,9,3);
 
         IMongoCollection<User> users = database.GetCollection<User>("Users");
         IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
 
         string id = ObjectId.GenerateNewId().ToString();
-        string past = DateTime.Today.AddYears(-2).ToString("yyyy-MM-dd");
+        string past = date.AddYears(-2).ToString("yyyy-MM-dd");
         string password = "asdfasdf";
         string username = "Jack2";
 
@@ -168,20 +168,22 @@ public class TestMongoHabitStatistic : IAsyncLifetime
         LoginResult result = await userService.Login(username, password);
         string sessionKey = result.SessionKey;
 
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-1).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-2).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-3).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-4).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-5).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-6).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-7).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-8).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-9).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-10).ToString("yyyy-MM-dd"), habit!.Id!, true);
-        await habitHistoryService.SetHabitCompletion(sessionKey, today.AddMonths(-11).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        //Only these 9 should be counted towards being complete
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-1).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-2).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-3).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-4).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-5).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-6).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-7).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-8).ToString("yyyy-MM-dd"), habit!.Id!, true);
 
-        Dictionary<string, int>? valuesPerMonth = await habitStatisticService.GetTotalValuesByMonth(sessionKey, habitId,0);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-9).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-10).ToString("yyyy-MM-dd"), habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, date.AddMonths(-11).ToString("yyyy-MM-dd"), habit!.Id!, true);
+
+        Dictionary<string, int>? valuesPerMonth = await habitStatisticService.GetTotalValuesByMonth(sessionKey, habitId, 2024);
 
         Assert.NotNull(valuesPerMonth);
         Assert.Equal(12,valuesPerMonth.Count);
@@ -189,6 +191,6 @@ public class TestMongoHabitStatistic : IAsyncLifetime
         foreach (int num in valuesPerMonth.Values)
             total += num;
 
-        Assert.Equal(300, total);
+        Assert.Equal(225, total);
     }
 }

@@ -29,13 +29,16 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             string userId = user.Id;
             HashSet<Habit> setOfHabits = await HabitUtils.GetAllHabits(userId, _habitCollections);
 
-            //Habit must exist in active or non active habits for completion to work
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
-            if (habit is null)
-                return false;
-
-            //Parse incoming date into a datetime object
-            if (!DateTime.TryParse(date, out DateTime convertedDate))
+            /*Habit must exist in active or non active habits for completion to work.
+            The requested date must be a valid date where the habit could have existed*/ 
+            if (
+                habit is null ||
+                !DateTime.TryParse(date, out DateTime convertedDate) ||
+                !habit.DaysActive.Contains(convertedDate.DayOfWeek.ToString()) ||
+                !DateTime.TryParse(date, out DateTime dateHabitCreated) || 
+                convertedDate.Date<dateHabitCreated.Date
+            )
                 return false;
             
             //Keys for accessing in mongoDb
@@ -52,11 +55,11 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
                 BuilderUtils.habitOptions
             );
 
-            //If there was a change in all completed habit, set it. 
-            await HabitUtils.CheckAllHabitsCompleted($"{month}-{day}", collection, userId, _habitCollections);
-
             if (!collection.HabitHistory.TryGetValue(month, out var monthDict) || !monthDict.TryGetValue(day, out var dayDict))
                 return false;
+
+            //If there was a change in all completed habit, set it. 
+            await HabitUtils.CheckAllHabitsCompleted($"{month}-{day}", collection, userId, _habitCollections);
 
             return dayDict.Habits.ContainsKey(habitId);
         }

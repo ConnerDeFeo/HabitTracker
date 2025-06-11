@@ -305,6 +305,9 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                 BuilderUtils.habitOptions
             );
 
+            //Incase habit was set or unset from the current date
+            await HabitUtils.CheckAllHabitsCompleted($"{thisMonth}-{thisDay}", collection, userId, _habitCollections);
+
             return habit;
         }
         return null;

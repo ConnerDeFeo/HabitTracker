@@ -92,7 +92,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
 
             List<ProjectionDefinition<HabitCollection>> habitHistoryProjections = [];
             //We Only Want to include months that have actually happened or are happening
-            while (startDate <= endDate && startDate<=currentDate)
+            while (startDate <= endDate && startDate <= currentDate)
             {
                 habitHistoryProjections.Add(BuilderUtils.habitProjection.Include($"HabitHistory.{startDate:yyyy-MM}"));
                 startDate = startDate.AddMonths(1);
@@ -103,7 +103,8 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
             .Project<HabitCollection>(BuilderUtils.habitProjection.Include("HabitHistory"))
             .FirstOrDefaultAsync();
 
-            return collection.GetTotalValuesByMonth(habitId, new DateTime(year, 1, 1).Date,endDate);
+            //We want the beggining and end of the year
+            return collection.GetTotalValuesByMonth(habitId, new DateTime(year, 1, 1).Date);
         }
         return null;
     }

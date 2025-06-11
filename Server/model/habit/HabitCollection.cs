@@ -16,11 +16,12 @@ public class HabitCollection
     public List<Habit> NonActiveHabits { get; set; } = [];
     public Dictionary<string, Dictionary<string, HistoricalDate>> HabitHistory { get; set; } = [];
 
+    ///Gets the total value completed for a given habit
     public int GetTotalValueCompleted(string habitId)
     {
         int total = 0;
 
-        foreach (Dictionary<string,HistoricalDate> monthData in HabitHistory.Values)
+        foreach (Dictionary<string, HistoricalDate> monthData in HabitHistory.Values)
             foreach (HistoricalDate HistoricalData in monthData.Values)
                 if (HistoricalData.Habits.TryGetValue(habitId, out Habit? h) && h.Completed)
                     total += h.Value;
@@ -29,44 +30,51 @@ public class HabitCollection
 
     }
 
+    //Gets the most recent streak for a given habit, today is not required, but it can be added towards the streak
     public int GetCurrentStreak(Habit habit)
     {
         HashSet<string> daysActive = habit.DaysActive;
-        DateTime currentDate = DateTime.Today.AddDays(-1);
+        DateTime currentDate = DateTime.Today;
         string habitId = habit.Id!;
         int currentStreak = 0;
+        
+        //today is not required for the streak to exist, but can count towards it
+        if (
+            daysActive.Contains(currentDate.DayOfWeek.ToString()) &&
+            HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var thisMonth) &&
+            thisMonth.TryGetValue(currentDate.ToString("dd"), out var thisDate) &&
+            thisDate.Habits.TryGetValue(habitId, out var todaysHabit) &&
+            todaysHabit.Completed
+        )
+            ++currentStreak;
+
+        //Start from yesterday
+        currentDate = currentDate.AddDays(-1);
 
         while (HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var monthData))
         {
+            //If the day isnt part of the habits active days, move on
             if (!daysActive.Contains(currentDate.DayOfWeek.ToString()))
             {
                 currentDate = currentDate.AddDays(-1);
                 continue;
             }
-            if
-            (
+            /*The habit does exist for the day, so if the day doesnt exist, the habit doesnt exist, or the habit isnt completed,
+            this is the end of the current streak*/
+            if (
                 !monthData.TryGetValue(currentDate.ToString("dd"), out var historicalDate) ||
                 !historicalDate.Habits.TryGetValue(habitId, out var h) ||
                 !h.Completed
             )
-                break;
+                return currentStreak;
             ++currentStreak;
             currentDate = currentDate.AddDays(-1);
         }
 
-        DateTime today = DateTime.Today;
-
-        if (
-            !daysActive.Contains(today.DayOfWeek.ToString()) ||
-            !HabitHistory.TryGetValue(today.ToString("yyyy-MM"), out var thisMonth) ||
-            !thisMonth.TryGetValue(today.ToString("dd"), out var thisDate) ||
-            !thisDate.Habits.TryGetValue(habitId, out var todaysHabit) ||
-            !todaysHabit.Completed
-        )
-            return currentStreak;
-        return currentStreak + 1;
+        return currentStreak;
     }
 
+    //Gets longest streak for a given habit
     public int GetLongestStreak(Habit habit)
     {
         DateTime currentDate = DateTime.Today;
@@ -74,16 +82,20 @@ public class HabitCollection
         string habitId = habit.Id!;
         int highestStreak = 0;
         int currentStreak = 0;
-
+        
+        /*Note for this we do check everymonth, even past the habit creation point, but it is assumed we
+        are only dealinig with a habit history back to where this habit first created anyway. This can
+        be easily changed in the future if need be*/
         while (HabitHistory.TryGetValue(currentDate.ToString("yyyy-MM"), out var monthData))
         {
+            //If day doesnt contain the habit, move on
             if (!daysActive.Contains(currentDate.DayOfWeek.ToString()))
             {
                 currentDate = currentDate.AddDays(-1);
                 continue;
             }
-            if
-            (
+            //Else if the habit exists and is not competed
+            if (
                 !monthData.TryGetValue(currentDate.ToString("dd"), out var date) ||
                 !date.Habits.TryGetValue(habitId, out Habit? h) ||
                 !h.Completed
@@ -92,6 +104,7 @@ public class HabitCollection
                 highestStreak = Math.Max(highestStreak, currentStreak);
                 currentStreak = 0;
             }
+            //Increment if the habit is completed
             else
                 ++currentStreak;
             currentDate = currentDate.AddDays(-1);
@@ -100,24 +113,29 @@ public class HabitCollection
         return Math.Max(highestStreak, currentStreak);
     }
 
-    public Dictionary<string, int> GetTotalValuesByMonth(string habitId, DateTime startDate, DateTime endDate)
+    /// <summary>
+    /// Gets total value of a habit from start date to 1 year in the future of that date
+    /// </summary>
+    /// <param name="habitId">id of habit</param>
+    /// <param name="startDate">date when data collection begins</param>
+    /// <returns></returns>
+    public Dictionary<string, int> GetTotalValuesByMonth(string habitId, DateTime startDate)
     {
         Dictionary<string, int> totalValuesByMonth = [];
-        DateTime today = DateTime.Today.Date;
 
-        // while (startDate <= endDate && startDate <= today)
-        // {
-            
-        //     string month = startDate.ToString("MMMM");
-        //     if (totalValuesByMonth.ContainsKey(month))
-        //         break;
-        //     totalValuesByMonth[month] = 0;
-        //     foreach (HistoricalDate date in monthData.Values)
-        //         if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
-        //             totalValuesByMonth[month] += habit.Value;
-        //     currentMonth = currentMonth.AddMonths(-1);
-        // }
+        for (int i = 0; i < 12; i++)
+        {
+            string monthKey = startDate.ToString("yyyy-MM");
+            string displayMonth = startDate.ToString("MMMM");
+            totalValuesByMonth[displayMonth] = 0;
 
-            return totalValuesByMonth;
+            if (HabitHistory.TryGetValue(monthKey, out var monthData))
+                foreach (HistoricalDate date in monthData.Values)
+                    if (date.Habits.TryGetValue(habitId, out Habit? habit) && habit.Completed)
+                        totalValuesByMonth[displayMonth] += habit.Value;
+            startDate = startDate.AddMonths(1);
+        }
+
+        return totalValuesByMonth;
     }
 }

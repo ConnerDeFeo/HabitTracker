@@ -9,7 +9,6 @@ using MongoDB.Bson;
 /// Concrete implementations of the User service class allowing functionality
 /// with a mongo database.
 /// </summary>
-/// <param name="_database"></param>
 public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
@@ -17,6 +16,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
     private readonly string thisDay = DateTime.Today.ToString("dd");
 
+    //Generates random sessionKey
     private static string GenerateSessionKey()
     {
         byte[] key = RandomNumberGenerator.GetBytes(32);
