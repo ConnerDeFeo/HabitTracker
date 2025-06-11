@@ -1,5 +1,6 @@
 import Habit from "../../types/Habit";
 
+//Panel showing all habits in the statistics
 const AllHabits = (
     props:{
         activeHabits:Habit[], 
@@ -9,9 +10,9 @@ const AllHabits = (
     }
 )=>{
     const {activeHabits, nonActiveHabits,handleHabitSelection,selectedHabitId} = props;
-    const habitNameStyling = "text-4xl text-center my-7 cursor-pointer ";
+    const habitNameStyling = "my-7 cursor-pointer "; //Styling for each of the habit names
     return(
-        <div className="habitBorder w-75 h-110 overflow-y-auto">
+        <div className="habitBorder w-75 h-110 overflow-y-auto text-4xl text-center">
                 {activeHabits.map((habit)=>
                     <p 
                         key={habit.name} 

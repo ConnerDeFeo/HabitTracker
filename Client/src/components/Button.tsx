@@ -1,3 +1,4 @@
+//Base button for this application
 const Button = (props:{label?:string, onClick?: ()=>void, className?:string})=>{
     const {label, onClick, className} = props;
     return(

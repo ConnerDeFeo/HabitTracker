@@ -1,3 +1,5 @@
+
+//Basic text based arrows used in larger parts of the application
 const Arrow = (props:{onClick: ()=>void, inverse?: boolean, className?: string, show?:boolean})=>{
     const {onClick, inverse, className,show} = props;
     

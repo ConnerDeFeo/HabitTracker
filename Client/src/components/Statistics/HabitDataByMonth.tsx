@@ -5,8 +5,8 @@ import HabitHistoryService from "../../services/HabitHistoryService";
 import DateInfo from "../../types/DateInfo";
 import HistoricalDate from "../../types/HistoricalDate";
 import HistoricalData from "../../types/HistoricalData";
-import Habit from "../../types/Habit";
 
+//Interactive calender on the statistics page in the statistics page
 const HabitDataByMonth = (
     props:{
         totalValuesByMonth: Record<string,number>,
@@ -15,8 +15,8 @@ const HabitDataByMonth = (
 )=>{
     const {totalValuesByMonth,historicalData} = props;
 
+    //Only defined when user clicks on one of the months, acts as its own flag for rendering in this way
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
-    console.log(monthlyHabits);
     const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
         return{
@@ -26,6 +26,7 @@ const HabitDataByMonth = (
         };
     });
 
+    //Date created in object form for the currently viewed habit
     const parsedHabitCreatedDate = new Date(historicalData?.habit.dateCreated+"T00:00:01");
     const firtDayOfMonth = new Date(date.year, date.month, 1).getDay();
     
@@ -38,6 +39,7 @@ const HabitDataByMonth = (
         return dateBeingChecked >=parsedHabitCreatedDate.getMonth() && dateBeingChecked<=today;
     }
 
+    /*When user clicks on a month in the initial panel, this is displayed */
     const renderMonth = ()=>{
         const daysInMonth:number = new Date(date.year,date.month,0).getDate();
         const habitId:string = historicalData?.habit.id! || "";
@@ -59,6 +61,7 @@ const HabitDataByMonth = (
         );
     }
 
+    //When user clicks on a month
     async function handleMonthSelection(index:number):Promise<void>{
         const month:string = DateService.padZero(index+1);
         const resp = await HabitHistoryService.getMonth(`${date.year}-${month}`);
@@ -72,7 +75,8 @@ const HabitDataByMonth = (
 
     return (
         <div className="habitBorder h-80">
-            {monthlyHabits ? 
+            {monthlyHabits ?
+                //Month selected
                 <div>
                     <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4 text-4xl">
                         <img src="./BasicArrow.png" className="rotate-180 h-7 w-7 cursor-pointer" onClick={()=>setMonthlyHabits(undefined)}/>
@@ -91,6 +95,7 @@ const HabitDataByMonth = (
                     </div>
                 </div>
                 :
+                //Initial pane shown
                 <>
                     <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4">
                         <img src="./BasicArrow.png" className="rotate-180 h-7 w-7 cursor-pointer" />

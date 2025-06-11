@@ -1,5 +1,7 @@
 import { useState } from "react";
-import Habit from "../types/Habit";
+import Habit from "../../types/Habit";
+import DateData from "../../data/DateData";
+import RenderHabitUtils from "./RenderHabitUtils";
 
 /**
  * _____________________________________________________
@@ -13,8 +15,7 @@ import Habit from "../types/Habit";
  * 
  * This component is somewhat generic and can deal with the creation adn editation of habits.
  * 
- * @param props 
- * @returns 
+ * Used for creation and editaion of habits in the myhabits page
  */
 const CreateHabit = (props: {
     handleCancelation:()=>void,
@@ -22,7 +23,6 @@ const CreateHabit = (props: {
     initialHabit?: Habit,
 })=>{
     const {handleCancelation, handleHabitCompletion, initialHabit,} = props;
-    const daysOfTheWeek =["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
     const defaultHabit: Habit = initialHabit??{
         name: "",
@@ -78,6 +78,7 @@ const CreateHabit = (props: {
         }))
     }
 
+    //On click for the days shown during habit creation
     const handleDateSelection = (day:string)=>{
         const daysActive:string[] = habit.daysActive;
         if(daysActive.includes(day))
@@ -155,22 +156,27 @@ const CreateHabit = (props: {
             </div>
             <div className="flex justify-between">
                 <label htmlFor="type" className="font-hand text-4xl text-left">Type: </label>
-                <select 
-                    id="type" 
-                    name="type" 
-                    className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 w-[80%]" 
-                    onChange={(e)=>handleTypeChange(e.target.value)}
-                >
-                    <option value={1}>Binary</option>
-                    <option value={2}>Time</option>
-                    <option value={3}>Numeric</option>
-                </select>
+                {
+                    initialHabit ? 
+                        <p className="text-4xl mx-auto">{RenderHabitUtils.typeConverstion[habit.type]}</p>
+                        :
+                        <select 
+                            id="type" 
+                            name="type" 
+                            className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 w-[80%]" 
+                            onChange={(e)=>handleTypeChange(e.target.value)}
+                        >
+                            <option value={1}>Binary</option>
+                            <option value={2}>Time</option>
+                            <option value={3}>Numeric</option>
+                        </select>
+                }
             </div>
             {renderValueOutput()}
             <div className="flex">
                 <label htmlFor="days" className="font-hand text-4xl text-left">Days: </label>
                 <div id="days" className="flex text-3xl justify-between m-auto w-[75%]">
-                    {daysOfTheWeek.map((day)=>
+                    {DateData.days.map((day)=>
                         <p 
                         key={day} 
                         onClick={()=>handleDateSelection(day)} 

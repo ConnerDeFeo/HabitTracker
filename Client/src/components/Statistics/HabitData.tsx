@@ -1,5 +1,6 @@
 import HistoricalData from "../../types/HistoricalData";
 
+//Habit data shown regarding streaks and days completed in the statistics page
 const HabitData = (props:{historicalData?: HistoricalData})=>{
     const {historicalData} = props;
     return (

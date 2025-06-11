@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import ImageButton from "../components/ImageButton";
-import CreateHabit from "../components/CreateHabit";
+import CreateHabit from "../components/MyHabits/CreateHabit";
 import RenderActiveHabit from "../components/MyHabits/RenderActiveHabits";
 import RenderNonActiveHabits from "../components/MyHabits/RenderNonActiveHabits";
 

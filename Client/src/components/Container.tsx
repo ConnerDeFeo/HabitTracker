@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+/*Formats content to stay at the bottom of the screen preferably, then rise as vh is lifted*/
 const Container = (props: { content: ReactNode})=>{
     const { content} = props;
     return(

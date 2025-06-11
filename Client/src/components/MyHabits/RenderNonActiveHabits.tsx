@@ -4,6 +4,7 @@ import HabitService from "../../services/HabitService";
 import Button from "../Button";
 import RenderHabitUtils from "./RenderHabitUtils";
 
+//Represents the non active habits shown in the myhabits page
 const RenderNonActiveHabits = (props:
     {habit:Habit, 
         setActiveHabits:React.Dispatch<React.SetStateAction<Habit[]>>,
@@ -11,11 +12,12 @@ const RenderNonActiveHabits = (props:
     }
 )=>{
     const {habit,setActiveHabits,setNonActiveHabits} = props;
-    const [inReactivateMode,setInReactivateMode] = useState<boolean>(false);
-    const [inDeletionMode,setInDeletionMode] = useState<boolean>(false);
-    const [currentDeletionValue,setCurrentDeletionValue] = useState<string>("");
+    const [inReactivateMode,setInReactivateMode] = useState<boolean>(false); //Flag for plus symbol being clicked
+    const [inDeletionMode,setInDeletionMode] = useState<boolean>(false); //Flag for minus symbol being clicked
+    const [currentDeletionValue,setCurrentDeletionValue] = useState<string>(""); //Holds current typed out deletion name from user
     const canDelete = currentDeletionValue==habit.name;
 
+    // Handles confirmation of a habit reactivation
     const handleHabitReactivation = async ()=>{
         const resp = await HabitService.reactivateHabit(habit.id!);
 
@@ -25,6 +27,7 @@ const RenderNonActiveHabits = (props:
         }
     }
 
+    //Handles confirmation of a habit deactivation
     const handleHabitDeletion = async()=>{
         const resp = await HabitService.deleteHabit(habit.id!);
 
@@ -34,7 +37,8 @@ const RenderNonActiveHabits = (props:
     }
     RenderHabitUtils.getDaysActiveTitle
 
-    return inReactivateMode ? 
+    
+    return inReactivateMode ? //User clicks plus symbol
         <div className="habitBorder p-3 grid gap-y-4">
             <p className="text-4xl text-center">{habit.name}</p>
             <p className="text-4xl text-center">Reactivate?</p>
@@ -44,7 +48,7 @@ const RenderNonActiveHabits = (props:
             </div>
         </div>
         :
-        inDeletionMode ? 
+        inDeletionMode ? //User clicks minus symbol
         <div className="habitBorder p-3 grid gap-y-4">
             <p className="text-4xl text-center wrap">Type "{habit.name}" to delete</p>
             <input value={currentDeletionValue} onChange={(e)=>setCurrentDeletionValue(e.target.value)} className="habitBorder w-[80%] pl-3 mx-auto"/>
@@ -54,6 +58,7 @@ const RenderNonActiveHabits = (props:
             </div>
         </div>
         :
+        //Default
         <div className="habitBorder p-3 grid gap-y-4">
             <div className="flex justify-between">
                 <img src="Add.svg" alt="reactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInReactivateMode(true)}/>
