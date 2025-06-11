@@ -75,7 +75,7 @@ const HabitDataByMonth = (
             {monthlyHabits ? 
                 <div>
                     <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4 text-4xl">
-                        <img src="./BasicArrow.png" className="rotate-180 h-7 w-7 cursor-pointer" />
+                        <img src="./BasicArrow.png" className="rotate-180 h-7 w-7 cursor-pointer" onClick={()=>setMonthlyHabits(undefined)}/>
                         <p>{DateData.months[date.month]}</p>
                         <p>{date.year}</p>
                     </div>
