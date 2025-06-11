@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Habit from "../types/Habit";
-import HabitService from "../services/HabitService";
-import Button from "../components/Button";
-import RenderHabitUtils from "../utils/RenderHabitUtils";
+import Habit from "../../types/Habit";
+import HabitService from "../../services/HabitService";
+import Button from "../Button";
+import RenderHabitUtils from "./RenderHabitUtils";
 
 const RenderNonActiveHabits = (props:
     {habit:Habit, 

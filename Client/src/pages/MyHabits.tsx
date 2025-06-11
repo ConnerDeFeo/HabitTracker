@@ -3,8 +3,8 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import ImageButton from "../components/ImageButton";
 import CreateHabit from "../components/CreateHabit";
-import RenderActiveHabit from "./RenderActiveHabits";
-import RenderNonActiveHabits from "./RenderNonActiveHabits";
+import RenderActiveHabit from "../components/MyHabits/RenderActiveHabits";
+import RenderNonActiveHabits from "../components/MyHabits/RenderNonActiveHabits";
 
 const MyHabits = (props:{fetchMonth: ()=>void})=>{
 

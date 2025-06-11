@@ -5,7 +5,11 @@ import DateService from "../services/DateService";
 import Arrow from "../components/Arrow";
 import DateData from "../data/DateData";
 
-const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>, monthlyHabits?: Record<string,HistoricalDate>, date: DateInfo})=>{
+const Schedule = (props:{
+    setDate: React.Dispatch<React.SetStateAction<DateInfo>>,
+    monthlyHabits?: Record<string,HistoricalDate>, 
+    date: DateInfo
+})=>{
     const {setDate,monthlyHabits, date} = props;
     const navigate = useNavigate();
 
@@ -32,17 +36,17 @@ const Schedule = (props:{setDate: React.Dispatch<React.SetStateAction<DateInfo>>
         const selectedDate = new Date(date.year,date.month,day);
 
         if(selectedDate<=today)
-            setDate(({
+            setDate({
                 day: day,
                 month: date.month,
                 year: date.year
-            }));
+            });
         else
-            setDate(({
+            setDate({
                 day: today.getDate(),
                 month: today.getMonth(),
                 year: today.getFullYear()
-            }));
+            });
 
         navigate("/");
     }

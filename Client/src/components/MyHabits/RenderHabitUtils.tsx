@@ -1,4 +1,4 @@
-import Habit from "../types/Habit";
+import Habit from "../../types/Habit";
 
 //Basically because both render classes were sharing this code
 const RenderHabitUtils ={
