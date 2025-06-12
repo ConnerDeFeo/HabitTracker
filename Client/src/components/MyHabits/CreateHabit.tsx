@@ -147,10 +147,13 @@ const CreateHabit = (props: {
                     className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
                     value={habit.name}
                     onChange={(e) => {
-                        setHabit((prevHabit: Habit) => ({
-                        ...prevHabit,
-                        name: e.target.value,
-                        }));
+                        const newName:string = e.target.value;
+                        if(newName.length<=25){
+                            setHabit((prevHabit: Habit) => ({
+                                ...prevHabit,
+                                name: e.target.value,
+                            }));
+                        }
                     }}
                 />
             </div>

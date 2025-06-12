@@ -65,7 +65,7 @@ const RenderNonActiveHabits = (props:
                 <p className="text-2xl">{RenderHabitUtils.getDaysActiveTitle(habit)}</p>
                 <img src="Minus.png" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInDeletionMode(true)}/>
             </div>
-            <p className="text-4xl text-center">{habit.name}</p>
+            <p className="text-4xl text-center w-70 mx-auto">{habit.name}</p>
             <div className="flex justify-between">
                 <p className="text-2xl">Date created: {habit.dateCreated}</p>
                 <p className="text-2xl">Type: {RenderHabitUtils.typeConverstion[habit.type]}</p>
