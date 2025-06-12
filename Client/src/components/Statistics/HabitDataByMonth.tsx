@@ -28,9 +28,9 @@ const HabitDataByMonth = (
     creation date of the habit and today to see if the given month is valid for
     a date that the current habit could have existed in*/
     const compareMonth = (index:number):boolean =>{
-        const dateBeingChecked:number = new Date(date.year,index,1).getMonth();
-        const today:number = new Date().getMonth();
-        return dateBeingChecked >=parsedHabitCreatedDate.getMonth() && dateBeingChecked<=today;
+        const today:Date = new Date();
+        const dateBeingChecked:Date = new Date(date.year,index,today.getDate());
+        return dateBeingChecked >=parsedHabitCreatedDate && dateBeingChecked<=today;
     }
 
     /*When user clicks on a month in the initial panel, this is displayed */
