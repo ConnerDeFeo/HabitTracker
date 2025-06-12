@@ -16,19 +16,19 @@ const Input = (props: { title: string; value: string; updateValue: (character: s
 
     return(
         <>
-            <label htmlFor={title} className="font-hand text-4xl">{title}</label>
+            <label htmlFor={title} className="font-hand text-2xl md:text-4xl">{title}</label>
             <div className="relative">
                 <input 
                     type={inputType} 
                     id={title} 
                     name={title} 
-                    className="resize-none habitBorder w-full text-xl h-12 pl-3 align-center" 
+                    className="resize-none habitBorder w-full text-xs sm:text-lg md:text-xl h-8 sm:h-10 md:h-12 pl-3 align-center" 
                     value={value} 
                     onChange={(e)=>updateValue(e.target.value)}
                 />
                 {type=="password" &&
                     <img src="./Eye.png" 
-                        className="h-10 w-8 absolute right-3 top-1 cursor-pointer"
+                        className="h-10 w-8 absolute right-3 top-[0.25rem] cursor-pointer"
                         alt="Toggle visibility"
                         onClick={handleEyeToggle}    
                     />
