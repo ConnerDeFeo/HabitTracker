@@ -41,12 +41,22 @@ const HabitDataByMonth = (
             <>
                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
                     const containsHabit = monthlyHabits?.[DateService.padZero(day)]?.habits?.[habitId];
+                    const dayOfWeek = DateData.days[new Date(date.year,date.month,day).getDay()];
+                    const containsDay = historicalData?.habit.daysActive.includes(dayOfWeek);
+
+                    let bgClass = "";
+
+                    if (containsHabit) {
+                        bgClass = containsHabit.completed ? "bg-green-500" : "bg-red-500";
+                    } else if (!containsDay) {
+                        bgClass = "bg-gray-500";
+                    }
                     return (
                         <div
                             key={day}
                             className={
-                                "border-2 border-black rounded-sm mb-5 relative h-5 w-5 shadow-md shadow-black " +
-                                (containsHabit && (containsHabit.completed ? "bg-green-500" : "bg-red-500"))
+                                "border-2 border-black rounded-sm mb-5 relative h-5 w-5 shadow-md shadow-black " +bgClass
+                                
                             }
                         ></div>
                     );
@@ -68,7 +78,7 @@ const HabitDataByMonth = (
     }
 
     return (
-        <div className="habitBorder h-80">
+        <div className="habitBorder h-full">
             {monthlyHabits ?
                 //Month selected
                 <div>
@@ -92,11 +102,19 @@ const HabitDataByMonth = (
                 //Initial pane shown
                 <>
                     <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4">
-                        <img src="./BasicArrow.png" className="rotate-180 h-7 w-7 cursor-pointer" />
+                        <img 
+                            src="./BasicArrow.png" 
+                            className="rotate-180 h-7 w-7 cursor-pointer" 
+                            onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year-1}))}
+                        />
                         {date.year}
-                        <img src="./BasicArrow.png" className="h-7 w-7 cursor-pointer"/>
+                        <img 
+                            src="./BasicArrow.png" 
+                            className="h-7 w-7 cursor-pointer" 
+                            onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year+1}))}
+                        />
                     </div>
-                    <div className="overflow-y-auto h-50 grid grid-cols-3 gap-y-3 w-[80%] mx-auto text-center">
+                    <div className="grid grid-cols-3 gap-y-3 w-[80%] mx-auto text-center mt-10">
                         {DateData.months.map((month,index)=>
                             <div 
                                 key={month} 

@@ -68,6 +68,13 @@ const Statistics = ()=>{
         fetchHabits();
     },[]);
 
+    //anytime the date is updated so should the respective dates
+    useEffect(()=>{
+        if(historicalData)
+            fetchTotalValueByMonth(historicalData?.habit.id!,date.year);
+        
+    },[date.year]);
+
     //On selection of one of the habits in the AllHabits component
     const handleHabitSelection = async (habitId:string)=>{
         await fetchHistoricalData(habitId);
