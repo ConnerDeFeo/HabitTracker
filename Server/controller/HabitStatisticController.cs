@@ -24,13 +24,13 @@ public class HabitStatisticController(IHabitStatisticService _statisticService) 
     }
     
     [HttpGet("totalValues")]
-    public async Task<IActionResult> GetTotalValuesByMonth([FromQuery] string habitId, int yearsBack)
+    public async Task<IActionResult> GetTotalValuesByMonth([FromQuery] string habitId, int year)
     { 
         string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
             //Note this will be the list of habits that correspond with the date
-            Dictionary<string,int>? data = await _statisticService.GetTotalValuesByMonth(sesionKey, habitId, yearsBack);
+            Dictionary<string,int>? data = await _statisticService.GetTotalValuesByMonth(sesionKey, habitId, year);
             if (data is not null)
                 return Ok(data);
             return NotFound();

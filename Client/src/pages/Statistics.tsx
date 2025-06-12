@@ -7,6 +7,7 @@ import Waiting from "../components/Waiting";
 import AllHabits from "../components/Statistics/AllHabits";
 import HabitData from "../components/Statistics/HabitData";
 import HabitDataByMonth from "../components/Statistics/HabitDataByMonth";
+import DateInfo from "../types/DateInfo";
 
 //Statistics page, obviously
 const Statistics = ()=>{
@@ -14,6 +15,14 @@ const Statistics = ()=>{
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
     const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
+    const [date, setDate] = useState<DateInfo>(() => {
+        const now = new Date();
+        return{
+            year: now.getFullYear(),
+            month: now.getMonth(), 
+            day: now.getDate()
+        };
+    });
     
     //Historical data in relation to streaks and total value completed
     const fetchHistoricalData = async (habitId:string)=>{
@@ -25,8 +34,8 @@ const Statistics = ()=>{
     }
 
     //This is the total value completed per month for the current year in relation to the habit
-    const fetchTotalValueByMonth = async (habitId:string, yearsBack:number)=>{
-        const resp = await HabitStatisticService.getTotalValueByMonth(habitId,yearsBack);
+    const fetchTotalValueByMonth = async (habitId:string, year:number)=>{
+        const resp = await HabitStatisticService.getTotalValueByMonth(habitId,year);
         if(resp.status==200){
             const totalValueByMonth: Record<string,number> = await resp.json();
             setTotalValuesByMonth(totalValueByMonth);
@@ -48,11 +57,11 @@ const Statistics = ()=>{
 
                 if(active.length>0){
                     await fetchHistoricalData(active[0].id!);
-                    await fetchTotalValueByMonth(active[0].id!,0);
+                    await fetchTotalValueByMonth(active[0].id!,date.year);
                 }
                 else if(nonActive.length>0){
                     await fetchHistoricalData(nonActive[0].id!);
-                    await fetchTotalValueByMonth(nonActive[0].id!,0);
+                    await fetchTotalValueByMonth(nonActive[0].id!,date.year);
                 }
             }
         }
@@ -62,7 +71,7 @@ const Statistics = ()=>{
     //On selection of one of the habits in the AllHabits component
     const handleHabitSelection = async (habitId:string)=>{
         await fetchHistoricalData(habitId);
-        await fetchTotalValueByMonth(habitId,0);
+        await fetchTotalValueByMonth(habitId,date.year);
     }
 
     return(
@@ -75,7 +84,7 @@ const Statistics = ()=>{
             />
             <div className="w-150">
                 <HabitData historicalData={historicalData}/>
-                <HabitDataByMonth totalValuesByMonth={totalValuesByMonth} historicalData={historicalData}/>
+                <HabitDataByMonth totalValuesByMonth={totalValuesByMonth} historicalData={historicalData} date={date} setDate={setDate}/>
             </div>
             {historicalData===undefined && <Waiting/>}
         </div>

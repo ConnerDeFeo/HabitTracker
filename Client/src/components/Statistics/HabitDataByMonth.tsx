@@ -11,20 +11,14 @@ const HabitDataByMonth = (
     props:{
         totalValuesByMonth: Record<string,number>,
         historicalData?: HistoricalData
+        date:DateInfo,
+        setDate: React.Dispatch<React.SetStateAction<DateInfo>>
     }
 )=>{
-    const {totalValuesByMonth,historicalData} = props;
+    const {totalValuesByMonth,historicalData,date,setDate} = props;
 
     //Only defined when user clicks on one of the months, acts as its own flag for rendering in this way
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
-    const [date, setDate] = useState<DateInfo>(() => {
-        const now = new Date();
-        return{
-            year: now.getFullYear(),
-            month: now.getMonth(), 
-            day: now.getDate()
-        };
-    });
 
     //Date created in object form for the currently viewed habit
     const parsedHabitCreatedDate = new Date(historicalData?.habit.dateCreated+"T00:00:01");
