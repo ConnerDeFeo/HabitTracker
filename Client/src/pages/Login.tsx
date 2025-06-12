@@ -41,11 +41,11 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
 
     return(
         <Container content={
-            <div className={"flex flex-col justify-center w-[40rem] mx-auto gap-8 mt-2"}>
+            <div className={"flex flex-col justify-center w-[60vw] max-w-115 mx-auto gap-8 mt-2"}>
                     <div className="text-center text-red-600 text-2xl">{message}</div>
                     <Input title={"Username"} value={username} updateValue={setUsername} />
                     <Input title={"Password"} value={password} updateValue={setPassword} type="password"/>
-                    <Button label="Login" onClick={onSubmit}/>
+                    <Button label="Login" onClick={onSubmit} className="ml-auto w-25"/>
                     {waiting && <Waiting/>}
             </div>
         }/>

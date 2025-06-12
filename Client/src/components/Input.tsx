@@ -22,7 +22,7 @@ const Input = (props: { title: string; value: string; updateValue: (character: s
                     type={inputType} 
                     id={title} 
                     name={title} 
-                    className="resize-none habitBorder text-xl h-12 pl-3 align-center w-full" 
+                    className="resize-none habitBorder w-full text-xl h-12 pl-3 align-center" 
                     value={value} 
                     onChange={(e)=>updateValue(e.target.value)}
                 />
