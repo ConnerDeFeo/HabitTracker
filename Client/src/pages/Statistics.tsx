@@ -10,7 +10,9 @@ import HabitDataByMonth from "../components/Statistics/HabitDataByMonth";
 import DateInfo from "../types/DateInfo";
 
 //Statistics page, obviously
-const Statistics = ()=>{
+const Statistics = (props:{smallScreen:boolean})=>{
+    const {smallScreen} = props;
+
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
@@ -82,12 +84,13 @@ const Statistics = ()=>{
     }
 
     return(
-        <div className="flex w-[75%] mx-auto my-10 justify-between">
+        <div className="grid md:flex w-[75%] mx-auto my-10 justify-between">
             <AllHabits 
                 activeHabits={activeHabits} 
                 nonActiveHabits={nonActiveHabits} 
                 handleHabitSelection={handleHabitSelection} 
                 selectedHabitId={historicalData?.habit.id!}
+                smallScreen={smallScreen}
             />
             <div className="w-150">
                 <HabitData historicalData={historicalData}/>

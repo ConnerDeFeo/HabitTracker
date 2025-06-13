@@ -6,28 +6,29 @@ const AllHabits = (
         activeHabits:Habit[], 
         nonActiveHabits:Habit[], 
         handleHabitSelection:(habitId:string)=>void,
-        selectedHabitId:string
+        selectedHabitId:string,
+        smallScreen:boolean
     }
 )=>{
-    const {activeHabits, nonActiveHabits,handleHabitSelection,selectedHabitId} = props;
-    const habitNameStyling = "my-7 cursor-pointer "; //Styling for each of the habit names
+    const {activeHabits, nonActiveHabits,handleHabitSelection,selectedHabitId,smallScreen} = props;
+    const habitNameStyling = "my-7 cursor-pointer"; //Styling for each of the habit names
     return(
         <div className="habitBorder w-75 overflow-y-auto text-4xl text-center">
-                {activeHabits.map((habit)=>
-                    <p 
-                        key={habit.name} 
-                        className={habitNameStyling+(selectedHabitId===habit.id! && "line-through")}
-                        onClick={()=>handleHabitSelection(habit.id!)}
-                    >{habit.name}</p>
-                )}
-                {nonActiveHabits.map((habit)=>
-                    <p 
-                        key={habit.name} 
-                        className={habitNameStyling+(selectedHabitId===habit.id! && "line-through")}
-                        onClick={()=>handleHabitSelection(habit.id!)}
-                    >{habit.name}</p>
-                )}
-            </div>
+            {activeHabits.map((habit)=>
+                <p 
+                    key={habit.name} 
+                    className={`${habitNameStyling} ${(selectedHabitId===habit.id! && "line-through")}`}
+                    onClick={()=>handleHabitSelection(habit.id!)}
+                >{habit.name}</p>
+            )}
+            {nonActiveHabits.map((habit)=>
+                <p 
+                    key={habit.name} 
+                    className={`${habitNameStyling} ${(selectedHabitId===habit.id! && "line-through")}`}
+                    onClick={()=>handleHabitSelection(habit.id!)}
+                >{habit.name}</p>
+            )}
+        </div>
     );
 }
 

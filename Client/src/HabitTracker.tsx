@@ -29,6 +29,7 @@ const HabitTracker = ()=>{
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     //Flag for showing the menu after clicking hamburger
     const [displayMenu, setDisplayMenu] = useState<boolean>(false);
+    const [smallScreen,setSmallScreen] = useState<boolean>(window.innerWidth<768);
     const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
         return{
@@ -37,6 +38,17 @@ const HabitTracker = ()=>{
             day: now.getDate()
         };
     });
+
+    //Hamburger menu used instead if teh screen is smaller than medium
+    useEffect(() => {
+        //Any time the screen is changed in width, this is called
+        const handleResize = () => {
+            setSmallScreen(window.innerWidth<768);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     //Re-renders the month
     const fetchMonth = async ()=>{
@@ -79,7 +91,7 @@ const HabitTracker = ()=>{
                 //menu should be displayed regardless of path when necessary 
                 <Menu exitMenu={()=>setDisplayMenu(false)}/> : 
                 <>
-                    <Navbar displayMenu={()=>setDisplayMenu(true)}/>
+                    <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen}/>
                         <Routes>
                         <Route path='' element={user.username==="" ? <HomePage/> : <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/>}/>
                         <Route path='CreateAccount' element={<CreateAccount setUser={setUser}/>}/>
@@ -87,7 +99,7 @@ const HabitTracker = ()=>{
                         <Route path='Profile' element={user.username==""? <HomePage/> : <Profile user={user} setUser={setUser}/>}/>
                         <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                         <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
-                        <Route path='Statistics' element={<Statistics/>}/>
+                        <Route path='Statistics' element={<Statistics smallScreen={smallScreen}/>}/>
                     </Routes>
                     <Footer/>
                 </>
