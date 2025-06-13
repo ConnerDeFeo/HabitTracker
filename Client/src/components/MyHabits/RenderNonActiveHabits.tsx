@@ -3,6 +3,7 @@ import Habit from "../../types/Habit";
 import HabitService from "../../services/HabitService";
 import Button from "../Button";
 import RenderHabitUtils from "./RenderHabitUtils";
+import DefaultHabitRender from "./DefaultHabitRender";
 
 //Represents the non active habits shown in the myhabits page
 const RenderNonActiveHabits = (props:
@@ -59,18 +60,11 @@ const RenderNonActiveHabits = (props:
         </div>
         :
         //Default
-        <div className="habitBorder p-3 grid gap-y-4">
-            <div className="flex justify-between">
-                <img src="Add.svg" alt="reactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInReactivateMode(true)}/>
-                <p className="text-2xl">{RenderHabitUtils.getDaysActiveTitle(habit)}</p>
-                <img src="Minus.png" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInDeletionMode(true)}/>
-            </div>
-            <p className="text-4xl text-center w-70 mx-auto">{habit.name}</p>
-            <div className="flex justify-between">
-                <p className="text-2xl">Date created: {habit.dateCreated}</p>
-                <p className="text-2xl">Type: {RenderHabitUtils.typeConverstion[habit.type]}</p>
-            </div>
-        </div>
+        <DefaultHabitRender 
+            habit={habit}
+            topLeftButton = {<img src="Add.svg" alt="reactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInReactivateMode(true)}/>}
+            topRightButton = {<img src="Minus.png" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInDeletionMode(true)}/>}
+        />
     ;
 }
 

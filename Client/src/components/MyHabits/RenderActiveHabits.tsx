@@ -4,6 +4,7 @@ import HabitService from "../../services/HabitService";
 import CreateHabit from "./CreateHabit";
 import Button from "../Button";
 import RenderHabitUtils from "./RenderHabitUtils";
+import DefaultHabitRender from "./DefaultHabitRender";
 
 //The active a single active habit in the myhabits page
 const RenderActiveHabit = (props:
@@ -43,7 +44,7 @@ const RenderActiveHabit = (props:
         //User clicks edit icon
         <CreateHabit handleCancelation={()=>setInEditMode(false)} handleHabitCompletion={handleHabitEditCompletion} initialHabit={habit}/>
         :
-        //user clicks minus icon
+        //User clicks minus icon
         inRemovalMode ? 
         <div className="border-b-3 p-3 grid gap-y-4">
             <p className="text-4xl text-center">{habit.name}</p>
@@ -54,19 +55,12 @@ const RenderActiveHabit = (props:
             </div>
         </div>
         :
-        //default
-        <div className="drop-shadow-xl p-3 grid gap-y-4 habitBorder w-80">
-            <div className="flex justify-between">
-                <img src="EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>
-                <p className="text-2xl">{RenderHabitUtils.getDaysActiveTitle(habit)}</p>
-                <img src="Minus.png" alt="deactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(true)}/>
-            </div>
-            <p className="text-4xl text-center w-70 mx-auto">{habit.name}</p>
-            <div className="flex justify-between">
-                <p className="text-2xl">Date created: {habit.dateCreated}</p>
-                <p className="text-2xl">Type: {RenderHabitUtils.typeConverstion[habit.type]}</p>
-            </div>
-        </div>
+        //Default
+        <DefaultHabitRender 
+            habit={habit}
+            topLeftButton = {<img src="EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>}
+            topRightButton = {<img src="Minus.png" alt="deactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(true)}/>}
+        />
     ;
 }
 
