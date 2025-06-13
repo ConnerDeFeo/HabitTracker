@@ -3,9 +3,9 @@
 const Arrow = (props:{onClick: ()=>void, inverse?: boolean, className?: string, show?:boolean})=>{
     const {onClick, inverse, className,show} = props;
     
-    let styling = "text-9xl absolute left-35 top-50 cursor-pointer ";
+    let styling = "absolute text-4xl left-4 top-55 cursor-pointer sm:text-6xl sm:left-15 md:text-9xl md:left-35 md:top-50";
     if(inverse)
-        styling = "text-9xl absolute right-35 top-50 cursor-pointer ";
+        styling = "absolute text-4xl right-4 top-55 cursor-pointer sm:text-6xl sm:right-15 md:text-9xl md:right-35 md:top-50";
     
     return show==undefined || show ? 
         <p className={styling+className} onClick={onClick}>{inverse ? ">": "<"}</p>

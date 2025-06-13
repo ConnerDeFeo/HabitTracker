@@ -22,19 +22,19 @@ const Input = (props: { title: string; value: string; updateValue: (character: s
                     type={inputType} 
                     id={title} 
                     name={title} 
-                    className="resize-none habitBorder w-full text-xs sm:text-lg md:text-xl h-8 sm:h-10 md:h-12 pl-3 align-center" 
+                    className="resize-none habitBorder w-full text-xs md:text-xl h-8 md:h-12 pl-3 align-center" 
                     value={value} 
                     onChange={(e)=>updateValue(e.target.value)}
                 />
                 {type=="password" &&
                     <img src="./Eye.png" 
-                        className="h-10 w-8 absolute right-3 top-[0.25rem] cursor-pointer"
+                        className="absolute h-8 md:h-10 w-6 md:w-8 right-1 md:right-3 top-0 md:top-[0.25rem] cursor-pointer"
                         alt="Toggle visibility"
                         onClick={handleEyeToggle}    
                     />
                 }
                 {!passwordVisible && type=="password" && 
-                    <div className="absolute right-[1.6rem] top-[0.4rem] w-[0.2rem] h-9 bg-black rotate-45"/>
+                    <div className="absolute right-[0.94rem] top-[0.2rem] w-[0.2rem] h-7 md:right-[1.6rem] md:top-[0.4rem] md:h-9 bg-black rotate-45"/>
                 }
             </div>
         </>

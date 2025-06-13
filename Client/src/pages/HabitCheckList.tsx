@@ -65,25 +65,26 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     }
 
     return(
-        <div className="flex flex-col mx-auto mb-[50vh]">
+        <div className="flex flex-col mx-auto mb-[10vh] md:mb-[50vh]">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
-                <p className="text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
-                <p className="text-6xl absolute left-1/2 -translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
+                <p className="text-2xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
+                <p className="absolute text-2xl md:text-6xl top-8 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
+   
                 {
                     !dateIsToday &&
                     <Button 
-                        label="Go to Today" 
+                        label="Today" 
                         onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}
-                        className="p-2"
+                        className="p-2 "
                     />
                 }
             </div>
-            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="mt-10"/>
-            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-10 gap-y-10" >
+            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))}/>
+            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-12 gap-y-10" >
                 {habits.map((habit)=>
                     <p 
                         key={habit.name} 
-                        className={"text-4xl cursor-pointer "+(habit.completed && "line-through")} 
+                        className={"text-xl md:text-4xl cursor-pointer "+(habit.completed && "line-through")} 
                         onClick={()=>handleHabitCompletion(habit,!habit.completed)}>{habit.name}
                     </p>
                 )}

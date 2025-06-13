@@ -10,7 +10,7 @@ const NavigationItem = (props:{name:string, navigateTo:string, imagePath?:string
     }
 
     return (
-        <div className={"cursor-pointer mt-auto flex gap-2 crossOut "+(className || "")} onClick={handleClick}>
+        <div className={"cursor-pointer mt-auto flex gap-2 crossOut w-fit "+(className || "")} onClick={handleClick}>
             <p className="text-3xl md:text-4xl">{name}</p>
             {imagePath && alt && <img src={imagePath} alt={alt} className="w-8 h-8 my-auto"/>}
         </div>

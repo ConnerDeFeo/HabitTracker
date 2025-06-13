@@ -11,14 +11,15 @@ const Menu = (props:{exitMenu:()=>void})=>{
             <div className="grid gap-y-10 w-[80%] mx-auto">
                 {loggedIn ?
                     <>
-                        <NavigationItem name="MyHabits" imagePath="Arrows.png" alt="MyHabits" navigateTo="/MyHabits"/>
-                        <NavigationItem name="Schedule" imagePath="Calender.png" alt="calender" navigateTo="/Schedule"/>
-                        <NavigationItem name="Statistics" imagePath="Statistics.png" alt="Statistics" navigateTo="/Statistics"/>
+                        <NavigationItem name="Habit Tracker" imagePath="checklist.webp" alt="checklist" navigateTo="/" onClick={exitMenu}/>
+                        <NavigationItem name="MyHabits" imagePath="Arrows.png" alt="MyHabits" navigateTo="/MyHabits" onClick={exitMenu}/>
+                        <NavigationItem name="Schedule" imagePath="Calender.png" alt="calender" navigateTo="/Schedule" onClick={exitMenu}/>
+                        <NavigationItem name="Statistics" imagePath="Statistics.png" alt="Statistics" navigateTo="/Statistics" onClick={exitMenu}/>
                     </>
                     :
                     <>
-                        <NavigationItem name="Login"  navigateTo="/Login" className="w-9" onClick={exitMenu}/>
-                        <NavigationItem name="Create Account" navigateTo="/CreateAccount" className="w-26" onClick={exitMenu}/>
+                        <NavigationItem name="Login"  navigateTo="/Login" onClick={exitMenu}/>
+                        <NavigationItem name="Create Account" navigateTo="/CreateAccount" onClick={exitMenu}/>
                     </>
                 }
             </div>
