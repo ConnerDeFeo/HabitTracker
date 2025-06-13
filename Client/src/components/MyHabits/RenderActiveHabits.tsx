@@ -50,8 +50,8 @@ const RenderActiveHabit = (props:
             <p className="text-4xl text-center">{habit.name}</p>
             <p className="text-4xl text-center">Deactivate?</p>
             <div className="flex justify-between w-[70%] mx-auto">
-                <Button label="Yes" className="w-15" onClick={handleHabitDeactivation}/>
-                <Button label="No" className="w-15" onClick={()=>setInRemovalMode(false)}/>
+                <Button label="Yes" className="w-10 sm:w-15" onClick={handleHabitDeactivation}/>
+                <Button label="No" className="w-10 sm:w-15" onClick={()=>setInRemovalMode(false)}/>
             </div>
         </div>
         :

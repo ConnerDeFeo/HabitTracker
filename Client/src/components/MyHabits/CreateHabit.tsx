@@ -106,7 +106,7 @@ const CreateHabit = (props: {
             <input 
                 id="value"
                 name="value" 
-                className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
+                className="resize-none habitBorder text-lg sm:text-xl h-6 sm:h-8 w-[100%] sm:w-[80%] pl-3" 
                 value={habit.value == 0 ? "" : habit.value}
                 onChange={(e) => handleValueChange(e.target.value)}
             />;
@@ -116,7 +116,7 @@ const CreateHabit = (props: {
             <input 
                 id="unit"
                 name="unit" 
-                className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
+                className="resize-none habitBorder text-lg sm:text-xl h-6 sm:h-8 w-[100%] sm:w-[80%] pl-3" 
                 value={habit.valueUnitType}
                 onChange={(e) => setHabit((prevHabit)=>({...prevHabit, valueUnitType:e.target.value}))}
             />
@@ -125,12 +125,12 @@ const CreateHabit = (props: {
 
         return (
             <>
-                <div className="flex justify-between">
-                    <label htmlFor="value" className="font-hand text-4xl text-left">Value: </label>
+                <div className="grid sm:flex sm:justify-between">
+                    <label htmlFor="value" className="font-hand text-xl sm:text-4xl text-left">Value: </label>
                     {valueInput}
                 </div>
-                <div className="flex justify-between">
-                    <label htmlFor="unitType" className="font-hand text-4xl text-left">Unit: </label>
+                <div className="grid sm:flex sm:justify-between">
+                    <label htmlFor="unitType" className="font-hand text-xl sm:text-4xl text-left">Unit: </label>
                     {unitInput}
                 </div>
             </>
@@ -139,12 +139,13 @@ const CreateHabit = (props: {
 
     return(
         <div className="grid p-2 gap-y-2">
-            <div className="flex justify-between">
-                <label htmlFor="name" className="font-hand text-4xl text-left ">{"Name: "}</label>
+            {/*Name and input */}
+            <div className="grid sm:flex sm:justify-between">
+                <label htmlFor="name" className="font-hand text-xl sm:text-4xl text-left ">{"Name: "}</label>
                 <input 
                     id="name"
                     name="name" 
-                    className="resize-none habitBorder text-xl h-8 w-[80%] pl-3" 
+                    className="resize-none habitBorder text-lg sm:text-xl h-6 sm:h-8 w-[100%] sm:w-[80%] pl-3" 
                     value={habit.name}
                     onChange={(e) => {
                         const newName:string = e.target.value;
@@ -157,11 +158,13 @@ const CreateHabit = (props: {
                     }}
                 />
             </div>
-            <div className="flex justify-between">
-                <label htmlFor="type" className="font-hand text-4xl text-left">Type: </label>
+            {/*Type and input*/}
+            <div className="grid sm:flex sm:justify-between">
+                <label htmlFor="type" className="font-hand text-xl sm:text-4xl text-left">Type: </label>
                 {
+                    //if habit initially habit was passed through props
                     initialHabit ? 
-                        <p className="text-4xl mx-auto">{RenderHabitUtils.typeConverstion[habit.type]}</p>
+                        <p className="text-2xl sm:text-3xl md:text-4xl mx-auto">{RenderHabitUtils.typeConverstion[habit.type]}</p>
                         :
                         <select 
                             id="type" 
@@ -175,10 +178,11 @@ const CreateHabit = (props: {
                         </select>
                 }
             </div>
+            {/*Value and value unit type inputs*/}
             {renderValueOutput()}
-            <div className="flex">
-                <label htmlFor="days" className="font-hand text-4xl text-left">Days: </label>
-                <div id="days" className="flex text-3xl justify-between m-auto w-[75%]">
+            <div className="grid sm:flex">
+                <label htmlFor="days" className="font-hand text-xl sm:text-4xl text-left">Days: </label>
+                <div id="days" className="flex text-xl md:text-3xl justify-between m-auto w-[100%] sm:w-[80%]">
                     {DateData.days.map((day)=>
                         <p 
                         key={day} 

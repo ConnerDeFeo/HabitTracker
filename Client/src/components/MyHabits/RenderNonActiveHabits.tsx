@@ -50,7 +50,7 @@ const RenderNonActiveHabits = (props:
         </div>
         :
         inDeletionMode ? //User clicks minus symbol
-        <div className="habitBorder p-3 grid gap-y-4">
+        <div className="habitBorder p-3 grid gap-y-4 md:w-65 lg:w-80 mx-auto">
             <p className="text-4xl text-center wrap">Type "{habit.name}" to delete</p>
             <input value={currentDeletionValue} onChange={(e)=>setCurrentDeletionValue(e.target.value)} className="habitBorder w-[80%] pl-3 mx-auto"/>
             <div className="flex justify-between w-[70%] mx-auto">
