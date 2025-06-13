@@ -65,7 +65,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     }
 
     return(
-        <div className="flex flex-col mx-auto mb-[10vh] md:mb-[50vh]">
+        <div className="flex flex-col mx-auto mb-[20vh] md:mb-[50vh] relative ">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
                 <p className="text-2xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
                 <p className="absolute text-2xl md:text-6xl top-8 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
@@ -79,7 +79,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                     />
                 }
             </div>
-            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))}/>
+            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="top-[10rem] left-[1rem] sm:left-[7rem] md:left-[10rem]"/>
             <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-12 gap-y-10" >
                 {habits.map((habit)=>
                     <p 
@@ -89,7 +89,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                     </p>
                 )}
             </div>
-            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="mt-10" show={!dateIsToday}/>      
+            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="top-[10rem] right-[1rem] sm:right-[7rem] md:right-[10rem]" show={!dateIsToday} />      
         </div>      
     );
 }
