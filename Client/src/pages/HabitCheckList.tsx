@@ -79,8 +79,8 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                     />
                 }
             </div>
-            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="top-[10rem] left-[1rem] sm:left-[7rem] md:left-[10rem]"/>
-            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-12 gap-y-10" >
+            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="top-[10rem] left-[1rem] sm:left-[7rem] md:left-[10rem] md:top-[20rem]"/>
+            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-20 gap-y-10" >
                 {habits.map((habit)=>
                     <p 
                         key={habit.name} 
@@ -89,7 +89,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                     </p>
                 )}
             </div>
-            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="top-[10rem] right-[1rem] sm:right-[7rem] md:right-[10rem]" show={!dateIsToday} />      
+            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="top-[10rem] right-[1rem] sm:right-[7rem] md:right-[10rem] md:top-[20rem]" show={!dateIsToday} />      
         </div>      
     );
 }
