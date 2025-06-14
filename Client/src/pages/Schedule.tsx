@@ -24,10 +24,10 @@ const Schedule = (props:{
         const day = monthlyHabits?.[DateService.padZero(number)];
         if(day !== undefined){
             if(day.allHabitsCompleted){
-                return <img src="./checkMark.webp" alt="Monthly Habit CheckMark" className="h-3 w-3 md:h-7 md:w-7 absolute right-[0.2rem] md:right-[0.9rem] bottom-[0.05rem] md:bottom-1"/>;
+                return <img src="./checkMark.webp" alt="Monthly Habit CheckMark" className="h-3 w-3 md:h-7 md:w-7 absolute right-[0.2rem] sm:right-[0.47rem] md:right-[0.9rem] bottom-[0.05rem] md:bottom-1"/>;
             }
             else{
-                return <img src="./RedX.png" alt="Monthly Habit CheckMark" className="h-2 w-2 md:h-6 md:w-6 absolute right-[0.35rem] md:right-4 bottom-[0.15rem] md:bottom-1"/>;
+                return <img src="./RedX.png" alt="Monthly Habit CheckMark" className="h-2 w-2 md:h-6 md:w-6 absolute right-[0.35rem] sm:right-[0.6rem] md:right-4 bottom-[0.15rem] md:bottom-1"/>;
             }
         }
         return <></>;
@@ -63,7 +63,7 @@ const Schedule = (props:{
                 {DateData.days.map((day,i)=><p className={"text-xl md:text-3xl "+(i < firtDayOfMonth && "row-span-2")} key={day}>{day.substring(0,3)}</p>)}
 
                 {Array.from({ length: daysInMonth }, (_, i) => i+1).map((day) => (
-                    <div key={day} className="md:border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-7 w-5 md:h-15 md:w-15 dropShadow"
+                    <div key={day} className="relative sm:shadow-md md:border-2 border-black rounded-sm border-black mb-5 cursor-pointer relative h-7 w-5 sm:w-7 md:h-15 md:w-15 dropShadow"
                         onClick={()=>handleDateSelection(day)}
                     >
                         <p className="text-sm md:text-3xl text-center">{day}</p>

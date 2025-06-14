@@ -34,13 +34,19 @@ const HabitDataByMonth = (
         return dateBeingChecked >=parsedHabitCreatedDate && dateBeingChecked<=today;
     }
 
-    /*When user clicks on a month in the initial panel, this is displayed */
+    /*When user clicks on a month in the initial panel, this is dwhat displays the 
+    individual days in the month with the respecitve colorings*/
     const renderMonth = ()=>{
         const daysInMonth:number = new Date(date.year,date.month,0).getDate();
         const habitId:string = historicalData?.habit.id! || "";
         return (
             <>
                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
+                    /*Basically just figuring out weather the date was completed, the 
+                    hierarchy gos completed --> not completed --> non active date. Note 
+                    that if a user did complete a habit on a date, then changed the active 
+                    dates to no longer include that date, the previous dates will still 
+                    be counted towards long term statistics */
                     const containsHabit = monthlyHabits?.[DateService.padZero(day)]?.habits?.[habitId];
                     const dayOfWeek = DateData.days[new Date(date.year,date.month,day).getDay()];
                     const containsDay = historicalData?.habit.daysActive.includes(dayOfWeek);
@@ -56,8 +62,7 @@ const HabitDataByMonth = (
                         <div
                             key={day}
                             className={
-                                "border-2 border-black rounded-sm mb-5 relative h-5 w-5 shadow-md shadow-black " +bgClass
-                                
+                                `border-2 border-black rounded-sm mb-5 relative h-3 w-3 sm:h-5 sm:w-5 shadow-md shadow-black ${bgClass}`  
                             }
                         ></div>
                     );
@@ -83,14 +88,14 @@ const HabitDataByMonth = (
             {monthlyHabits ?
                 //Month selected
                 <div>
-                    <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4 text-4xl">
-                        <img src="./BasicArrow.png" className="rotate-180 h-7 w-7 cursor-pointer" onClick={()=>setMonthlyHabits(undefined)}/>
+                    <div className="flex justify-between text-xl md:text-2xl w-[80%] mx-auto relative mt-4 text-4xl">
+                        <img src="./BasicArrow.png" className="rotate-180 h-4 w-4 md:w-7 md:h-7 cursor-pointer" onClick={()=>setMonthlyHabits(undefined)}/>
                         <p>{DateData.months[date.month]}</p>
                         <p>{date.year}</p>
                     </div>
                     <div className="grid grid-cols-7 justify-items-center w-[80%] mx-auto">
                         {DateData.days.map((day,i)=>
-                            <p className={"text-2xl "+(i < firtDayOfMonth && "row-span-2")} 
+                            <p className={"text-lg md:text-2xl "+(i < firtDayOfMonth && "row-span-2")} 
                                 key={day}
                             >
                                 {day.substring(0,1)}
