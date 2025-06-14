@@ -67,15 +67,15 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     return(
         <div className="flex flex-col mx-auto mb-[20vh] md:mb-[50vh] relative ">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
-                <p className="text-2xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
-                <p className="absolute text-2xl md:text-6xl top-8 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
+                <p className="text-xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
+                <p className="absolute text-xl md:text-6xl top-8 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
    
                 {
                     !dateIsToday &&
                     <Button 
                         label="Today" 
                         onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}
-                        className="p-2 "
+                        className="p-1 sm:p-2"
                     />
                 }
             </div>
