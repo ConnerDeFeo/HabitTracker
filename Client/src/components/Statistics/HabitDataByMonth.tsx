@@ -84,16 +84,16 @@ const HabitDataByMonth = (
     }
 
     return (
-        <div className="habitBorder h-fit pb-10">
+        <div className="habitBorder h-fit md:h-170 pb-10">
             {monthlyHabits ?
                 //Month selected
                 <div>
-                    <div className="flex justify-between text-xl md:text-2xl w-[80%] mx-auto relative mt-4 text-4xl">
+                    <div className="flex justify-between text-xl md:text-4xl w-[80%] mx-auto relative mt-4">
                         <img src="./BasicArrow.png" className="rotate-180 h-4 w-4 md:w-7 md:h-7 cursor-pointer" onClick={()=>setMonthlyHabits(undefined)}/>
                         <p>{DateData.months[date.month]}</p>
                         <p>{date.year}</p>
                     </div>
-                    <div className="grid grid-cols-7 justify-items-center w-[80%] mx-auto">
+                    <div className="grid grid-cols-7 justify-items-center w-[80%] mx-auto mt-[25%]">
                         {DateData.days.map((day,i)=>
                             <p className={"text-lg md:text-2xl "+(i < firtDayOfMonth && "row-span-2")} 
                                 key={day}
@@ -129,8 +129,8 @@ const HabitDataByMonth = (
                                 className="shadow-md mx-auto md:border-2 border-dashed rounded-md h-10 md:h-30 w-8 md:w-30 my-autogrid items-center cursor-pointer dropShadow"
                                 onClick={()=>handleMonthSelection(index)}
                             >
-                                <p className="text-md md:text-xl xl:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
-                                <p className="text-xs md:text-lg xl:text-2xl">
+                                <p className="text-md md:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
+                                <p className="text-xs md:text-2xl">
                                     {compareMonth(index) &&
                                         //determines what follows the number, the unit of the habit
                                         `${totalValuesByMonth[month] || 0}\n
