@@ -84,7 +84,7 @@ const HabitDataByMonth = (
     }
 
     return (
-        <div className="habitBorder h-80">
+        <div className="habitBorder h-fit pb-10">
             {monthlyHabits ?
                 //Month selected
                 <div>

@@ -56,7 +56,7 @@ const Schedule = (props:{
 
     return(
         <div className="relative">
-            <Arrow onClick={()=>setDate(DateService.decreaseMonth(date))} className="top-[10rem] left-[0.7rem]"/>
+            <Arrow onClick={()=>setDate(DateService.decreaseMonth(date))} className="top-[10rem] left-[0.7rem] md:left-[10rem]"/>
             <p className="text-3xl md:text-6xl w-[68%] mx-auto text-left mt-8 mb-2">{`${DateData.months[date.month]} ${date.year}`}</p>
             <div className="grid grid-cols-7 grid-rows-7 max-w-[75%] mx-auto justify-items-center">   
                 {/*Row span down one for all days prior to the first day to give that calender look */}
@@ -71,7 +71,7 @@ const Schedule = (props:{
                     </div>
                 ))}
             </div>
-            <Arrow onClick={()=>setDate(DateService.increaseMonth(date))} inverse={true} className="top-[10rem] right-[0.7rem]"/>
+            <Arrow onClick={()=>setDate(DateService.increaseMonth(date))} inverse={true} className="top-[10rem] right-[0.7rem] md:right-[10rem]"/>
         </div>
     );
 }
