@@ -2,7 +2,6 @@ import { useState } from "react";
 import Habit from "../../types/Habit";
 import HabitService from "../../services/HabitService";
 import Button from "../Button";
-import RenderHabitUtils from "./RenderHabitUtils";
 import DefaultHabitRender from "./DefaultHabitRender";
 
 //Represents the non active habits shown in the myhabits page
@@ -36,7 +35,6 @@ const RenderNonActiveHabits = (props:
             setNonActiveHabits((prevHabits)=>prevHabits.filter(h=>h.id!==habit.id));
         
     }
-    RenderHabitUtils.getDaysActiveTitle
 
     
     return inReactivateMode ? //User clicks plus symbol
