@@ -92,7 +92,7 @@ const Statistics = (props:{smallScreen:boolean})=>{
                 selectedHabitId={historicalData?.habit.id!}
                 smallScreen={smallScreen}
             />
-            <div className="w-40 md:w-150">
+            <div className="w-[80vw] min-w-35 md:w-150">
                 <HabitData historicalData={historicalData}/>
                 <HabitDataByMonth 
                     totalValuesByMonth={totalValuesByMonth} 

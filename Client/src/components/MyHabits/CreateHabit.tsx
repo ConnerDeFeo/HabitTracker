@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Habit from "../../types/Habit";
 import DateData from "../../data/DateData";
-import RenderHabitUtils from "./RenderHabitUtils";
+import HabitConverstions from "../../data/HabitConversions";
 
 /**
  * _____________________________________________________
@@ -164,7 +164,7 @@ const CreateHabit = (props: {
                 {
                     //if habit initially habit was passed through props
                     initialHabit ? 
-                        <p className="text-2xl sm:text-3xl md:text-4xl mx-auto">{RenderHabitUtils.typeConverstion[habit.type]}</p>
+                        <p className="text-2xl sm:text-3xl md:text-4xl mx-auto">{HabitConverstions.typeConverstion[habit.type]}</p>
                         :
                         <select 
                             id="type" 

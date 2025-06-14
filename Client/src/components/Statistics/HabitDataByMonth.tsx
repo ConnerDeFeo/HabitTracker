@@ -121,10 +121,10 @@ const HabitDataByMonth = (
                         {DateData.months.map((month,index)=>
                             <div 
                                 key={month} 
-                                className="border-2 border-dashed rounded-md h-10 md:h-30 w-10 md:w-30 my-autogrid items-center cursor-pointer dropShadow"
+                                className="shadow-md mx-auto md:border-2 border-dashed rounded-md h-10 md:h-30 w-8 md:w-30 my-autogrid items-center cursor-pointer dropShadow"
                                 onClick={()=>handleMonthSelection(index)}
                             >
-                                <p className="text-sm md:text-xl xl:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
+                                <p className="text-md md:text-xl xl:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
                                 <p className="text-xs md:text-lg xl:text-2xl">
                                     {compareMonth(index) &&
                                         //determines what follows the number, the unit of the habit

@@ -14,7 +14,7 @@ const AllHabits = (
     const habitNameStyling = "my-7 cursor-pointer"; //Styling for each of the habit names
     return smallScreen ? 
         <>
-            <select className="habitBorder mb-10 w-40 text-center text-xs pl-1"
+            <select className="habitBorder mb-10 w-35 text-center text-xs pl-1"
                 onChange={(e)=>handleHabitSelection(e.target.value)}
             >
                 {activeHabits.map(habit=>
