@@ -10,8 +10,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
 
-        //may change this in the future to work with PostgreSQL, for now though eh
-        var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
+        var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
         //only need one for everything
