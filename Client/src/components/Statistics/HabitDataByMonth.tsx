@@ -12,10 +12,11 @@ const HabitDataByMonth = (
         totalValuesByMonth: Record<string,number>,
         historicalData?: HistoricalData
         date:DateInfo,
-        setDate: React.Dispatch<React.SetStateAction<DateInfo>>
+        setDate: React.Dispatch<React.SetStateAction<DateInfo>>,
+        smallScreen:boolean
     }
 )=>{
-    const {totalValuesByMonth,historicalData,date,setDate} = props;
+    const {totalValuesByMonth,historicalData,date,setDate,smallScreen} = props;
 
     //Only defined when user clicks on one of the months, acts as its own flag for rendering in this way
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
@@ -78,7 +79,7 @@ const HabitDataByMonth = (
     }
 
     return (
-        <div className="habitBorder h-full">
+        <div className="habitBorder h-80">
             {monthlyHabits ?
                 //Month selected
                 <div>
@@ -101,29 +102,32 @@ const HabitDataByMonth = (
                 :
                 //Initial pane shown
                 <>
-                    <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4">
+                    {/*Header to the bottom right pane   */}
+                    <div className="flex justify-between text-md md:text-2xl w-[80%] mx-auto relative mt-4">
                         <img 
                             src="./BasicArrow.png" 
-                            className="rotate-180 h-7 w-7 cursor-pointer" 
+                            className="rotate-180 h-4 lg:h-7 w-4 lg:w-7 cursor-pointer" 
                             onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year-1}))}
                         />
                         {date.year}
                         <img 
                             src="./BasicArrow.png" 
-                            className="h-7 w-7 cursor-pointer" 
+                            className="h-4 lg:h-7 w-4 lg:w-7 cursor-pointer" 
                             onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year+1}))}
                         />
                     </div>
+                    {/*All the different months */}
                     <div className="grid grid-cols-3 gap-y-3 w-[80%] mx-auto text-center mt-10">
                         {DateData.months.map((month,index)=>
                             <div 
                                 key={month} 
-                                className="border-2 border-dashed rounded-md h-30 w-30 my-autogrid items-center cursor-pointer dropShadow"
+                                className="border-2 border-dashed rounded-md h-10 md:h-30 w-10 md:w-30 my-autogrid items-center cursor-pointer dropShadow"
                                 onClick={()=>handleMonthSelection(index)}
                             >
-                                <p className="text-4xl mt-5">{month}</p>
-                                <p className="text-2xl">
+                                <p className="text-sm md:text-xl xl:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
+                                <p className="text-xs md:text-lg xl:text-2xl">
                                     {compareMonth(index) &&
+                                        //determines what follows the number, the unit of the habit
                                         `${totalValuesByMonth[month] || 0}\n
                                         ${historicalData?.habit.type ===1 ? "Days" 
                                             : 

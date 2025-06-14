@@ -84,7 +84,7 @@ const Statistics = (props:{smallScreen:boolean})=>{
     }
 
     return(
-        <div className="grid md:flex w-[75%] mx-auto my-10 justify-between">
+        <div className="grid md:flex w-[75%] mx-auto my-10 justify-center md:justify-between">
             <AllHabits 
                 activeHabits={activeHabits} 
                 nonActiveHabits={nonActiveHabits} 
@@ -92,9 +92,15 @@ const Statistics = (props:{smallScreen:boolean})=>{
                 selectedHabitId={historicalData?.habit.id!}
                 smallScreen={smallScreen}
             />
-            <div className="w-150">
+            <div className="w-40 md:w-150">
                 <HabitData historicalData={historicalData}/>
-                <HabitDataByMonth totalValuesByMonth={totalValuesByMonth} historicalData={historicalData} date={date} setDate={setDate}/>
+                <HabitDataByMonth 
+                    totalValuesByMonth={totalValuesByMonth} 
+                    historicalData={historicalData} 
+                    date={date} 
+                    setDate={setDate}
+                    smallScreen = {smallScreen}
+                />
             </div>
             {historicalData===undefined && <Waiting/>}
         </div>

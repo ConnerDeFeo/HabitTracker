@@ -5,7 +5,7 @@ const HabitData = (props:{historicalData?: HistoricalData})=>{
     const {historicalData} = props;
     const textSizing:string = "text-xl md:text-2xl lg:text-3xl xl:text-4xl";
     return (
-        <div className="h-25 mb-5">
+        <div className="mb-5">
             {historicalData === undefined ? 
                 <p className="text-6xl text-center">No habits to view!</p>
                 :
