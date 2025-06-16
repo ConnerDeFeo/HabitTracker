@@ -9,6 +9,10 @@ public class Program
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.WebHost.ConfigureKestrel(serverOptions =>
+        {
+            serverOptions.ListenAnyIP(5000);
+        });
 
         var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
         mongoConnectionString ??= "mongodb://localhost:27017";
