@@ -11,6 +11,7 @@ public class Program
 
 
         var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
+        mongoConnectionString ??= "mongodb://localhost:27017";
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
         //only need one for everything
