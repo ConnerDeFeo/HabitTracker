@@ -36,7 +36,15 @@ public class UserController(IUserService _userService) : ControllerBase
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {
         LoginResult result = await _userService.CreateUser(user.Username,user.Password);
-        if(result.SessionKey!=""){
+        if (result.SessionKey != "")
+        { 
+            Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+            });
             return Ok(result); 
         }
         return Conflict(result);
@@ -45,8 +53,17 @@ public class UserController(IUserService _userService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] User user){
         LoginResult result = await _userService.Login(user.Username,user.Password);
-        if(result.SessionKey!=""){
-            return Ok(result);
+        if (result.SessionKey != "")
+        { 
+            var resp = new HttpResponseMessage();
+            Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+            });
+            return Ok(result);   
         }
         return Unauthorized(result);
     }
@@ -58,9 +75,8 @@ public class UserController(IUserService _userService) : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(){
         var sesionKey = Request.Cookies["sessionKey"];
-        if(sesionKey!=null && await _userService.Logout(sesionKey)){
+        if(sesionKey!=null && await _userService.Logout(sesionKey))
             return Ok();
-        }
         return Unauthorized();
     }
 }

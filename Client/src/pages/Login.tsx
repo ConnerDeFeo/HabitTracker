@@ -32,7 +32,6 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
                 setMessage("Invalid Username or Password");
             }else{
                 const loginResult = await response.json();
-                document.cookie = "sessionKey="+loginResult.sessionKey;
                 sessionStorage.setItem("loggedIn","true");
                 setUser(loginResult.user);
                 navigate('/');

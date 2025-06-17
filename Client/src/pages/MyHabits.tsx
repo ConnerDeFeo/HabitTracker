@@ -36,7 +36,6 @@ const MyHabits = (props:{fetchMonth: ()=>void})=>{
     //When the user completes a new habit
     const handleNewHabitCompletion = async (habit:Habit)=>{
         const resp = await HabitService.createHabit(habit);
-        console.log(resp);
         if(resp.status==200){
             const newHabit = await resp.json();
             setActiveHabits((prevHabits)=>(
