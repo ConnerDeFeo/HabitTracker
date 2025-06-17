@@ -42,7 +42,6 @@ public class UserController(IUserService _userService) : ControllerBase
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
-                Secure = true,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
             });
             return Ok(result); 
@@ -55,12 +54,10 @@ public class UserController(IUserService _userService) : ControllerBase
         LoginResult result = await _userService.Login(user.Username,user.Password);
         if (result.SessionKey != "")
         { 
-            var resp = new HttpResponseMessage();
             Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
-                Secure = true,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
             });
             return Ok(result);   
