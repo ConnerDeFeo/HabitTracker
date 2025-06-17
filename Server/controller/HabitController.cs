@@ -43,7 +43,7 @@ public class HabitController(IHabitService _habitService) : ControllerBase
                 return Ok(habits);
             return NotFound();
         }
-        return Unauthorized();
+        return Unauthorized($"sessionKey invalid, {sesionKey} is null");
 
     }
 

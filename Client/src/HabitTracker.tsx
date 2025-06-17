@@ -85,6 +85,7 @@ const HabitTracker = ()=>{
         fetchMonth();
     },[date.month]);
 
+    console.log(document.cookie);
     return (
         <Router >
             {displayMenu ?

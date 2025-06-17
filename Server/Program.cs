@@ -39,7 +39,7 @@ public class Program
                     policy.WithOrigins(builder.Configuration["Client"]!)  // Frontend URL
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials(); //Needed for some reason
+                        .AllowCredentials();
                 });
         });
 
