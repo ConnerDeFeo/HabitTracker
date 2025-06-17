@@ -16,7 +16,7 @@ public class Program
 
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenAnyIP(5000); // listens on all IPv4 and IPv6 addresses on port 5000
+            options.ListenAnyIP(5000);
         });
 
         //only need one for everything
