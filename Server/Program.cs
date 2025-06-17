@@ -62,6 +62,7 @@ public class Program
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
             userService.CreateSessionKeyIndexes();
         }
+        app.MapGet("/", () => "API is running!");
 
         //this took me a while to find in stacktrace
         app.UseCors("AllowReactApp");
