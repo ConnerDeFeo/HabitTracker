@@ -43,6 +43,7 @@ public class UserController(IUserService _userService) : ControllerBase
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
+                Secure = true,
             });
             return Ok(result); 
         }
@@ -59,6 +60,7 @@ public class UserController(IUserService _userService) : ControllerBase
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
+                Secure = true,
             });
             return Ok(result);   
         }

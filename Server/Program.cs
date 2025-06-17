@@ -9,14 +9,15 @@ public class Program
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.WebHost.ConfigureKestrel(serverOptions =>
-        {
-            serverOptions.ListenAnyIP(5000);
-        });
 
         var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
         mongoConnectionString ??= "mongodb://localhost:27017";
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
+
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(5000); // listens on all IPv4 and IPv6 addresses on port 5000
+        });
 
         //only need one for everything
         builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
