@@ -9,9 +9,14 @@ public class Program
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
+        var inDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        string? mongoConnectionString;
 
-        var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
-        mongoConnectionString ??= "mongodb://localhost:27017";
+        if (inDevelopment =="Development")
+            mongoConnectionString = "mongodb://localhost:27017";
+        else
+            mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
+
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
         builder.WebHost.ConfigureKestrel(options =>
