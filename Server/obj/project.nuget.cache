@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "pxK1KjTOZm8=",
+  "dgSpecHash": "M45AqO4Tb3g=",
   "success": true,
   "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
   "expectedPackageFiles": [
@@ -41,10 +41,7 @@
     "C:\\Users\\cjack\\.nuget\\packages\\xunit.extensibility.core\\2.9.3\\xunit.extensibility.core.2.9.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\xunit.runner.visualstudio\\3.0.2\\xunit.runner.visualstudio.3.0.2.nupkg.sha512",
-    "C:\\Users\\cjack\\.nuget\\packages\\zstdsharp.port\\0.7.3\\zstdsharp.port.0.7.3.nupkg.sha512",
-    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\8.0.14\\microsoft.netcore.app.runtime.linux-x64.8.0.14.nupkg.sha512",
-    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\8.0.14\\microsoft.aspnetcore.app.runtime.linux-x64.8.0.14.nupkg.sha512",
-    "C:\\Users\\cjack\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\8.0.14\\microsoft.netcore.app.host.linux-x64.8.0.14.nupkg.sha512"
+    "C:\\Users\\cjack\\.nuget\\packages\\zstdsharp.port\\0.7.3\\zstdsharp.port.0.7.3.nupkg.sha512"
   ],
   "logs": []
 }
