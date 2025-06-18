@@ -11,7 +11,9 @@ public class Program
 
         var inDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
+
+        var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
+        mongoConnectionString ??= builder.Configuration.GetConnectionString("MongoDb");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
         builder.WebHost.ConfigureKestrel(options =>
