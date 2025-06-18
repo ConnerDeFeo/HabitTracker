@@ -10,13 +10,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var inDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        string? mongoConnectionString;
 
-        if (inDevelopment =="Development")
-            mongoConnectionString = "mongodb://localhost:27017";
-        else
-            mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
-
+        var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
         builder.WebHost.ConfigureKestrel(options =>
@@ -42,7 +37,7 @@ public class Program
             options.AddPolicy("AllowReactApp",
                 policy =>
                 {
-                    policy.WithOrigins(builder.Configuration["Client"]!)  // Frontend URL
+                    policy.WithOrigins(builder.Configuration["Client"]!)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
