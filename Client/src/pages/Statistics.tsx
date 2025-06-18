@@ -3,7 +3,6 @@ import Habit from "../types/Habit";
 import HabitService from "../services/HabitService";
 import HistoricalData from "../types/HistoricalData";
 import HabitStatisticService from "../services/HabitStatisticService";
-import Waiting from "../components/Waiting";
 import AllHabits from "../components/Statistics/AllHabits";
 import HabitData from "../components/Statistics/HabitData";
 import HabitDataByMonth from "../components/Statistics/HabitDataByMonth";
@@ -40,6 +39,7 @@ const Statistics = (props:{smallScreen:boolean})=>{
         const resp = await HabitStatisticService.getTotalValueByMonth(habitId,year);
         if(resp.status==200){
             const totalValueByMonth: Record<string,number> = await resp.json();
+            console.log(totalValueByMonth);
             setTotalValuesByMonth(totalValueByMonth);
         }
     }
@@ -102,7 +102,6 @@ const Statistics = (props:{smallScreen:boolean})=>{
                     smallScreen = {smallScreen}
                 />
             </div>
-            {historicalData===undefined && <Waiting/>}
         </div>
     );
 }
