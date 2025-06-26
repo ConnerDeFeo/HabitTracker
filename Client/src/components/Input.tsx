@@ -9,10 +9,11 @@ const Input = (
             updateValue: (character: string) => void, 
             type?:string, 
             placeholder?:string,
-            className?:string
+            className?:string,
+            name?:string
         }
 )=>{
-    const { title, value, updateValue, type, placeholder, className } = props;
+    const { title, value, updateValue, type, placeholder, className, name} = props;
     
     //only used if the type is password
     const [inputType, setInputType] = useState<string>(type || "");
@@ -31,7 +32,7 @@ const Input = (
                 <input 
                     type={inputType} 
                     id={title} 
-                    name={title} 
+                    name={name} 
                     className={"resize-none habitBorder w-full text-xs md:text-xl h-8 md:h-12 pl-3 align-center "+(className??"")}
                     value={value} 
                     onChange={(e)=>updateValue(e.target.value)}
