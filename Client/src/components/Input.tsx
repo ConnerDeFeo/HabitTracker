@@ -1,8 +1,18 @@
 import { useState } from "react";
 
 //Base input used for the application
-const Input = (props: { title?: string; value: string; updateValue: (character: string) => void; type?:string })=>{
-    const { title, value, updateValue, type } = props;
+const Input = (
+    props: 
+        { 
+            title?: string, 
+            value: string, 
+            updateValue: (character: string) => void, 
+            type?:string, 
+            placeholder?:string,
+            className?:string
+        }
+)=>{
+    const { title, value, updateValue, type, placeholder, className } = props;
     
     //only used if the type is password
     const [inputType, setInputType] = useState<string>(type || "");
@@ -22,9 +32,10 @@ const Input = (props: { title?: string; value: string; updateValue: (character: 
                     type={inputType} 
                     id={title} 
                     name={title} 
-                    className="resize-none habitBorder w-full text-xs md:text-xl h-8 md:h-12 pl-3 align-center" 
+                    className={"resize-none habitBorder w-full text-xs md:text-xl h-8 md:h-12 pl-3 align-center "+(className??"")}
                     value={value} 
                     onChange={(e)=>updateValue(e.target.value)}
+                    placeholder={placeholder}
                 />
                 {type=="password" &&
                     <img src="./Eye.png" 
