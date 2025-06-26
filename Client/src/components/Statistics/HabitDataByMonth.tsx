@@ -24,15 +24,20 @@ const HabitDataByMonth = (
     //Date created in object form for the currently viewed habit
     const parsedHabitCreatedDate = new Date(historicalData?.habit.dateCreated+"T00:00:01");
     const firtDayOfMonth = new Date(date.year, date.month, 1).getDay();
-    
+
     /*Compares the current month being rendered to the 
     creation date of the habit and today to see if the given month is valid for
     a date that the current habit could have existed in*/
-    const compareMonth = (index:number):boolean =>{
-        const today:Date = new Date();
-        const dateBeingChecked:Date = new Date(date.year,index,today.getDate());
-        return dateBeingChecked >=parsedHabitCreatedDate && dateBeingChecked<=today;
-    }
+    const compareMonth = (index: number): boolean => {
+        const today = new Date();
+        const target = new Date(date.year, index, 1);
+
+        const habitYearMonth = parsedHabitCreatedDate.getFullYear() + parsedHabitCreatedDate.getMonth();
+        const targetYearMonth = target.getFullYear() + target.getMonth();
+        const todayYearMonth = today.getFullYear() + today.getMonth();
+
+        return targetYearMonth >= habitYearMonth && targetYearMonth <= todayYearMonth;
+    };
 
     /*When user clicks on a month in the initial panel, this is dwhat displays the 
     individual days in the month with the respecitve colorings*/

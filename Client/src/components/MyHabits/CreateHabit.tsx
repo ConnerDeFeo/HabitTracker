@@ -32,7 +32,7 @@ const CreateHabit = (props: {
         skipped:false,
         daysActive:[],
         valueUnitType:"",
-        value: 0
+        value: 1
     }
     const [habit, setHabit] = useState<Habit>(defaultHabit);
     const buttonStyling = "border-2 border-black w-12 h-12 rounded-xl cursor-pointer mx-auto dropShadow";
@@ -73,7 +73,7 @@ const CreateHabit = (props: {
         setHabit((prevHabit)=>({
             ...prevHabit,
             type: num,
-            value: 0,
+            value: 1,
             valueUnitType:valueUnitType
         }))
     }

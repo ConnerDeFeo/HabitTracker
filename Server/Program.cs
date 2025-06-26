@@ -9,9 +9,6 @@ public class Program
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
-        var inDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-
         var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
         mongoConnectionString ??= builder.Configuration.GetConnectionString("MongoDb");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
@@ -46,7 +43,7 @@ public class Program
                 });
         });
 
-        //all marked controllers are instanciated (I Think?)
+        //all marked controllers are instanciated
         builder.Services.AddControllers();
 
         //Regenerate UserService each time a request is made
@@ -64,7 +61,7 @@ public class Program
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
             userService.CreateSessionKeyIndexes();
         }
-        app.MapGet("/", () => "API is running!");
+        app.MapGet("/api/", () => "API is running!");
 
         //this took me a while to find in stacktrace
         app.UseCors("AllowReactApp");
