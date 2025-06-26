@@ -20,6 +20,8 @@ import MyHabits from './pages/MyHabits';
 import UserDto from './types/UserDto';
 import Statistics from './pages/Statistics';
 import Menu from './components/Navigation/Menu';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 //Overarching application
 const HabitTracker = ()=>{
@@ -92,7 +94,7 @@ const HabitTracker = ()=>{
                 <Menu exitMenu={()=>setDisplayMenu(false)}/> : 
                 <>
                     <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen}/>
-                        <Routes>
+                    <Routes>
                         <Route path='' element={user.username==="" ? <HomePage/> : <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/>}/>
                         <Route path='CreateAccount' element={<CreateAccount setUser={setUser}/>}/>
                         <Route path='Login' element={<Login setUser={setUser}/>}/>
@@ -100,6 +102,8 @@ const HabitTracker = ()=>{
                         <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                         <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
                         <Route path='Statistics' element={<Statistics smallScreen={smallScreen}/>}/>
+                        <Route path='About' element={<About/>}/>
+                        <Route path='Contact' element={<Contact/>}/>
                     </Routes>
                     <Footer/>
                 </>

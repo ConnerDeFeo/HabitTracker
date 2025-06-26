@@ -39,7 +39,6 @@ const Statistics = (props:{smallScreen:boolean})=>{
         const resp = await HabitStatisticService.getTotalValueByMonth(habitId,year);
         if(resp.status==200){
             const totalValueByMonth: Record<string,number> = await resp.json();
-            console.log(totalValueByMonth);
             setTotalValuesByMonth(totalValueByMonth);
         }
     }
