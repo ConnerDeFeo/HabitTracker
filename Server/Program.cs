@@ -9,9 +9,6 @@ public class Program
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
-        var inDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-
         var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
         mongoConnectionString ??= builder.Configuration.GetConnectionString("MongoDb");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
@@ -46,7 +43,7 @@ public class Program
                 });
         });
 
-        //all marked controllers are instanciated (I Think?)
+        //all marked controllers are instanciated
         builder.Services.AddControllers();
 
         //Regenerate UserService each time a request is made
