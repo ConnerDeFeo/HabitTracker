@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 //Base input used for the application
-const Input = (props: { title: string; value: string; updateValue: (character: string) => void; type?:string })=>{
+const Input = (props: { title?: string; value: string; updateValue: (character: string) => void; type?:string })=>{
     const { title, value, updateValue, type } = props;
     
     //only used if the type is password
@@ -16,7 +16,7 @@ const Input = (props: { title: string; value: string; updateValue: (character: s
 
     return(
         <>
-            <label htmlFor={title} className="font-hand text-2xl md:text-4xl">{title}</label>
+            {title && <label htmlFor={title} className="font-hand text-2xl md:text-4xl">{title}</label>}
             <div className="relative">
                 <input 
                     type={inputType} 

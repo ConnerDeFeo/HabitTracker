@@ -15,8 +15,8 @@ const Menu = (props:{exitMenu:()=>void})=>{
                         <NavigationItem name="MyHabits" imagePath="Arrows.png" alt="MyHabits" navigateTo="/MyHabits" onClick={exitMenu}/>
                         <NavigationItem name="Schedule" imagePath="Calender.png" alt="calender" navigateTo="/Schedule" onClick={exitMenu}/>
                         <NavigationItem name="Statistics" imagePath="Statistics.png" alt="Statistics" navigateTo="/Statistics" onClick={exitMenu}/>
-                        <NavigationItem name="About" navigateTo="/About"/>
-                        <NavigationItem name="Contact" navigateTo="/Contact"/>
+                        <NavigationItem name="About" navigateTo="/About" onClick={exitMenu}/>
+                        <NavigationItem name="Contact" navigateTo="/Contact" onClick={exitMenu}/>
                     </>
                     :
                     <>
