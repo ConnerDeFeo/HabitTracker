@@ -24,10 +24,10 @@ const Schedule = (props:{
         const day = monthlyHabits?.[DateService.padZero(number)];
         if(day !== undefined){
             if(day.allHabitsCompleted){
-                return <img src="./checkMark.webp" alt="Monthly Habit CheckMark" className="h-4 w-4 md:h-7 md:w-7 absolute right-[0.365rem] md:right-[0.9rem] bottom-[0.2rem] md:bottom-1"/>;
+                return <img src="/checkMark.webp" alt="Monthly Habit CheckMark" className="h-4 w-4 md:h-7 md:w-7 absolute right-[0.365rem] md:right-[0.9rem] bottom-[0.2rem] md:bottom-1"/>;
             }
             else{
-                return <img src="./RedX.png" alt="Monthly Habit CheckMark" className="h-3 w-3 md:h-6 md:w-6 absolute right-[0.5rem] md:right-4 bottom-[0.3rem] md:bottom-1"/>;
+                return <img src="/RedX.png" alt="Monthly Habit CheckMark" className="h-3 w-3 md:h-6 md:w-6 absolute right-[0.5rem] md:right-4 bottom-[0.3rem] md:bottom-1"/>;
             }
         }
         return <></>;

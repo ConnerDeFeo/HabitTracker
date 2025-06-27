@@ -10,7 +10,7 @@ const Arrow = (props:{onClick: ()=>void, inverse?: boolean, className?: string, 
         styling+=" absolute";
 
     return show==undefined || show ? 
-        <img src="./NextPage.jpg" className={`${styling} ${className}`} onClick={onClick} alt={inverse ? "Previous" : "Next"} />
+        <img src="/NextPage.jpg" className={`${styling} ${className}`} onClick={onClick} alt={inverse ? "Previous" : "Next"} />
         :
         <></>;
     

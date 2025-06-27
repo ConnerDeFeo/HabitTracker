@@ -16,16 +16,16 @@ const Navbar = (props:{displayMenu:()=>void, useHamburger:boolean})=>{
                     <h1 className="font-hand text-5xl cursor-pointer crossOut" onClick={()=>navigate("/")}>Habit Tracker</h1>
                     {loggedIn && 
                         <>
-                            <NavigationItem name="MyHabits" imagePath="Arrows.png" alt="MyHabits" navigateTo="/MyHabits"/>
-                            <NavigationItem name="Schedule" imagePath="Calender.png" alt="calender" navigateTo="/Schedule"/>
-                            <NavigationItem name="Statistics" imagePath="Statistics.png" alt="Statistics" navigateTo="/Statistics"/>
+                            <NavigationItem name="MyHabits" imagePath="/Arrows.png" alt="MyHabits" navigateTo="/MyHabits"/>
+                            <NavigationItem name="Schedule" imagePath="/Calender.png" alt="calender" navigateTo="/Schedule"/>
+                            <NavigationItem name="Statistics" imagePath="/Statistics.png" alt="Statistics" navigateTo="/Statistics"/>
                             <NavigationItem name="About" navigateTo="/About"/>
                             <NavigationItem name="Contact" navigateTo="/Contact"/>
                         </>
                     }
                 </div>
             }
-            <img src="./UserIcon.png" className="h-12 w-12 md:h-16 md:w-16 cursor-pointer" onClick={()=>navigate("/Profile")}/>
+            <img src="/UserIcon.png" className="h-12 w-12 md:h-16 md:w-16 cursor-pointer" onClick={()=>navigate("/Profile")}/>
         </div>
     );
 } 

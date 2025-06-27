@@ -39,7 +39,7 @@ const Input = (
                     placeholder={placeholder}
                 />
                 {type=="password" &&
-                    <img src="./Eye.png" 
+                    <img src="/Eye.png" 
                         className="absolute h-8 md:h-10 w-6 md:w-8 right-2 md:right-3 top-1 md:top-[0.25rem] cursor-pointer"
                         alt="Toggle visibility"
                         onClick={handleEyeToggle}    

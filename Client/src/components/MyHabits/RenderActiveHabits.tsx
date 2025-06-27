@@ -57,8 +57,8 @@ const RenderActiveHabit = (props:
         //Default
         <DefaultHabitRender 
             habit={habit}
-            topLeftButton = {<img src="EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>}
-            topRightButton = {<img src="Minus.png" alt="deactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(true)}/>}
+            topLeftButton = {<img src="/EditHabits.svg" alt="editHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInEditMode(true)}/>}
+            topRightButton = {<img src="/Minus.png" alt="deactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInRemovalMode(true)}/>}
         />
     ;
 }

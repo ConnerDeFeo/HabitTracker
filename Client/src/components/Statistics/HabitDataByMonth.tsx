@@ -94,7 +94,7 @@ const HabitDataByMonth = (
                 //Month selected
                 <div>
                     <div className="flex justify-between text-xl md:text-4xl w-[80%] mx-auto relative mt-4">
-                        <img src="./BasicArrow.png" className="rotate-180 w-7 h-7 cursor-pointer md:mt-7" onClick={()=>setMonthlyHabits(undefined)}/>
+                        <img src="/BasicArrow.png" className="rotate-180 w-7 h-7 cursor-pointer md:mt-7" onClick={()=>setMonthlyHabits(undefined)}/>
                         <p className="text-3xl md:text-5xl md:mt-5">{DateData.months[date.month]}</p>
                         <p className="text-3xl md:text-5xl md:mt-5">{date.year}</p>
                     </div>
@@ -115,13 +115,13 @@ const HabitDataByMonth = (
                     {/*Header to the bottom right pane   */}
                     <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4 items-center">
                         <img 
-                            src="./BasicArrow.png" 
+                            src="/BasicArrow.png" 
                             className="rotate-180 h-7 w-7 cursor-pointer" 
                             onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year-1}))}
                         />
                         {date.year}
                         <img 
-                            src="./BasicArrow.png" 
+                            src="/BasicArrow.png" 
                             className="h-7 w-7 cursor-pointer" 
                             onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year+1}))}
                         />

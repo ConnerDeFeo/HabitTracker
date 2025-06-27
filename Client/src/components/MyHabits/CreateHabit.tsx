@@ -199,12 +199,12 @@ const CreateHabit = (props: {
             </div>
             <div className="grid grid-cols-2 mt-5">
                 <button className={buttonStyling}>
-                    <img src="./x.webp" alt="x" className="w-10 h-10 mx-auto" onClick={handleCancelation}/>
+                    <img src="/x.webp" alt="x" className="w-10 h-10 mx-auto" onClick={handleCancelation}/>
                 </button>
                 <button className={buttonStyling} onClick={
                     async () => { await handleHabitCompletion(habit);}
                 }>
-                    <img src="./checkMark.webp" alt="check mark" className="w-8 h-8 mx-auto"/>
+                    <img src="/checkMark.webp" alt="check mark" className="w-8 h-8 mx-auto"/>
                 </button>
             </div>
         </div>
