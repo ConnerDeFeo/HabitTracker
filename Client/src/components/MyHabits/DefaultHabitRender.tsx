@@ -22,7 +22,7 @@ const DefaultHabitRender = (props:{habit:Habit, topLeftButton:React.ReactNode, t
     }
 
     return(
-        <div className="drop-shadow-xl p-3 grid gap-y-4 habitBorder w-36 sm:w-50 md:w-65 lg:w-80 mx-auto">
+        <div className="drop-shadow-xl p-3 grid gap-y-4 habitBorder w-65 lg:w-80 mx-auto">
             <div className="flex justify-between">
                 {topLeftButton}
                 <p className="text-lg lg:text-2xl">{getDaysActiveTitle(habit)}</p>

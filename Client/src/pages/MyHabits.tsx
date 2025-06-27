@@ -53,8 +53,8 @@ const MyHabits = (props:{fetchMonth: ()=>void})=>{
     
     return(
         <div className="grid md:grid-cols-2 w-[80%] mx-auto justify-center mt-7 mb-[10vh]">
-            <div className="w-45 sm:w-65 md:w-90 mx-auto">
-                <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl text-center w-35 sm:w-65 lg:w-85 mx-auto mb-5">Active Habits</h1>
+            <div className="w-75 md:w-90 mx-auto border">
+                <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl text-center w-65 lg:w-85 mx-auto mb-5">Active Habits</h1>
                 <div className="sm:overflow-y-auto sm:h-[70vh] p-2 flex flex-col gap-y-4">
                     {activeHabits.map((habit)=>
                         <RenderActiveHabit 
@@ -78,8 +78,8 @@ const MyHabits = (props:{fetchMonth: ()=>void})=>{
                     }
                 </div>
             </div>
-            <div className="w-45 sm:w-65 md:w-90 mx-auto mt-15 md:mt-0">
-                <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl w-35 sm:w-65 lg:w-85 text-center mb-5 mx-auto">NonActive Habits</h1>
+            <div className="w-75 md:w-90 mx-auto mt-15 md:mt-0">
+                <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl w-65 lg:w-85 text-center mb-5 mx-auto">NonActive Habits</h1>
                 <div className="sm:overflow-y-auto sm:h-[70vh] flex flex-col gap-y-4">
                     {nonActiveHabits.map((habit)=>
                         <RenderNonActiveHabits 
