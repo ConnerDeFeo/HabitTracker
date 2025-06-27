@@ -51,12 +51,12 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
     return(
         <Container
             content={
-                <div className={"flex flex-col justify-center w-[60vw] max-w-115 mx-auto gap-8"}>
+                <div className={"flex flex-col justify-center w-[85%] max-w-115 mx-auto gap-8"}>
                     <div className="text-center text-red-600 text-2xl">{message}</div>
                     <Input title={"Username"} value={username} updateValue={setUsername} />
-                    <Input title={"Password"} value={password} updateValue={setPassword} type="password"/>
-                    <Input title={"Confirm Password"} value={confirmPassword} updateValue={setConfirmPassword} type="password"/>
-                    <Button label="Create" onClick={onSubmit} className="ml-auto w-15 md:w-15"/>
+                    <Input title={"Password"} value={password} updateValue={setPassword} type="password" />
+                    <Input title={"Confirm Password"} value={confirmPassword} updateValue={setConfirmPassword} type="password" />
+                    <Button label="Create" onClick={onSubmit} className="ml-auto w-30"/>
                     {waiting && <Waiting/>}
                 </div>
             }

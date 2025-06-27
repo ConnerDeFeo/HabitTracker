@@ -44,7 +44,7 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
                     <div className="text-center text-red-600 text-2xl">{message}</div>
                     <Input title={"Username"} value={username} updateValue={setUsername} />
                     <Input title={"Password"} value={password} updateValue={setPassword} type="password"/>
-                    <Button label="Login" onClick={onSubmit} className="ml-auto w-15 md:w-25"/>
+                    <Button label="Login" onClick={onSubmit} className="ml-auto w-30"/>
                     {waiting && <Waiting/>}
             </div>
         }/>

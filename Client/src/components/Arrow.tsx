@@ -3,12 +3,12 @@
 const Arrow = (props:{onClick: ()=>void, inverse?: boolean, className?: string, show?:boolean})=>{
     const {onClick, inverse, className,show} = props;
     
-    let styling = "absolute text-4xl cursor-pointer sm:text-6xl md:text-9xl  ";
+    let styling = "absolute cursor-pointer h-10 sm:h-15";
     if(inverse)
-        styling = "absolute text-4xl cursor-pointer sm:text-6xl md:text-9xl  ";
-    
+        styling+=" rotate-180";
+
     return show==undefined || show ? 
-        <p className={styling+className} onClick={onClick}>{inverse ? ">": "<"}</p>
+        <img src="./NextPage.jpg" className={`${styling} ${className}`} onClick={onClick} alt={inverse ? "Previous" : "Next"} />
         :
         <></>;
     

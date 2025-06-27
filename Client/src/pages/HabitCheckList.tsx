@@ -67,29 +67,29 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     return(
         <div className="flex flex-col mx-auto mb-[20vh] md:mb-[50vh] relative ">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
-                <p className="text-xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
-                <p className="absolute text-xl md:text-6xl top-8 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
+                <p className="text-3xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
+                <p className="absolute text-3xl md:text-6xl top-12 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
    
                 {
                     !dateIsToday &&
                     <Button 
                         label="Today" 
                         onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}
-                        className="p-1 sm:p-2"
+                        className="w-20"
                     />
                 }
             </div>
-            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} className="top-[10rem] left-[1rem] sm:left-[7rem] md:left-[10rem] md:top-[20rem]"/>
-            <div className="grid grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-20 gap-y-10" >
+            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} inverse={true} className="top-[12rem] left-[1rem] sm:left-[7rem] lg:left-[10rem] lg:top-[15rem]"/>
+            <div className="grid md:grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-20 gap-y-10" >
                 {habits.map((habit)=>
                     <p 
                         key={habit.name} 
-                        className={"text-xl md:text-4xl cursor-pointer "+(habit.completed && "line-through")} 
+                        className={"text-4xl cursor-pointer "+(habit.completed && "line-through")} 
                         onClick={()=>handleHabitCompletion(habit,!habit.completed)}>{habit.name}
                     </p>
                 )}
             </div>
-            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} inverse={true} className="top-[10rem] right-[1rem] sm:right-[7rem] md:right-[10rem] md:top-[20rem]" show={!dateIsToday} />      
+            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} className="top-[12rem] right-[1rem] sm:right-[7rem] md:right-[10rem] md:top-[20rem]" show={!dateIsToday} />      
         </div>      
     );
 }

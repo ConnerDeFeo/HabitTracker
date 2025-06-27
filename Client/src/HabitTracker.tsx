@@ -31,7 +31,7 @@ const HabitTracker = ()=>{
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     //Flag for showing the menu after clicking hamburger
     const [displayMenu, setDisplayMenu] = useState<boolean>(false);
-    const [smallScreen,setSmallScreen] = useState<boolean>(window.innerWidth<768);
+    const [smallScreen,setSmallScreen] = useState<boolean>(window.innerWidth<1024);
     const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
         return{
@@ -45,7 +45,7 @@ const HabitTracker = ()=>{
     useEffect(() => {
         //Any time the screen is changed in width, this is called
         const handleResize = () => {
-            setSmallScreen(window.innerWidth<768);
+            setSmallScreen(window.innerWidth<1024);
         };
 
         window.addEventListener("resize", handleResize);
