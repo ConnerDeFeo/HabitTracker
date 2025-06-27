@@ -32,7 +32,7 @@ const AllHabits = (
             </select>
         </>
         :
-        <div className="habitBorder w-75 overflow-y-auto text-4xl text-center">
+        <div className="habitBorder w-75 overflow-y-auto text-4xl text-center h-100">
             {activeHabits.map(habit=>
                 <p 
                     key={habit.name} 
