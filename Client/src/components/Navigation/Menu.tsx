@@ -7,7 +7,7 @@ const Menu = (props:{exitMenu:()=>void})=>{
 
     return (
         <div className="w-[80%] mx-auto">
-            <img src="./x.webp" className="h-10 w-10 cursor-pointer my-5" onClick={exitMenu}/>
+            <img src="/x.webp" className="h-10 w-10 cursor-pointer my-5" onClick={exitMenu}/>
             <div className="grid gap-y-10 w-[80%] mx-auto">
                 {loggedIn ?
                     <>

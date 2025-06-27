@@ -10,7 +10,7 @@ const Navbar = (props:{displayMenu:()=>void, useHamburger:boolean})=>{
     return (
         <div className="flex place-content-between border-b-4 border-black h-24 w-[85%] mx-auto pt-3 items-center">
             {useHamburger ? 
-                <img src="./hamburger.png" className="w-8 h-8 cursor-pointer" onClick={displayMenu}/>
+                <img src="/hamburger.png" className="w-8 h-8 cursor-pointer" onClick={displayMenu}/>
                 : 
                 <div className="flex gap-8">
                     <h1 className="font-hand text-5xl cursor-pointer crossOut" onClick={()=>navigate("/")}>Habit Tracker</h1>
