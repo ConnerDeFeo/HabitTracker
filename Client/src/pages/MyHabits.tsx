@@ -73,7 +73,7 @@ const MyHabits = (props:{fetchMonth: ()=>void})=>{
                         <ImageButton
                             className="mx-auto mt-5"
                             onClick={()=>setAddHabit(true)}
-                            image={<img src="./Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem] my-[0.45rem]"/>}
+                            image={<img src="/Add.svg" alt="editIcon" className="h-7 w-7 ml-[0.45rem] my-[0.45rem]"/>}
                         />
                     }
                 </div>
