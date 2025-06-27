@@ -19,7 +19,7 @@ const Contact = ()=>{
         try {
             await emailjs.sendForm(
                 'service_ho7d22t',
-                'template_e1yhk0c',
+                'template_blol2zp',
                 form,
                 'dHmN6Poxt2OKm6_FU'
             );
@@ -31,7 +31,7 @@ const Contact = ()=>{
 
     return(
         <div className="my-10">
-            <form className="grid w-[85%] min-w-[300px] mx-auto gap-y-7">
+            <form className="grid w-[85%] min-w-[300px] max-w-[760px] mx-auto gap-y-7" onSubmit={sendEmail}>
                 <p className="text-6xl">Reach Out!</p>
                 <Input value={name} updateValue={setName} placeholder="name" type="text" name="from_name"/>
                 <Input value={email} updateValue={setEmail} type="email" placeholder="email" name="from_email"/>
