@@ -121,7 +121,8 @@ const CreateHabit = (props: {
                 name="unit" 
                 className={inputStyling}
                 value={habit.valueUnitType}
-                onChange={(e) => setHabit((prevHabit)=>({...prevHabit, valueUnitType:e.target.value}))}
+                //Prevent long unit types
+                onChange={(e) => setHabit((prevHabit)=>({...prevHabit, valueUnitType:(e.target.value.length<=10 ? e.target.value : prevHabit.valueUnitType)}))}
             />
             :
             <p className="text-4xl mx-auto">{habit.type===2 && "Minutes"}</p>;
