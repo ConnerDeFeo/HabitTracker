@@ -9,7 +9,7 @@ const HabitData = (props:{historicalData?: HistoricalData})=>{
             {historicalData === undefined ? 
                 <p className="text-6xl text-center">No habits to view!</p>
                 :
-                <div className="grid md:grid-cols-3 justify-between md:w-[90%] md:mx-auto border">
+                <div className="grid md:grid-cols-3 justify-between md:w-[90%] md:mx-auto">
                     <p className={`${textSizing} md:mb-5 md:row-start-1 md:col-start-1`}>{historicalData.habit.name}</p>
                     <p className={`${textSizing} my-5 md:my-0 md:row-start-1 md:col-start-3 md:text-right`}>Longest Streak: {historicalData.longestStreak}</p>
                     <p className={`${textSizing} md:row-start-2 md:col-start-3 md:text-right`}>Current Streak: {historicalData.currentStreak}</p>
