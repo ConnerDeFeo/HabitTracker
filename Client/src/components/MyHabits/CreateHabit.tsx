@@ -23,6 +23,9 @@ const CreateHabit = (props: {
     initialHabit?: Habit,
 })=>{
     const {handleCancelation, handleHabitCompletion, initialHabit,} = props;
+    const labelStyling = "font-hand text-2xl md:text-4xl text-left";
+    const inputStyling = "resize-none habitBorder text-xl sm:text-xl h-9 md:h-12 w-[100%] sm:w-[80%] pl-3";
+    const inputLayoutStyling = "grid sm:flex sm:justify-between";
 
     const defaultHabit: Habit = initialHabit??{
         name: "",
@@ -106,7 +109,7 @@ const CreateHabit = (props: {
             <input 
                 id="value"
                 name="value" 
-                className="resize-none habitBorder text-lg sm:text-xl h-6 sm:h-8 w-[100%] sm:w-[80%] pl-3" 
+                className={inputStyling} 
                 value={habit.value == 0 ? "" : habit.value}
                 onChange={(e) => handleValueChange(e.target.value)}
             />;
@@ -116,7 +119,7 @@ const CreateHabit = (props: {
             <input 
                 id="unit"
                 name="unit" 
-                className="resize-none habitBorder text-lg sm:text-xl h-6 sm:h-8 w-[100%] sm:w-[80%] pl-3" 
+                className={inputStyling}
                 value={habit.valueUnitType}
                 onChange={(e) => setHabit((prevHabit)=>({...prevHabit, valueUnitType:e.target.value}))}
             />
@@ -125,12 +128,12 @@ const CreateHabit = (props: {
 
         return (
             <>
-                <div className="grid sm:flex sm:justify-between">
-                    <label htmlFor="value" className="font-hand text-xl sm:text-4xl text-left">Value: </label>
+                <div className={inputLayoutStyling}>
+                    <label htmlFor="value" className={labelStyling}>Value: </label>
                     {valueInput}
                 </div>
-                <div className="grid sm:flex sm:justify-between">
-                    <label htmlFor="unitType" className="font-hand text-xl sm:text-4xl text-left">Unit: </label>
+                <div className={inputLayoutStyling}>
+                    <label htmlFor="unitType" className={labelStyling}>Unit: </label>
                     {unitInput}
                 </div>
             </>
@@ -140,12 +143,12 @@ const CreateHabit = (props: {
     return(
         <div className="grid p-2 gap-y-2">
             {/*Name and input */}
-            <div className="grid sm:flex sm:justify-between">
-                <label htmlFor="name" className="font-hand text-xl sm:text-4xl text-left ">{"Name: "}</label>
+            <div className={inputLayoutStyling}>
+                <label htmlFor="name" className={labelStyling}>Name: </label>
                 <input 
                     id="name"
                     name="name" 
-                    className="resize-none habitBorder text-lg sm:text-xl h-6 sm:h-8 w-[100%] sm:w-[80%] pl-3" 
+                    className={inputStyling} 
                     value={habit.name}
                     onChange={(e) => {
                         const newName:string = e.target.value;
@@ -159,17 +162,17 @@ const CreateHabit = (props: {
                 />
             </div>
             {/*Type and input*/}
-            <div className="grid sm:flex sm:justify-between">
-                <label htmlFor="type" className="font-hand text-xl sm:text-4xl text-left">Type: </label>
+            <div className={inputLayoutStyling}>
+                <label htmlFor="type" className={labelStyling}>Type: </label>
                 {
                     //if habit initially habit was passed through props
                     initialHabit ? 
-                        <p className="text-2xl sm:text-3xl md:text-4xl mx-auto">{HabitConverstions.typeConverstion[habit.type]}</p>
+                        <p className="text-4xl mx-auto">{HabitConverstions.typeConverstion[habit.type]}</p>
                         :
                         <select 
                             id="type" 
                             name="type" 
-                            className="border-2 shadow-xl rounded-2xl text-xl h-8 pl-3 w-[80%]" 
+                            className={inputStyling} 
                             onChange={(e)=>handleTypeChange(e.target.value)}
                         >
                             <option value={1}>Binary</option>
@@ -181,13 +184,13 @@ const CreateHabit = (props: {
             {/*Value and value unit type inputs*/}
             {renderValueOutput()}
             <div className="grid sm:flex">
-                <label htmlFor="days" className="font-hand text-xl sm:text-4xl text-left">Days: </label>
-                <div id="days" className="flex text-xl md:text-3xl justify-between m-auto w-[100%] sm:w-[80%]">
+                <label htmlFor="days" className={labelStyling}>Days: </label>
+                <div id="days" className="flex text-3xl md:text-4xl justify-between m-auto w-[100%] sm:w-[80%]">
                     {DateData.days.map((day)=>
                         <p 
                         key={day} 
                         onClick={()=>handleDateSelection(day)} 
-                        className={"cursor-pointer "+(!habit.daysActive.includes(day) && "text-gray-500")}>
+                        className={`cursor-pointer ${!habit.daysActive.includes(day) && "text-gray-500"}`}>
                             {day.substring(0,3)}
                         </p>
                     )}

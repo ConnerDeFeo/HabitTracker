@@ -83,7 +83,7 @@ const Statistics = (props:{smallScreen:boolean})=>{
     }
 
     return(
-        <div className="grid md:flex w-[80%] xl:w-[70%] 2xl:w-[60%] mx-auto my-10 justify-center md:justify-between">
+        <div className="grid lg:flex w-[80%] xl:w-[70%] 2xl:w-[60%] mx-auto my-10 justify-center lg:justify-between">
             <AllHabits 
                 activeHabits={activeHabits} 
                 nonActiveHabits={nonActiveHabits} 

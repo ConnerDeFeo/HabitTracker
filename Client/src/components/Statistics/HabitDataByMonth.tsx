@@ -113,16 +113,16 @@ const HabitDataByMonth = (
                 //Initial pane shown
                 <>
                     {/*Header to the bottom right pane   */}
-                    <div className="flex justify-between text-md md:text-2xl w-[80%] mx-auto relative mt-4">
+                    <div className="flex justify-between text-2xl w-[80%] mx-auto relative mt-4 items-center">
                         <img 
                             src="./BasicArrow.png" 
-                            className="rotate-180 h-4 lg:h-7 w-4 lg:w-7 cursor-pointer" 
+                            className="rotate-180 h-7 w-7 cursor-pointer" 
                             onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year-1}))}
                         />
                         {date.year}
                         <img 
                             src="./BasicArrow.png" 
-                            className="h-4 lg:h-7 w-4 lg:w-7 cursor-pointer" 
+                            className="h-7 w-7 cursor-pointer" 
                             onClick={()=>setDate((prevDate)=>({...prevDate,year:date.year+1}))}
                         />
                     </div>
@@ -131,17 +131,15 @@ const HabitDataByMonth = (
                         {DateData.months.map((month,index)=>
                             <div 
                                 key={month} 
-                                className="shadow-md mx-auto md:border-2 border-dashed rounded-md h-10 md:h-30 w-8 md:w-30 my-autogrid items-center cursor-pointer dropShadow"
+                                className="shadow-md mx-auto border-2 border-dashed rounded-md h-15 md:h-30 w-15 md:w-30 my-autogrid items-center cursor-pointer dropShadow"
                                 onClick={()=>handleMonthSelection(index)}
                             >
-                                <p className="text-md md:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
-                                <p className="text-xs md:text-2xl">
+                                <p className="text-2xl md:text-4xl md:mt-5">{smallScreen ? month.substring(0,3) : month}</p>
+                                <p className="text-lg md:text-2xl">
                                     {compareMonth(index) &&
                                         //determines what follows the number, the unit of the habit
                                         `${totalValuesByMonth[month] || 0}\n
-                                        ${historicalData?.habit.type ===1 ? "Days" 
-                                            : 
-                                        historicalData?.habit.valueUnitType}`
+                                        ${historicalData?.habit.type ===1 ? "Days" : ""}`
                                     }
                                 </p>
                             </div>
