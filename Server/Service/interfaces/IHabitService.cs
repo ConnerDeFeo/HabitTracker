@@ -1,6 +1,6 @@
 using Server.model.habit;
 
-namespace Server.service;
+namespace Server.service.interfaces;
 
 /// <summary>
 /// Interface for the interactions with Habit service classes.

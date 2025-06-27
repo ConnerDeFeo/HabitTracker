@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using Server.model.habit;
 
-namespace Server.service;
+namespace Server.service.utils;
 
 public static class HabitUtils
 {

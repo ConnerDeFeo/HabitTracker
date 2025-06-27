@@ -3,7 +3,7 @@ namespace Server.controller;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Server.model.habit;
-using Server.service;
+using Server.service.interfaces;
 
 /// <summary>
 /// Main controller for dictating habit changes.

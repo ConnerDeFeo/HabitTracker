@@ -3,7 +3,7 @@ namespace Server.controller;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Server.model.user;
-using Server.service;
+using Server.service.interfaces;
 
 /// <summary>
 /// Handles user requests dealing with user profiles specifically.

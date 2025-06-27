@@ -1,10 +1,6 @@
-using Server.model.habit;
 
-namespace Server.service;
+namespace Server.service.concrete;
 
-public interface IPhotoService
+public class IPhotoService
 {
-    Task<string?> UploadProfilePicture(string sessionKey, IFormFile photo);
-
-    Task<string?> GetProfilePicture(string sessionKey);
 }

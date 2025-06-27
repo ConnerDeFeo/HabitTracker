@@ -1,4 +1,4 @@
-namespace Server.service;
+namespace Server.service.interfaces;
 using Server.model.user;
 
 

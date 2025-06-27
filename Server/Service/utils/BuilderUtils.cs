@@ -2,7 +2,7 @@ using MongoDB.Driver;
 using Server.model.habit;
 using Server.model.user;
 
-namespace Server.service;
+namespace Server.service.utils;
 
 public static class BuilderUtils
 {

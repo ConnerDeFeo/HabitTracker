@@ -2,7 +2,7 @@ namespace Test.controller;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Microsoft.AspNetCore.Http;
-using Server.service;
+using Server.service.interfaces;
 using Server.controller;
 using Server.model.user;
 using Server.model.habit;

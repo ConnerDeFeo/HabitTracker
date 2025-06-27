@@ -4,6 +4,8 @@ using Server.model.user;
 using Server.model.habit;
 using System.Security.Cryptography;
 using MongoDB.Bson;
+using Server.service.interfaces;
+using Server.service.utils;
 
 /// <summary>
 /// Concrete implementations of the User service class allowing functionality

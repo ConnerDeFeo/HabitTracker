@@ -1,4 +1,5 @@
-namespace Server.service;
+
+namespace Server.service.utils;
 
 using System.Security.Cryptography;
 

@@ -1,10 +1,10 @@
 namespace Server.service.concrete;
 
 using MongoDB.Driver;
-using Server.model;
 using Server.model.habit;
 using Server.model.user;
-using Server.service;
+using Server.service.interfaces;
+using Server.service.utils;
 
 public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryService
 { 

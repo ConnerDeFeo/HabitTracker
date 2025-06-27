@@ -1,5 +1,5 @@
 namespace Test.service;
-using Server.service;
+using Server.service.utils;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 

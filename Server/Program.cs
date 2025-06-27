@@ -1,7 +1,8 @@
 namespace Server;   
 using MongoDB.Driver;
-using Server.service;
 using Server.service.concrete;
+using Server.service.interfaces;
+
 public class Program
 {
     public static void Main(string[] args)

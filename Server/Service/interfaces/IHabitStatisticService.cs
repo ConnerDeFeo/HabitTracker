@@ -1,6 +1,6 @@
 using Server.model.habit;
 
-namespace Server.service;
+namespace Server.service.interfaces;
 
 public interface IHabitStatisticService
 {

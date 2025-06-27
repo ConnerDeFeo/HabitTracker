@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.model.habit;
-using Server.service;
+using Server.service.interfaces;
 
 namespace Server.controller;
 
