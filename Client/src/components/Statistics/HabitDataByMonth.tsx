@@ -32,11 +32,11 @@ const HabitDataByMonth = (
         const today = new Date();
         const target = new Date(date.year, index, 1);
 
-        const habitYearMonth = parsedHabitCreatedDate.getFullYear() + parsedHabitCreatedDate.getMonth();
-        const targetYearMonth = target.getFullYear() + target.getMonth();
-        const todayYearMonth = today.getFullYear() + today.getMonth();
-
-        return targetYearMonth >= habitYearMonth && targetYearMonth <= todayYearMonth;
+        // Check if target month is before habit creation and after current month
+        return (
+            target >= new Date(parsedHabitCreatedDate.getFullYear(), parsedHabitCreatedDate.getMonth(), 1) &&
+            target <= new Date(today.getFullYear(), today.getMonth(), 1)
+        );
     };
 
     /*When user clicks on a month in the initial panel, this is dwhat displays the 
