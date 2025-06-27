@@ -60,8 +60,8 @@ const RenderNonActiveHabits = (props:
         //Default
         <DefaultHabitRender 
             habit={habit}
-            topLeftButton = {<img src="Add.svg" alt="reactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInReactivateMode(true)}/>}
-            topRightButton = {<img src="Minus.png" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInDeletionMode(true)}/>}
+            topLeftButton = {<img src="/Add.svg" alt="reactivateHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInReactivateMode(true)}/>}
+            topRightButton = {<img src="/Minus.png" alt="removeHabit" className="h-6 w-6 cursor-pointer" onClick={()=>setInDeletionMode(true)}/>}
         />
     ;
 }
