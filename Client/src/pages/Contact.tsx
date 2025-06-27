@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Input from "../components/Input";
 import emailjs from 'emailjs-com';
-import Button from "../components/Button";
 
 const Contact = ()=>{
     const [name, setName] = useState("");
@@ -36,10 +35,10 @@ const Contact = ()=>{
                 <Input value={name} updateValue={setName} placeholder="name" type="text" name="from_name"/>
                 <Input value={email} updateValue={setEmail} type="email" placeholder="email" name="from_email"/>
                 <textarea className="habitBorder p-3 h-25 resize-none" placeholder="message" name="message" value={message} onChange={(e)=>setMessage(e.target.value)}/>
-                <input type="submit"/>
+                <input type="submit" className="w-30 ml-auto color-black border border-black font-hand bg-black text-white rounded-2xl cursor-pointer py-1 text-4xl "/>
             </form>
             <div className="w-[85%] border-y-3 mx-auto mt-10 md:h-40 md:flex md:items-center">
-                <div className="md:w-[90%] mx-auto grid grid-cols-2 gap-y-2 md:flex md:justify-between text-center">
+                <div className="md:w-[90%] mx-auto grid grid-cols-2 gap-y-2 md:flex md:justify-between text-center my-2">
                     <div className="col-start-1 mx-auto">
                         <p className={textSizing}>Phone</p>
                         <p className={infoSizing}>315-879-7067</p>
