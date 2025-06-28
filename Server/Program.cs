@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Server.service.concrete;
 using Server.service.interfaces;
 using Amazon.S3;
+using Amazon.Runtime;
 
 public class Program
 {
@@ -44,11 +45,22 @@ public class Program
                         .AllowCredentials();
                 });
         });
+        if (Environment.GetEnvironmentVariable("MONGODB_URI") == "Production")
+            builder.Services.AddAWSService<IAmazonS3>();
+        else
+        { 
+            // If not in production, use local aws credentials in order to connect to S3
+            var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+            var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+            var region = Amazon.RegionEndpoint.GetBySystemName("us-east-2");
 
+            var credentials = new BasicAWSCredentials(accessKey, secretKey);
+            var s3Client = new AmazonS3Client(credentials, region);
+
+            builder.Services.AddSingleton<IAmazonS3>(s3Client);
+        }
         //all marked controllers are instanciated
         builder.Services.AddControllers();
-
-        builder.Services.AddAWSService<IAmazonS3>();
         //Regenerate Services each time a request is made
         builder.Services.AddScoped<IUserService, MongoUserService>();
         builder.Services.AddScoped<IHabitService, MongoHabitService>();
