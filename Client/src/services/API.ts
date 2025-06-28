@@ -30,6 +30,15 @@ const API = {
         credentials: 'include', 
         method: 'DELETE'
       });
+    },
+    upload: async (path: string, file: File): Promise<Response> => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return await fetch(path, {
+        credentials: 'include', 
+        method: 'POST',  
+        body: formData,
+      });
     }
   };
   

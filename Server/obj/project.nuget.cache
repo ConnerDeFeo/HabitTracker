@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "nfN66Cr80Es=",
+  "dgSpecHash": "7KcP6I81Brs=",
   "success": true,
   "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cjack\\.nuget\\packages\\awssdk.core\\4.0.0.13\\awssdk.core.4.0.0.13.nupkg.sha512",
+    "C:\\Users\\cjack\\.nuget\\packages\\awssdk.extensions.netcore.setup\\4.0.2\\awssdk.extensions.netcore.setup.4.0.2.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\awssdk.s3\\4.0.3.1\\awssdk.s3.4.0.3.1.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",

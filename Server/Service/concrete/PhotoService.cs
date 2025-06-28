@@ -27,7 +27,7 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         if (file == null || file.Length == 0 || userId == null)
             return null;
 
-        var key = $"profile_photos/{userId}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var key = $"profilePhotos/{userId}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
 
         using var newMemoryStream = new MemoryStream();
         await file.CopyToAsync(newMemoryStream);
@@ -38,13 +38,27 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
             Key = key,
             BucketName = _bucketName,
             ContentType = file.ContentType,
-            CannedACL = S3CannedACL.PublicRead // Optional: controls access level
+            CannedACL = S3CannedACL.PublicRead
         };
 
         var transferUtility = new TransferUtility(_s3Client);
         await transferUtility.UploadAsync(uploadRequest);
 
         string url = $"https://{_bucketName}.s3.amazonaws.com/{key}";
+        await _users.UpdateOneAsync(
+            u => u.SessionKey == sessionKey,
+            Builders<User>.Update.Set(u => u.ProfilePhotoUrl, url)
+        );
+
         return url;
+    }
+
+    public async Task<string?> GetProfilePhoto(string sessionKey)
+    {
+        var user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user == null || string.IsNullOrEmpty(user.ProfilePhotoUrl))
+            return null;
+
+        return user.ProfilePhotoUrl;
     }
 }

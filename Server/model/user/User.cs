@@ -23,4 +23,6 @@ public class User
 
     public string DateCreated { get; set; } = string.Empty;
 
+    public string? ProfilePhotoUrl { get; set; }
+
 }

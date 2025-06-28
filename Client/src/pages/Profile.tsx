@@ -19,6 +19,7 @@ const Profile =(props:{user: UserDto; setUser: (user:UserDto)=>void})=>{
     return(
         <Container content={
             <div className="grid mx-auto text-4xl md:text-6xl gap-5">
+                <div className="h-40 w-40 rounded-2xl bg-gray-200 mx-auto"/>
                 <p>Username: {user.username}</p>
                 <p>Date Joined: {user.dateCreated}</p>
                 <Button label="Logout" onClick={logout} className="w-30 ml-auto"/>

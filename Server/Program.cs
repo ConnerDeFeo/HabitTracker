@@ -2,6 +2,7 @@ namespace Server;
 using MongoDB.Driver;
 using Server.service.concrete;
 using Server.service.interfaces;
+using Amazon.S3;
 
 public class Program
 {
@@ -47,11 +48,13 @@ public class Program
         //all marked controllers are instanciated
         builder.Services.AddControllers();
 
-        //Regenerate UserService each time a request is made
+        builder.Services.AddAWSService<IAmazonS3>();
+        //Regenerate Services each time a request is made
         builder.Services.AddScoped<IUserService, MongoUserService>();
         builder.Services.AddScoped<IHabitService, MongoHabitService>();
         builder.Services.AddScoped<IHabitHistoryService, MongoHabitHistoryService>();
         builder.Services.AddScoped<IHabitStatisticService, MongoHabitStatisticService>();
+        builder.Services.AddScoped<PhotoService>();
 
         //Mix everything and haza we have a server
         var app = builder.Build();
