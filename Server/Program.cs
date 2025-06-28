@@ -54,8 +54,8 @@ public class Program
             var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
             var region = Amazon.RegionEndpoint.GetBySystemName("us-east-2");
 
-            var credentials = new BasicAWSCredentials(accessKey, secretKey);
-            var s3Client = new AmazonS3Client(credentials, region);
+            BasicAWSCredentials credentials = new(accessKey, secretKey);
+            AmazonS3Client s3Client = new(credentials, region);
 
             builder.Services.AddSingleton<IAmazonS3>(s3Client);
         }
