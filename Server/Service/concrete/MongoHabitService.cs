@@ -243,7 +243,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
                         updates.Add(
                             BuilderUtils.habitUpdate
                             .Unset($"HabitHistory.{month}.{day}.Habits.{habitId}")
-                            .Set($"HabitHistory.{month}.{day}.AllHabitsComplted", allHabitsCompleted)
+                            .Set($"HabitHistory.{month}.{day}.AllHabitsCompleted", allHabitsCompleted)
                         );
                     }
 
