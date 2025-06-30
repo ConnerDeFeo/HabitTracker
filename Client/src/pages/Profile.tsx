@@ -5,6 +5,7 @@ import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import PhotoService from "../services/PhotoService";
+import Modal from "../components/Modal";
 
 //Profile page the user sees
 const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
@@ -13,7 +14,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [imageUrl, setImageUrl] = useState<string>("");
-
+    const [modalOpen, setModalOpen] = useState<boolean>(true);
 
     //On load, fetch profile photo
     useEffect(()=>{
@@ -53,7 +54,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                     {imageUrl ? 
                         <>
-                            <img src={imageUrl} alt="profile picture" className="w-full h-full object-cover rounded-[0.85rem]"/>
+                            <img src={imageUrl} alt="Profile pic" className="h-full w-full object-cover rounded-[0.85rem]"/>
                             <img src={"/UploadImage.png"} alt="uplaod image" hidden={imageUrl==""} className="h-7 w-7 cursor-pointer absolute bottom-1 right-1" onClick={()=>fileInputRef.current?.click()}/>
                         </>
                         :
@@ -63,6 +64,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                 <p>Username: {user.username}</p>
                 <p>Date Joined: {user.dateCreated}</p>
                 <Button label="Logout" onClick={logout} className="w-30 ml-auto"/>
+                {modalOpen && <Modal content={<>Testing</>}/>}
             </div>
         }/>
     );
