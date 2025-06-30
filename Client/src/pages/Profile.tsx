@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Container from "../components/Container";
 import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import PhotoService from "../services/PhotoService";
 
 //Profile page the user sees
@@ -26,13 +26,22 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
         fetchImage();
     },[]);
 
-    const handleButtonClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click(); // safe if current is not null
-        }
-    };
+    //Anytime the url is changed, refetch image from s3 bucket.
+    useEffect(()=>{
 
-    const handleFileChange = () => {
+    },[])
+
+    //Upload file to the backend
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if(file){
+            const resp = await PhotoService.uploadProfilePhoto(file);
+            console.log(resp);
+            if(resp.status==200){
+                const url = await resp.text();
+                setImageUrl(url);
+            }
+        }
     };
 
     const logout = async ()=>{
@@ -50,8 +59,9 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                         <img src={imageUrl} alt="profile picture"/>
                         :
                         <>
-                            <input type="file" accept="image/*" className="hidden" ref={fileInputRef}/>
-                            <img src="/UploadImage.png" alt="uplaod image" className="h-10 w-10 cursor-pointer"/>
+                            <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
+                            {/*Onclick, click the hidden input tag */}
+                            <img src="/UploadImage.png" alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
                         </>
                     }
                 </div>

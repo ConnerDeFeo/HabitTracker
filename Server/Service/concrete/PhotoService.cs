@@ -37,8 +37,7 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
             InputStream = newMemoryStream,
             Key = key,
             BucketName = _bucketName,
-            ContentType = file.ContentType,
-            CannedACL = S3CannedACL.PublicRead
+            ContentType = file.ContentType
         };
 
         var transferUtility = new TransferUtility(_s3Client);

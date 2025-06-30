@@ -9,6 +9,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        DotNetEnv.Env.Load(); // loads .env from root
+
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
@@ -45,13 +47,15 @@ public class Program
                         .AllowCredentials();
                 });
         });
+        //if in production, the ec2 instance has been granted a policy that will allow it to interact with the bucket
         if (Environment.GetEnvironmentVariable("MONGODB_URI") == "Production")
             builder.Services.AddAWSService<IAmazonS3>();
         else
-        { 
+        {
             // If not in production, use local aws credentials in order to connect to S3
-            var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
+            var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY");
             var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+            
             var region = Amazon.RegionEndpoint.GetBySystemName("us-east-2");
 
             BasicAWSCredentials credentials = new(accessKey, secretKey);
