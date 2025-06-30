@@ -1,11 +1,16 @@
-import { useState } from "react";
 import ReactCrop, { Crop } from "react-image-crop";
 
 
-const ImageCropper = (props:{imageSrc:string, className?:string})=>{
+const ImageCropper = (
+    props:{
+        imageSrc:string, 
+        className?:string, 
+        crop:Crop,
+        setCrop:React.Dispatch<React.SetStateAction<Crop>>
+    }
+)=>{
 
-    const {imageSrc,className} = props;
-    const [crop,setCrop] = useState<Crop>();
+    const {imageSrc,className,crop,setCrop} = props;
 
     return(
         <ReactCrop

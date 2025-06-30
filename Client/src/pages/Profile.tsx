@@ -7,6 +7,8 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import PhotoService from "../services/PhotoService";
 import Modal from "../components/General/Modal";
 import ImageCropper from "../components/Profile/ImageCropper";
+import { convertToPixelCrop, Crop, PixelCrop } from "react-image-crop";
+import Canvas from "../components/Profile/Canvas";
 
 //Profile page the user sees
 const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
@@ -16,6 +18,15 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [imageUrl, setImageUrl] = useState<string>("");
     const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [crop, setCrop] = useState<Crop>({
+        unit: 'px', // Can be 'px' or '%'
+        x: 100,
+        y: 100,
+        width: 250,
+        height: 250
+    })
+    const modifiedImgRef = useRef<HTMLCanvasElement>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
 
     //On load, fetch profile photo
     useEffect(()=>{
@@ -48,6 +59,9 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
         navigate('/');
     }
 
+    console.log("crop", crop);
+    console.log("converted", crop as PixelCrop);
+
     return(
         <Container content={
             <div className="grid mx-auto text-4xl md:text-6xl gap-5">
@@ -57,7 +71,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                 >
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                     {imageUrl ? 
-                        <img src={imageUrl} alt="Profile pic" className="h-full w-full object-cover rounded-full"/>
+                        <img src={imageUrl} alt="Profile pic" className="h-full w-full object-cover rounded-full" ref={imgRef}/>
                         :
                         <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
                     }
@@ -68,8 +82,17 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                 {modalOpen && 
                     <Modal content={
                         <>
-                            <ImageCropper imageSrc={imageUrl}/>
-                            <button/>
+                            <ImageCropper imageSrc={imageUrl} crop={crop} setCrop={setCrop}/>
+                            <Button label="Confirm" className="w-30" onClick={
+                                ()=>{
+                                    if(imgRef.current && modifiedImgRef.current)
+                                        Canvas(
+                                            imgRef.current,
+                                            modifiedImgRef.current,
+                                            crop as PixelCrop
+                                        )
+                                }}/>
+                            {crop && <canvas ref={modifiedImgRef} className="border w-[250px] h-[250px] object-contain"/>}
                         </>
                     } onClose={()=>setModalOpen(false)}/>}
             </div>
