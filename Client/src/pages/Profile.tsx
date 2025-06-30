@@ -12,7 +12,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     const navigate = useNavigate();
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [imageUrl, setImageUrl] = useState<string | undefined>();
+    const [imageUrl, setImageUrl] = useState<string>("");
 
     //On load, fetch profile photo
     useEffect(()=>{
@@ -48,15 +48,15 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     return(
         <Container content={
             <div className="grid mx-auto text-4xl md:text-6xl gap-5">
-                <div className="h-40 w-40 habitBorder mx-auto flex justify-center items-center">
+                <div className="h-40 w-40 habitBorder mx-auto flex justify-center items-center relative">
+                    <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                     {imageUrl ? 
-                        <img src={imageUrl} alt="profile picture"/>
-                        :
                         <>
-                            <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
-                            {/*Onclick, click the hidden input tag */}
-                            <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
+                            <img src={imageUrl} alt="profile picture"/>
+                            <img src={"/UploadImage.png"} alt="uplaod image" hidden={imageUrl==""} className="h-7 w-7 cursor-pointer absolute bottom-1 right-1" onClick={()=>fileInputRef.current?.click()}/>
                         </>
+                        :
+                        <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
                     }
                 </div>
                 <p>Username: {user.username}</p>
