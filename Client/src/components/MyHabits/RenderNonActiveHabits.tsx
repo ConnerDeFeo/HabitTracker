@@ -38,22 +38,22 @@ const RenderNonActiveHabits = (props:
 
     
     return inReactivateMode ? //User clicks plus symbol
-        <div className="habitBorder p-3 grid gap-y-4 w-35 md:w-65 lg:w-80 mx-auto">
+        <div className="habitBorder p-3 grid gap-y-4 w-65 lg:w-80 mx-auto">
             <p className="text-4xl text-center">{habit.name}</p>
             <p className="text-4xl text-center">Reactivate?</p>
-            <div className="flex justify-between w-[70%] mx-auto">
-                <Button label="Yes" className="w-15" onClick={handleHabitReactivation}/>
-                <Button label="No" className="w-15" onClick={()=>setInReactivateMode(false)}/>
+            <div className="flex justify-between w-[90%] mx-auto">
+                <Button label="Yes" className="w-20" onClick={handleHabitReactivation}/>
+                <Button label="No" className="w-20" onClick={()=>setInReactivateMode(false)}/>
             </div>
         </div>
         :
         inDeletionMode ? //User clicks minus symbol
-        <div className="habitBorder p-3 grid gap-y-4 w-35 md:w-65 lg:w-80 mx-auto">
+        <div className="habitBorder p-3 grid gap-y-4 w-65 lg:w-80 mx-auto">
             <p className="text-4xl text-center wrap">Type "{habit.name}" to delete</p>
-            <input value={currentDeletionValue} onChange={(e)=>setCurrentDeletionValue(e.target.value)} className="habitBorder w-[90%] pl-3 mx-auto text-xs"/>
-            <div className="flex justify-between w-[70%] mx-auto">
-                <Button label="Delete" className="w-15" onClick={canDelete ? handleHabitDeletion : ()=>setCurrentDeletionValue("Names did not match")}/>
-                <Button label="Cancel" className="w-15" onClick={()=>setInDeletionMode(false)}/>
+            <input value={currentDeletionValue} onChange={(e)=>setCurrentDeletionValue(e.target.value)} className="habitBorder w-[90%] pl-3 mx-auto text-lg h-9 md:h-12"/>
+            <div className="flex justify-between w-[90%] mx-auto">
+                <Button label="Delete" className="w-20" onClick={canDelete ? handleHabitDeletion : ()=>setCurrentDeletionValue("Names did not match")}/>
+                <Button label="Cancel" className="w-20" onClick={()=>setInDeletionMode(false)}/>
             </div>
         </div>
         :

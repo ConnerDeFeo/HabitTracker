@@ -24,7 +24,7 @@ const CreateHabit = (props: {
 })=>{
     const {handleCancelation, handleHabitCompletion, initialHabit,} = props;
     const labelStyling = "font-hand text-2xl md:text-4xl text-left";
-    const inputStyling = "resize-none habitBorder text-xl sm:text-xl h-9 md:h-12 w-[100%] sm:w-[80%] pl-3";
+    const inputStyling = "resize-none habitBorder text-xl h-9 md:h-12 w-[100%] sm:w-[80%] pl-3";
     const inputLayoutStyling = "grid sm:flex sm:justify-between";
 
     const defaultHabit: Habit = initialHabit??{
