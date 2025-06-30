@@ -14,7 +14,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [imageUrl, setImageUrl] = useState<string>("");
-    const [modalOpen, setModalOpen] = useState<boolean>(true);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     //On load, fetch profile photo
     useEffect(()=>{
@@ -50,13 +50,13 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     return(
         <Container content={
             <div className="grid mx-auto text-4xl md:text-6xl gap-5">
-                <div className="h-40 w-40 habitBorder mx-auto flex justify-center items-center relative">
+                <div 
+                    className="h-40 w-40 mx-auto border-3 flex justify-center items-center relative rounded-full cursor-pointer"
+                    onClick={()=>setModalOpen(true)}
+                >
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                     {imageUrl ? 
-                        <>
-                            <img src={imageUrl} alt="Profile pic" className="h-full w-full object-cover rounded-[0.85rem]"/>
-                            <img src={"/UploadImage.png"} alt="uplaod image" hidden={imageUrl==""} className="h-7 w-7 cursor-pointer absolute bottom-1 right-1" onClick={()=>fileInputRef.current?.click()}/>
-                        </>
+                        <img src={imageUrl} alt="Profile pic" className="h-full w-full object-cover rounded-full"/>
                         :
                         <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
                     }
@@ -64,7 +64,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                 <p>Username: {user.username}</p>
                 <p>Date Joined: {user.dateCreated}</p>
                 <Button label="Logout" onClick={logout} className="w-30 ml-auto"/>
-                {modalOpen && <Modal content={<>Testing</>}/>}
+                {modalOpen && <Modal content={<>Testing</>} onClose={()=>setModalOpen(false)}/>}
             </div>
         }/>
     );
