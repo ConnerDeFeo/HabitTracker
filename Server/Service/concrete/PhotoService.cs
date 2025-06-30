@@ -1,5 +1,6 @@
 
 using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using MongoDB.Driver;
 using Server.model.user;
@@ -22,16 +23,29 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
     /// <returns></returns>
     public async Task<string?> UploadProfilePhoto(string sessionKey, IFormFile file)
     {
-        var userId = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         //File must exist and not be empty, user must be logged in
-        if (file == null || file.Length == 0 || userId == null)
+        if (file is null || file.Length == 0 || user is null)
             return null;
 
-        var key = $"profilePhotos/{userId}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var key = $"profilePhotos/{Guid.NewGuid()}";
 
+        //send as stream
         using var newMemoryStream = new MemoryStream();
         await file.CopyToAsync(newMemoryStream);
 
+        //Delete the previous profile picture uploaded
+        if (user.ProfilePhotoKey is not null)
+        { 
+            DeleteObjectRequest deleteRequest = new()
+            {
+                BucketName = _bucketName,
+                Key = user.ProfilePhotoKey
+            };
+            await _s3Client.DeleteObjectAsync(deleteRequest);
+        }
+
+        //Upload the new photo, transfer utility is used to handle poltentially larger files
         var uploadRequest = new TransferUtilityUploadRequest
         {
             InputStream = newMemoryStream,
@@ -43,10 +57,11 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         var transferUtility = new TransferUtility(_s3Client);
         await transferUtility.UploadAsync(uploadRequest);
 
+        //This is where the front end can find the photo
         string url = $"https://{_bucketName}.s3.amazonaws.com/{key}";
         await _users.UpdateOneAsync(
             u => u.SessionKey == sessionKey,
-            Builders<User>.Update.Set(u => u.ProfilePhotoUrl, url)
+            Builders<User>.Update.Set(u => u.ProfilePhotoKey, key)
         );
 
         return url;
@@ -55,9 +70,9 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
     public async Task<string?> GetProfilePhoto(string sessionKey)
     {
         var user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        if (user == null || string.IsNullOrEmpty(user.ProfilePhotoUrl))
+        if (user == null || string.IsNullOrEmpty(user.ProfilePhotoKey))
             return null;
 
-        return user.ProfilePhotoUrl;
+        return $"https://{_bucketName}.s3.amazonaws.com/{user.ProfilePhotoKey}";
     }
 }

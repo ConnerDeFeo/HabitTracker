@@ -26,17 +26,11 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
         fetchImage();
     },[]);
 
-    //Anytime the url is changed, refetch image from s3 bucket.
-    useEffect(()=>{
-
-    },[])
-
     //Upload file to the backend
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if(file){
             const resp = await PhotoService.uploadProfilePhoto(file);
-            console.log(resp);
             if(resp.status==200){
                 const url = await resp.text();
                 setImageUrl(url);
@@ -61,7 +55,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                         <>
                             <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                             {/*Onclick, click the hidden input tag */}
-                            <img src="/UploadImage.png" alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
+                            <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
                         </>
                     }
                 </div>
