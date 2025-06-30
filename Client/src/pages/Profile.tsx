@@ -53,7 +53,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                     {imageUrl ? 
                         <>
-                            <img src={imageUrl} alt="profile picture" className="w-full h-full object-cover rounded-[1rem]"/>
+                            <img src={imageUrl} alt="profile picture" className="w-full h-full object-cover rounded-[0.85rem]"/>
                             <img src={"/UploadImage.png"} alt="uplaod image" hidden={imageUrl==""} className="h-7 w-7 cursor-pointer absolute bottom-1 right-1" onClick={()=>fileInputRef.current?.click()}/>
                         </>
                         :
