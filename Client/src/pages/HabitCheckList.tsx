@@ -4,8 +4,8 @@ import Habit from "../types/Habit";
 import DateInfo from "../types/DateInfo";
 import DateService from "../services/DateService";
 import DateData from "../data/DateData";
-import Arrow from "../components/Arrow";
-import Button from "../components/Button";
+import Arrow from "../components/General/Arrow";
+import Button from "../components/General/Button";
 import HabitHistoryService from "../services/HabitHistoryService";
 
 //Base page that the Habit Tracker clickable leads to in the top left

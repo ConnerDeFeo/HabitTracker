@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
-import Container from "../components/Container";
+import Button from "../components/General/Button";
+import Container from "../components/General/Container";
 import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import PhotoService from "../services/PhotoService";
-import Modal from "../components/Modal";
-import ImageCropper from "../components/ImageCropper";
+import Modal from "../components/General/Modal";
+import ImageCropper from "../components/Profile/ImageCropper";
 
 //Profile page the user sees
 const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{

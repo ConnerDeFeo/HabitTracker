@@ -2,7 +2,7 @@ import HistoricalDate from "../types/HistoricalDate";
 import DateInfo from "../types/DateInfo";
 import { useNavigate } from "react-router-dom";
 import DateService from "../services/DateService";
-import Arrow from "../components/Arrow";
+import Arrow from "../components/General/Arrow";
 import DateData from "../data/DateData";
 
 //Schedulue navbar item leads to this

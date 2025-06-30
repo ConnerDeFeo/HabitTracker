@@ -1,10 +1,10 @@
 import { useState } from "react";
-import Container from "../components/Container";
+import Container from "../components/General/Container";
 import UserService from "../services/UserService";
-import Waiting from "../components/Waiting";
+import Waiting from "../components/General/Waiting";
 import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
-import Input from "../components/Input";
+import Button from "../components/General/Button";
+import Input from "../components/General/Input";
 import UserDto from "../types/UserDto";
 
 //Create account page

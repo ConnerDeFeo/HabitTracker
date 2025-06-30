@@ -2,7 +2,7 @@ import { useState } from "react";
 import Habit from "../../types/Habit";
 import HabitService from "../../services/HabitService";
 import CreateHabit from "./CreateHabit";
-import Button from "../Button";
+import Button from "../General/Button";
 import DefaultHabitRender from "./DefaultHabitRender";
 
 //The active a single active habit in the myhabits page

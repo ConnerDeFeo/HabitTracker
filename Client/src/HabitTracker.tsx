@@ -7,7 +7,7 @@ import HomePage from './pages/Home';
 import CreateAccount from './pages/CreateAccount';
 import Login from './pages/Login';
 import Navbar from './components/Navigation/Navbar';
-import Footer from './components/Footer';
+import Footer from './components/General/Footer';
 import HabitCheckList from './pages/HabitCheckList';
 import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';

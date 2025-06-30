@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Habit from "../../types/Habit";
 import HabitService from "../../services/HabitService";
-import Button from "../Button";
+import Button from "../General/Button";
 import DefaultHabitRender from "./DefaultHabitRender";
 
 //Represents the non active habits shown in the myhabits page
