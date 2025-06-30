@@ -6,6 +6,7 @@ import UserDto from "../types/UserDto";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import PhotoService from "../services/PhotoService";
 import Modal from "../components/Modal";
+import ImageCropper from "../components/ImageCropper";
 
 //Profile page the user sees
 const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
@@ -64,7 +65,13 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                 <p>Username: {user.username}</p>
                 <p>Date Joined: {user.dateCreated}</p>
                 <Button label="Logout" onClick={logout} className="w-30 ml-auto"/>
-                {modalOpen && <Modal content={<>Testing</>} onClose={()=>setModalOpen(false)}/>}
+                {modalOpen && 
+                    <Modal content={
+                        <>
+                            <ImageCropper imageSrc={imageUrl}/>
+                            <button/>
+                        </>
+                    } onClose={()=>setModalOpen(false)}/>}
             </div>
         }/>
     );
