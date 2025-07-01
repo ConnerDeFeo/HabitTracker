@@ -5,6 +5,7 @@ import Modal from "../General/Modal";
 import ConvertToCanvas from "./ConvertToCanvas";
 import PhotoService from "../../services/PhotoService";
 import heic2any from "heic2any";
+import UploadProfilePicture from "./UploadProfilePicture";
 
 //When use gos to upload a new pfp
 const AddProfilePic = (
@@ -76,26 +77,9 @@ const AddProfilePic = (
     }
 
     //On completion of the image being uploaded and cropped, send to backend for url
-    const handleFileUpload = ()=>{
-        canvas.toBlob(async (blob)=>{
-            if(!blob)
-                return;
-
-            //Convert canvas element to image
-            const file = new File([blob], "ProfilePicture.jpg", { type: "image/jpeg" });
-
-            // Prepare FormData for upload
-            const formData = new FormData();
-            formData.append("file", file);
-
-            const resp = await PhotoService.uploadProfilePhoto(file);
-            if(resp.status==200){
-                const url = await resp.text();
-                setImageUrl(url);
-            }
-            onClose();
-        });
-    }
+    const handleFileUpload = async () => {
+        UploadProfilePicture(canvas,setImageUrl,onClose)
+    };
 
     return(
         <Modal content={
