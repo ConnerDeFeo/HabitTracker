@@ -4,6 +4,7 @@ import Button from "../General/Button";
 import Modal from "../General/Modal";
 import ConvertToCanvas from "./ConvertToCanvas";
 import PhotoService from "../../services/PhotoService";
+import heic2any from "heic2any";
 
 //When use gos to upload a new pfp
 const AddProfilePic = (
@@ -35,12 +36,25 @@ const AddProfilePic = (
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if(file){
+
+            let fileToUse = file;
+
+            // Convert HEIC to JPEG because HEIC sucks why does apple use it god damn
+            if (file.type === "image/heic" || file.name.endsWith(".heic")) {
+                const converted = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.9,
+                });
+                fileToUse = new File([converted as BlobPart], "converted.jpg", { type: "image/jpeg" });
+            }
+
             const reader = new FileReader();
             reader.addEventListener('load',()=>{
                 const uploadedFile = reader.result?.toString() || "";
                 setImgSrc(uploadedFile);
             });
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fileToUse);
         }
     };
 
