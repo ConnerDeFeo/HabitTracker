@@ -86,14 +86,24 @@ const AddProfilePic = (
     return(
         <Modal content={
             <div className="grid">
-                <input type="file" accept="image/*" ref={fileInputRef} onChange={(e)=>handleFileChange(e)} className="text-4xl font-hand cursor-pointer"/>
+                <img src="/x.webp" alt="exit modal" className="cursor-pointer h-15 w-15" onClick={onClose}/>
+                <label className="color-black border border-black font-hand text-4xl bg-black text-white rounded-2xl cursor-pointer p-2 w-fit">
+                    Choose File
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                    />
+                </label>
                 {imgSrc && 
                     <ReactCrop
-                        crop={crop} //Crop doesnt go away
+                        crop={crop}
                         keepSelection
                         circularCrop
                         aspect={ASPECT}
-                        onChange={(_,percent)=>setCrop(percent)} // use percent crop for scalling
+                        onChange={(_,percent)=>setCrop(percent)}
                         minWidth={MINWIDTH}
                         className="max-h-100 mx-auto"
                     >

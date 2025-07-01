@@ -39,11 +39,18 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
         <Container content={
             <div className="grid mx-auto text-4xl md:text-6xl gap-5">
                 <div 
-                    className="h-40 w-40 mx-auto border-3 flex justify-center items-center relative rounded-full cursor-pointer"
-                    onClick={()=>setModalOpen(true)}
+                    className="h-40 w-40 mx-auto border-3 flex justify-center items-center rounded-full"
                 >
                     {imageUrl ? 
-                        <img src={imageUrl} alt="Profile pic" className="rounded-full"/>
+                        <div className="relative">
+                            <img src={imageUrl} alt="Profile pic" className="rounded-full"/>
+                            <div 
+                                className="absolute h-10 w-10 border-2 bg-white bottom-0 right-0 flex justify-center items-center rounded-full cursor-pointer"
+                                onClick={()=>setModalOpen(true)}
+                            >
+                                <img src={"/EditHabits.svg"} alt="uplaod image" className="h-5 w-5 "/>
+                            </div>
+                        </div>
                         :
                         <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>setModalOpen(true)}/>
                     }
