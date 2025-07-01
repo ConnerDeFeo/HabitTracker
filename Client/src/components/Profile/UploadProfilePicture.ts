@@ -30,7 +30,6 @@ const resizeCanvasAndExportBlob = (
 const UploadProfilePicture = async (canvas: HTMLCanvasElement, setImageUrl:React.Dispatch<React.SetStateAction<string>>,onClose:()=>void) => {
     // Resize and compress blob incase file size is to large
     const blob = await resizeCanvasAndExportBlob(canvas, 500, 0.75);
-    console.log(blob.size);
     const file = new File([blob], "ProfilePicture.jpg", { type: "image/jpeg" });
 
     const resp = await PhotoService.uploadProfilePhoto(file);

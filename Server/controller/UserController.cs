@@ -25,9 +25,12 @@ public class UserController(IUserService _userService) : ControllerBase
     public async Task<IActionResult> GetUser()
     {
         var sesionKey = Request.Cookies["sessionKey"];
-        if(sesionKey!=null){
+        if (sesionKey != null)
+        {
             UserDto? result = await _userService.GetUser(sesionKey);
-            if(result!=null) return Ok(result);
+
+            if (result != null)
+                return Ok(result);
         }
         return Unauthorized();
     }

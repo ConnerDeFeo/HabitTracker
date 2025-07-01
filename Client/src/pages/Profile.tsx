@@ -16,10 +16,10 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
 
     //On load, fetch profile photo, then set canvascrop
     useEffect(()=>{
-        if(user.profilePhotoKey){
+        if(user.profilePhotoKey)
             setImageUrl(`https://habit-tracker-photos.s3.amazonaws.com/${user.profilePhotoKey}`);
-        }
-    },[]);
+        
+    },[user]);
 
     //Logout button pressed
     const logout = async ()=>{

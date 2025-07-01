@@ -137,7 +137,17 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                     )
             );
 
-            return new LoginResult {  SessionKey = sessionKey, User = new UserDto { Username = username, DateCreated = user.DateCreated} };
+            return new LoginResult
+            {
+                SessionKey = sessionKey,
+                User =
+                new UserDto
+                {
+                    Username = username,
+                    DateCreated = user.DateCreated,
+                    ProfilePhotoKey = user.ProfilePhotoKey
+                }
+            };
         }
         return new LoginResult{SessionKey = ""};
     }
