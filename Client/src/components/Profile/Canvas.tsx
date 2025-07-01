@@ -6,35 +6,43 @@ const Canvas = (
     crop: PixelCrop
 ) => {
     const ctx = canvas.getContext("2d");
-    if (!ctx) 
+    if (!ctx) {
         throw new Error("No 2d context");
+    }
 
+    // devicePixelRatio slightly increases sharpness on retina devices
+    // at the expense of slightly slower render times and needing to
+    // size the image back down if you want to download/upload and be
+    // true to the images natural size.
     const pixelRatio = window.devicePixelRatio;
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
+    canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
+    canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
+
+    ctx.scale(pixelRatio, pixelRatio);
+    ctx.imageSmoothingQuality = "high";
+    ctx.save();
+
     const cropX = crop.x * scaleX;
     const cropY = crop.y * scaleY;
-    const cropWidth = crop.width * scaleX;
-    const cropHeight = crop.height * scaleY;
 
-    canvas.width = Math.floor(cropWidth * pixelRatio);
-    canvas.height = Math.floor(cropHeight * pixelRatio);
-
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    ctx.imageSmoothingQuality = "high";
-
+    // Move the crop origin to the canvas origin (0,0)
+    ctx.translate(-cropX, -cropY);
     ctx.drawImage(
         image,
-        cropX,       // Start X in source image
-        cropY,       // Start Y in source image
-        cropWidth,   // Width to crop from source
-        cropHeight,  // Height to crop from source
-        0,           // X on canvas
-        0,           // Y on canvas
-        cropWidth,   // Width on canvas
-        cropHeight   // Height on canvas
+        0,
+        0,
+        image.naturalWidth,
+        image.naturalHeight,
+        0,
+        0,
+        image.naturalWidth,
+        image.naturalHeight
     );
+
+    ctx.restore();
 };
 
 export default Canvas;

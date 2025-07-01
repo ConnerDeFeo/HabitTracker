@@ -19,11 +19,11 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     const [imageUrl, setImageUrl] = useState<string>("");
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [crop, setCrop] = useState<Crop>({
-        unit: 'px', // Can be 'px' or '%'
-        x: 100,
+        unit: '%', // Can be 'px' or '%'
+        x: 200,
         y: 100,
-        width: 250,
-        height: 250
+        width: 25,
+        height: 25,
     })
     const modifiedImgRef = useRef<HTMLCanvasElement>(null);
     const imgRef = useRef<HTMLImageElement>(null);
@@ -89,10 +89,10 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                                         Canvas(
                                             imgRef.current,
                                             modifiedImgRef.current,
-                                            crop as PixelCrop
+                                            convertToPixelCrop(crop,imgRef.current.width,imgRef.current.height)
                                         )
                                 }}/>
-                            {crop && <canvas ref={modifiedImgRef} className="border w-[250px] h-[250px] object-contain"/>}
+                            {crop && <canvas ref={modifiedImgRef} className="border w-[150px] h-[150px] object-contain"/>}
                         </>
                     } onClose={()=>setModalOpen(false)}/>}
             </div>
