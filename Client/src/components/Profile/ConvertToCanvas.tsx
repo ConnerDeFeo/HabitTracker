@@ -1,7 +1,7 @@
 import { PixelCrop } from "react-image-crop";
 
 //Converts and image with a crop to a canvas element
-const SetCrop = (
+const ConvertToCanvas = (
     image: HTMLImageElement,
     canvas: HTMLCanvasElement,
     crop: PixelCrop
@@ -46,4 +46,4 @@ const SetCrop = (
     ctx.restore();
 };
 
-export default SetCrop;
+export default ConvertToCanvas;
