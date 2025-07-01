@@ -34,7 +34,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             return new UserDto
             {
                 Username = user.Username,
-                DateCreated = user.DateCreated
+                DateCreated = user.DateCreated,
+                ProfilePhotoKey = user.ProfilePhotoKey
             };
         return null;
     }

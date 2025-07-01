@@ -85,7 +85,7 @@ const AddProfilePic = (
 
     return(
         <Modal content={
-            <div className="grid">
+            <div className="grid gap-y-5">
                 <img src="/x.webp" alt="exit modal" className="cursor-pointer h-15 w-15" onClick={onClose}/>
                 <label className="color-black border border-black font-hand text-4xl bg-black text-white rounded-2xl cursor-pointer p-2 w-fit">
                     Choose File

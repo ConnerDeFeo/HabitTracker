@@ -4,7 +4,6 @@ import Container from "../components/General/Container";
 import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
 import { useEffect, useState } from "react";
-import PhotoService from "../services/PhotoService";
 import AddProfilePic from "../components/Profile/AddProfilePic";
 
 //Profile page the user sees
@@ -17,14 +16,9 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
 
     //On load, fetch profile photo, then set canvascrop
     useEffect(()=>{
-        const fetchImage = async () => {
-            const response = await PhotoService.getProfilePhoto();
-            if (response.status==200) {
-                const data = await response.text();
-                setImageUrl(data);
-            }
-        };
-        fetchImage();
+        if(user.profilePhotoKey){
+            setImageUrl(`https://habit-tracker-photos.s3.amazonaws.com/${user.profilePhotoKey}`);
+        }
     },[]);
 
     //Logout button pressed

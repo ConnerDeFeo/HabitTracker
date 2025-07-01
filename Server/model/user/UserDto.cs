@@ -10,4 +10,5 @@ public class UserDto
 
     public string DateCreated { get; set; } = null!;
 
+    public string? ProfilePhotoKey { get; set; }
 }
