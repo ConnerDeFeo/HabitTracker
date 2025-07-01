@@ -3,7 +3,6 @@ import ReactCrop, { centerCrop, convertToPixelCrop, Crop, makeAspectCrop } from 
 import Button from "../General/Button";
 import Modal from "../General/Modal";
 import ConvertToCanvas from "./ConvertToCanvas";
-import PhotoService from "../../services/PhotoService";
 import heic2any from "heic2any";
 import UploadProfilePicture from "./UploadProfilePicture";
 
