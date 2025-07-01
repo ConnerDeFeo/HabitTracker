@@ -8,7 +8,7 @@ import PhotoService from "../services/PhotoService";
 import Modal from "../components/General/Modal";
 import ImageCropper from "../components/Profile/ImageCropper";
 import { convertToPixelCrop, Crop, PixelCrop } from "react-image-crop";
-import Canvas from "../components/Profile/Canvas";
+import SetCrop from "../components/Profile/SetCrop";
 
 //Profile page the user sees
 const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
@@ -86,7 +86,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                             <Button label="Confirm" className="w-30" onClick={
                                 ()=>{
                                     if(imgRef.current && modifiedImgRef.current)
-                                        Canvas(
+                                        SetCrop(
                                             imgRef.current,
                                             modifiedImgRef.current,
                                             convertToPixelCrop(crop,imgRef.current.width,imgRef.current.height)
