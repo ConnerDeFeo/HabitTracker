@@ -5,10 +5,7 @@ import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import PhotoService from "../services/PhotoService";
-import Modal from "../components/General/Modal";
-import ImageCropper from "../components/Profile/ImageCropper";
-import { convertToPixelCrop, Crop, PixelCrop } from "react-image-crop";
-import SetCrop from "../components/Profile/SetCrop";
+import AddProfilePic from "../components/Profile/AddProfilePic";
 
 //Profile page the user sees
 const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
@@ -18,14 +15,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [imageUrl, setImageUrl] = useState<string>("");
     const [modalOpen, setModalOpen] = useState<boolean>(false);
-    const [crop, setCrop] = useState<Crop>({
-        unit: '%', // Can be 'px' or '%'
-        x: 200,
-        y: 100,
-        width: 25,
-        height: 25,
-    })
-    const modifiedImgRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const imgRef = useRef<HTMLImageElement>(null);
 
     //On load, fetch profile photo
@@ -59,9 +49,6 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
         navigate('/');
     }
 
-    console.log("crop", crop);
-    console.log("converted", crop as PixelCrop);
-
     return(
         <Container content={
             <div className="grid mx-auto text-4xl md:text-6xl gap-5">
@@ -71,30 +58,22 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
                 >
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e)=>handleFileChange(e)}/>
                     {imageUrl ? 
-                        <img src={imageUrl} alt="Profile pic" className="h-full w-full object-cover rounded-full" ref={imgRef}/>
+                        <canvas ref={canvasRef} className="border w-[150px] h-[150px] object-contain rounded-full"/>
                         :
-                        <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>fileInputRef.current?.click()}/>
+                        <img src={"/UploadImage.png"} alt="uplaod image" className="h-10 w-10 cursor-pointer" onClick={()=>setModalOpen(true)}/>
                     }
                 </div>
                 <p>Username: {user.username}</p>
                 <p>Date Joined: {user.dateCreated}</p>
                 <Button label="Logout" onClick={logout} className="w-30 ml-auto"/>
                 {modalOpen && 
-                    <Modal content={
-                        <>
-                            <ImageCropper imageSrc={imageUrl} crop={crop} setCrop={setCrop}/>
-                            <Button label="Confirm" className="w-30" onClick={
-                                ()=>{
-                                    if(imgRef.current && modifiedImgRef.current)
-                                        SetCrop(
-                                            imgRef.current,
-                                            modifiedImgRef.current,
-                                            convertToPixelCrop(crop,imgRef.current.width,imgRef.current.height)
-                                        )
-                                }}/>
-                            {crop && <canvas ref={modifiedImgRef} className="border w-[150px] h-[150px] object-contain"/>}
-                        </>
-                    } onClose={()=>setModalOpen(false)}/>}
+                    <AddProfilePic
+                        imgSrc={imageUrl}
+                        imgRef={imgRef}
+                        canvasRef={canvasRef}
+                        onClose={()=>setModalOpen(false)}
+                    />
+                }
             </div>
         }/>
     );

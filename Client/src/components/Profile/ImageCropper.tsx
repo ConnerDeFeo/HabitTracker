@@ -14,6 +14,7 @@ const ImageCropper = (
     const MINWIDTH = 150;
     const {imageSrc,className,crop,setCrop} = props;
 
+    //Sets crop to middle of screen and then
     const onImageLoad = (e:SyntheticEvent<HTMLImageElement, Event>)=>{
         const {width,height} = e.currentTarget;
         const cropWidthAsPercent = (MINWIDTH / width) * 100;
@@ -32,18 +33,17 @@ const ImageCropper = (
 
     return(
         <ReactCrop
-            crop={crop}
+            crop={crop} //Crop doesnt go away
             keepSelection
             circularCrop
             aspect={ASPECT}
-            onChange={(_,percent)=>setCrop(percent)}
+            onChange={(_,percent)=>setCrop(percent)} // use percent crop for scalling
             className={className}
             minWidth={MINWIDTH}
         >
             <img 
                 src={imageSrc} 
                 alt={"Upload"}
-                className="max-h-[70vh]"
                 onLoad={e=>onImageLoad(e)}
             />
         </ReactCrop>
