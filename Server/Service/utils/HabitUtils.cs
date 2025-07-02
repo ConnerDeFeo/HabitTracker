@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using Server.model.habit;
+using Server.model.user;
 
 namespace Server.service.utils;
 
@@ -74,9 +75,9 @@ public static class HabitUtils
 
         return nonActiveHabits;
     }
-    
+
     public static async Task<HashSet<Habit>> GetActiveHabits(string userId, IMongoCollection<HabitCollection> habitCollections)
-    { 
+    {
         HabitCollection collection = await habitCollections
             .Find(hc => hc.Id == userId)
             .Project<HabitCollection>(
@@ -91,5 +92,58 @@ public static class HabitUtils
             activeHabits.Add(habit);
 
         return activeHabits;
+    }
+
+    //Parses last login date for any given habit
+    private static DateTime ParseLastLoginDate(User user)
+    {
+        if (!DateTime.TryParse(user.LastLoginDate, out DateTime lastLogin))
+            throw new Exception("Date not parsed properly");
+        lastLogin = lastLogin.Date;
+        return lastLogin;
+    } 
+    
+
+    /// <summary>
+    /// Updates list of updated user habit days based on days received
+    /// </summary>
+    /// <param name="user">user being updated</param>
+    /// <param name="collection">collection of given user</param>
+    /// <returns>List of update definitions for a service to call on</returns>
+    /// <exception cref="Exception">Date could not be parsed properly</exception>
+    public static List<UpdateDefinition<HabitCollection>> UpdateUserHabitHistory(User user, HabitCollection collection, DateTime toDate)
+    {
+        List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = [];
+        UpdateDefinitionBuilder<HabitCollection> updateHabitCollection = Builders<HabitCollection>.Update;
+        DateTime lastLogin = ParseLastLoginDate(user);
+
+        if (lastLogin != toDate)
+        {
+            Dictionary<DayOfWeek, HistoricalDate> daysToHabits = [];
+            /*For every day there has not been a login and today, set the habit history as the blank slate
+            of incomplete haibts*/
+            while (lastLogin <= toDate)
+            {
+                DayOfWeek dayOfWeek = lastLogin.DayOfWeek;
+                if (!daysToHabits.ContainsKey(dayOfWeek))
+                    daysToHabits[dayOfWeek] = new()
+                    {
+                        AllHabitsCompleted = false
+                    };
+
+                foreach (Habit habit in collection.ActiveHabits)
+                    if (habit.DaysActive.Contains(lastLogin.DayOfWeek.ToString()))
+                        daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
+
+                //add the dict to the db
+                habitHistoryUpdates.Add(
+                    updateHabitCollection.Set($"HabitHistory.{lastLogin:yyyy-MM}.{lastLogin:dd}", daysToHabits[lastLogin.DayOfWeek])
+                );
+
+                lastLogin = lastLogin.AddDays(1);
+            }
+            //complete all updates on the dictionary
+        }
+        return habitHistoryUpdates;
     }
 }

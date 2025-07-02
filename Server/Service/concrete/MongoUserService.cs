@@ -25,18 +25,36 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         return Convert.ToBase64String(key);
     }
 
+    //Updates users habit history to keep up with current dates
+    private async Task UpdateUserHistory(User user)
+    {
+        //Get habit collection for updating missing dates
+        var filter = Builders<HabitCollection>.Filter.Eq(hc => hc.Id, user.Id);
+        HabitCollection collection = await _habitCollections
+            .Find(filter)
+            .Project<HabitCollection>(Builders<HabitCollection>.Projection.Include(hc => hc.ActiveHabits))
+            .FirstOrDefaultAsync();
+        DateTime today = DateTime.Today.Date;
+        List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = HabitUtils.UpdateUserHabitHistory(user, collection, today);
+        if(habitHistoryUpdates.Count > 0)
+            await _habitCollections.UpdateOneAsync(filter, Builders<HabitCollection>.Update.Combine(habitHistoryUpdates));
+    }
+
     //This is the public version of getUser, not exposing any sensitive info
     public async Task<UserDto?> GetUser(string sessionKey)
     {
 
-        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user != null)
+        {
+            await UpdateUserHistory(user);
             return new UserDto
             {
                 Username = user.Username,
                 DateCreated = user.DateCreated,
                 ProfilePhotoKey = user.ProfilePhotoKey
-            };
+            };   
+        }
         return null;
     }
     
@@ -84,56 +102,14 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         if (user is not null && PasswordHasher.VerifyPassword(password, user.Password))
         {
-            //Get habit collection for updating missing dates
-            var filter = Builders<HabitCollection>.Filter.Eq(hc => hc.Id, user.Id);
-            HabitCollection collection = await _habitCollections
-                .Find(filter)
-                .Project<HabitCollection>(Builders<HabitCollection>.Projection.Include(hc => hc.ActiveHabits))
-                .FirstOrDefaultAsync();
-            List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = [];
-            UpdateDefinitionBuilder<HabitCollection> updateHabitCollection = Builders<HabitCollection>.Update;
-
-            //Get the previous date time in the date class format for < and > comparisons
-            DateTime today = DateTime.Today.Date;
-            if (!DateTime.TryParse(user.LastLoginDate, out DateTime lastLogin))
-                throw new Exception("Date was not parsed properly");
-            lastLogin = lastLogin.Date;
-
-            if (lastLogin != today)
-            {
-                Dictionary<DayOfWeek, HistoricalDate> daysToHabits = [];
-                /*For every day there has not been a login and today, set the habit history as the blank slate
-                of incomplete haibts*/
-                while (lastLogin <= today)
-                {
-                    DayOfWeek dayOfWeek = lastLogin.DayOfWeek;
-                    if (!daysToHabits.ContainsKey(dayOfWeek))
-                        daysToHabits[dayOfWeek] = new()
-                        { 
-                            AllHabitsCompleted=false
-                        };
-                    
-                    foreach (Habit habit in collection.ActiveHabits)
-                        if (habit.DaysActive.Contains(lastLogin.DayOfWeek.ToString()))
-                            daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
-                    
-                    //add the dict to the db
-                    habitHistoryUpdates.Add(
-                        updateHabitCollection.Set($"HabitHistory.{lastLogin:yyyy-MM}.{lastLogin:dd}", daysToHabits[lastLogin.DayOfWeek])
-                    );
-
-                    lastLogin = lastLogin.AddDays(1);
-                }
-                //complete all updates on the dictionary
-                await _habitCollections.UpdateOneAsync(filter, updateHabitCollection.Combine(habitHistoryUpdates));
-            }
-
+            await UpdateUserHistory(user);
+            
                 string sessionKey = GenerateSessionKey();
                 await _users.UpdateOneAsync(
                     u => u.Username.Equals(username),
                     BuilderUtils.userUpdate.Combine(
                         BuilderUtils.userUpdate.Set(u => u.SessionKey, sessionKey),
-                        BuilderUtils.userUpdate.Set(u => u.LastLoginDate, today.ToString("yyyy-MM-dd"))
+                        BuilderUtils.userUpdate.Set(u => u.LastLoginDate, DateTime.Today.ToString("yyyy-MM-dd"))
                     )
             );
 
