@@ -5,7 +5,7 @@ import NavigationItem from "./NavigationItem";
 const Navbar = (props:{displayMenu:()=>void, useHamburger:boolean})=>{
     const {displayMenu, useHamburger} = props;
     const navigate = useNavigate();
-    const loggedIn:boolean = sessionStorage.getItem("loggedIn") ==="true";
+    const loggedIn:boolean = localStorage.getItem("loggedIn") ==="true";
 
     return (
         <div className="flex place-content-between border-b-4 border-black h-24 w-[85%] mx-auto pt-3 items-center">

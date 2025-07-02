@@ -73,11 +73,11 @@ const HabitTracker = ()=>{
             const response = await UserService.GetUser();
             if(response.status==200){
                 const user = await response.json();
-                sessionStorage.setItem("loggedIn","true");
+                localStorage.setItem("loggedIn","true");
                 setUser(user);
             }
             else
-                sessionStorage.setItem("loggedIn","false");
+                localStorage.setItem("loggedIn","false");
         }
         fetchUser();
     },[]);

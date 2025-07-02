@@ -3,7 +3,7 @@ import NavigationItem from "./NavigationItem";
 //after clicking hamburger, this apears
 const Menu = (props:{exitMenu:()=>void})=>{
     const {exitMenu} = props;
-    const loggedIn:boolean = sessionStorage.getItem("loggedIn") ==="true";
+    const loggedIn:boolean = localStorage.getItem("loggedIn") ==="true";
 
     return (
         <div className="w-[80%] mx-auto">

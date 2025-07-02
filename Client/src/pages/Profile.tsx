@@ -24,7 +24,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     //Logout button pressed
     const logout = async ()=>{
         await UserService.Logout();
-        sessionStorage.setItem("loggedIn","false");
+        localStorage.setItem("loggedIn","false");
         setUser({username:"", dateCreated: "" });
         navigate('/');
     }

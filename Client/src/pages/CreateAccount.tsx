@@ -41,7 +41,7 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
                 setMessage("Username Taken");
             }else{
                 const loginResult = await response.json();
-                sessionStorage.setItem("loggedIn","true");
+                localStorage.setItem("loggedIn","true");
                 setUser(loginResult.user);
                 navigate('/');
             }
