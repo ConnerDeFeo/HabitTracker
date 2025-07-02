@@ -7,7 +7,7 @@ const Home = ()=>{
     return(
         <Container content={
             <div className="grid justify-center mt-10 mb-5 gap-10">
-                <h1 className='text-7xl md:text-9xl'>Habit Tracker</h1>
+                <h1 className='text-7xl md:text-9xl'>Kaizen Habits</h1>
                 <Link to="/CreateAccount" className={fontStyling}>Create Account</Link>
                 <Link to="/Login" className={fontStyling}>Login</Link>
             </div>

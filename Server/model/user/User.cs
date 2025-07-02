@@ -25,4 +25,6 @@ public class User
 
     public string? ProfilePhotoKey { get; set; }
 
+    public List<string> Friends { get; set; } = [];
+
 }
