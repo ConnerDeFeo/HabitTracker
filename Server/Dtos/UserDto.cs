@@ -1,4 +1,4 @@
-namespace Server.model.user;
+namespace Server.Dtos;
 
 /// <summary>
 /// Data transfer object representing the public information 
@@ -12,4 +12,5 @@ public class UserDto
 
     public string? ProfilePhotoKey { get; set; }
 
+    public List<string> Friends { get; set; } = [];
 }

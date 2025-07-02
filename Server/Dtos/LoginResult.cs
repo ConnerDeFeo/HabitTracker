@@ -1,4 +1,7 @@
-namespace Server.model.user;
+using Server.model.user;
+
+namespace Server.Dtos;
+
 
 /// <summary>
 /// Login result used to dictate authentication

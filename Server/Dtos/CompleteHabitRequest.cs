@@ -1,4 +1,5 @@
-namespace Server.model.habit;
+namespace Server.Dtos;
+
 
 /// <summary>
 /// Servers to hold all data needed for habit completion.

@@ -1,4 +1,6 @@
+using Amazon;
 using MongoDB.Driver;
+using Server.Dtos;
 using Server.model.habit;
 using Server.model.user;
 
@@ -18,5 +20,20 @@ public static class UserUtils
         var Filter = BuilderUtils.userFilter.Eq(u => u.SessionKey, sessionKey);
 
         return await _users.Find(Filter).FirstOrDefaultAsync();
+    }
+
+    private List<ProfileHabit> GetCurrentHabits(HabitCollection collection)
+    {
+        
+    }
+
+    public static async Task<ProfileHabits> GetProfileHabits(HabitCollection collection)
+    {
+        List<Habit> activeHabits = collection.ActiveHabits;
+        List<ProfileHabit> profileHabits = [];
+        foreach (Habit habit in activeHabits)
+        { 
+            
+        }
     }
 }

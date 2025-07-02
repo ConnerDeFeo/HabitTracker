@@ -1,4 +1,4 @@
-namespace Server.model.habit;
+namespace Server.Dtos;
 
 public class ProfileHabit
 {
@@ -7,5 +7,5 @@ public class ProfileHabit
     public string DateCreated { get; set; } = null!;
 
     public int CurrentStreak { get; set; } = 0;
-    
+
 }

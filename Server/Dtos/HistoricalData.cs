@@ -1,4 +1,6 @@
-namespace Server.model.habit;
+using Server.model.habit;
+
+namespace Server.Dtos;
 
 public class HistoricalData
 {
