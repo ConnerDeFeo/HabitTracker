@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Server.service.interfaces;
 using Server.controller;
 using Server.model.user;
+using Server.dtos;
 using Server.model.habit;
 using Moq;
 

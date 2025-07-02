@@ -1,6 +1,6 @@
 using Server.model.habit;
 
-namespace Server.Dtos;
+namespace Server.dtos;
 
 public class HistoricalData
 {

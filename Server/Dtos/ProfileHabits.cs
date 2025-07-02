@@ -1,5 +1,5 @@
 
-namespace Server.Dtos;
+namespace Server.dtos;
 
 /// <summary>
 /// Basic data regarding a user including their current active habits and current monthly habits

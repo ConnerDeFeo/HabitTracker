@@ -1,4 +1,4 @@
-namespace Server.Dtos;
+namespace Server.dtos;
 
 public class ProfileHabit
 {

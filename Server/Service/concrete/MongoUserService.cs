@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using MongoDB.Bson;
 using Server.service.interfaces;
 using Server.service.utils;
-using Server.Dtos;
+using Server.dtos;
 
 /// <summary>
 /// Concrete implementations of the User service class allowing functionality
@@ -150,7 +150,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 .FirstOrDefaultAsync();
 
             if (collection is not null)
-                return await UserUtils.GetProfileHabits(collection);
+                return UserUtils.GetProfileHabits(collection);
         }
         return new ProfileHabits();
     }

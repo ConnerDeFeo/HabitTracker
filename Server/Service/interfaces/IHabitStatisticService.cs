@@ -1,4 +1,4 @@
-using Server.model.habit;
+using Server.dtos;
 
 namespace Server.service.interfaces;
 

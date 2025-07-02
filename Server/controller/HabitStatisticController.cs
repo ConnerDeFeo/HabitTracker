@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Server.Dtos;
-using Server.model.habit;
+using Server.dtos;
 using Server.service.interfaces;
 
 namespace Server.controller;

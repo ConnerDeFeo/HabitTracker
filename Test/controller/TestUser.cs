@@ -6,6 +6,7 @@ using Server.service.interfaces;
 using Server.controller;
 using Server.model.user;
 using Server.model.habit;
+using Server.dtos;
 using Moq;
 
 

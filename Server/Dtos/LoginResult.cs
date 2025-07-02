@@ -1,6 +1,4 @@
-using Server.model.user;
-
-namespace Server.Dtos;
+namespace Server.dtos;
 
 
 /// <summary>

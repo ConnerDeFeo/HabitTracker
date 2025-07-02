@@ -1,5 +1,6 @@
 namespace Server.service.interfaces;
-using Server.model.user;
+
+using Server.dtos;
 
 
 /// <summary>

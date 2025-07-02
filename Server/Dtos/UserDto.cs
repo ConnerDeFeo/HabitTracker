@@ -1,4 +1,4 @@
-namespace Server.Dtos;
+namespace Server.dtos;
 
 /// <summary>
 /// Data transfer object representing the public information 
