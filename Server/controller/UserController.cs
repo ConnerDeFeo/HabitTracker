@@ -39,9 +39,9 @@ public class UserController(IUserService _userService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User user)
     {
-        LoginResult result = await _userService.CreateUser(user.Username,user.Password);
+        LoginResult result = await _userService.CreateUser(user.Username, user.Password);
         if (result.SessionKey != "")
-        { 
+        {
             Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
             {
                 HttpOnly = true,
@@ -49,16 +49,17 @@ public class UserController(IUserService _userService) : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Secure = true,
             });
-            return Ok(result); 
+            return Ok(result);
         }
         return Conflict(result);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] User user){
-        LoginResult result = await _userService.Login(user.Username,user.Password);
+    public async Task<IActionResult> Login([FromBody] User user)
+    {
+        LoginResult result = await _userService.Login(user.Username, user.Password);
         if (result.SessionKey != "")
-        { 
+        {
             Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
             {
                 HttpOnly = true,
@@ -66,7 +67,7 @@ public class UserController(IUserService _userService) : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Secure = true,
             });
-            return Ok(result);   
+            return Ok(result);
         }
         return Unauthorized(result);
     }
@@ -76,10 +77,25 @@ public class UserController(IUserService _userService) : ControllerBase
     /// </summary>
     /// <returns>200 if succesful logout, 401 else</returns>
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout(){
+    public async Task<IActionResult> Logout()
+    {
         var sesionKey = Request.Cookies["sessionKey"];
-        if(sesionKey!=null && await _userService.Logout(sesionKey))
+        if (sesionKey != null && await _userService.Logout(sesionKey))
             return Ok();
+        return Unauthorized();
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetUserProfile()
+    {
+        var sesionKey = Request.Cookies["sessionKey"];
+        if (sesionKey != null)
+        {
+            ProfileHabits? result = await _userService.GetProfileHabits(sesionKey);
+
+            if (result != null)
+                return Ok(result);
+        }
         return Unauthorized();
     }
 }
