@@ -32,7 +32,7 @@ public class MongoHabitHistoryService(IMongoDatabase _database) : IHabitHistoryS
             Habit? habit = setOfHabits.FirstOrDefault(h => h.Id == habitId);
             /*Habit must exist in active or non active habits for completion to work.
             The requested date must be a valid date where the habit could have existed*/ 
-            if (
+            if (    
                 habit is null ||
                 !DateTime.TryParse(date, out DateTime convertedDate) ||
                 !habit.DaysActive.Contains(convertedDate.DayOfWeek.ToString()) ||
