@@ -1,6 +1,6 @@
 import API from "./API";
 
-const url = import.meta.env.VITE_SERVER_URL+"users/";
+const url = import.meta.env.VITE_SERVER_URL+"users";
 
 const UserService ={
     PostUser: async (username: string, password:string)=>{
@@ -10,11 +10,14 @@ const UserService ={
         return await API.get(url);
     },
     Logout: async ()=>{
-        return await API.post(url+"logout",{});
+        return await API.post(`${url}/login`,{});
     },
     Login: async (username: string, password:string)=>{
-        return await API.post(url+"login",{Username: username, Password: password});
+        return await API.post(`${url}/logout`,{Username: username, Password: password});
     },
+    GetProfile: async ()=>{
+        return await API.get(`${url}/profile`);
+    }
 }
 
 export default UserService;

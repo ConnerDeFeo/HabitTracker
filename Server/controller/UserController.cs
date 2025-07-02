@@ -85,7 +85,7 @@ public class UserController(IUserService _userService) : ControllerBase
         return Unauthorized();
     }
     
-    [HttpGet]
+    [HttpGet("profile")]
     public async Task<IActionResult> GetUserProfile()
     {
         var sesionKey = Request.Cookies["sessionKey"];
