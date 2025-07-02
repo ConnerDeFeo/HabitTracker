@@ -139,7 +139,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     }
 
 
-    public async Task<ProfileHabits> GetProfileHabits(string sessionKey)
+    public async Task<ProfileHabits?> GetProfileHabits(string sessionKey)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is not null)
@@ -152,7 +152,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             if (collection is not null)
                 return UserUtils.GetProfileHabits(collection);
         }
-        return new ProfileHabits();
+        return null;
     }
 
     /// <summary>
