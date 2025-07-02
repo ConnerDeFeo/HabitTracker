@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import AddProfilePic from "../components/Profile/AddProfilePic";
 
 //Profile page the user sees
-const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
+const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
     const {user,setUser} = props;
     const navigate = useNavigate();
 
@@ -24,8 +24,7 @@ const Profile =(props:{user: UserDto, setUser: (user:UserDto)=>void})=>{
     //Logout button pressed
     const logout = async ()=>{
         await UserService.Logout();
-        localStorage.setItem("loggedIn","false");
-        setUser({username:"", dateCreated: "" });
+        setUser(undefined);
         navigate('/');
     }
 

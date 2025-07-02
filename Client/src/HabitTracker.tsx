@@ -6,7 +6,7 @@ import {
 import HomePage from './pages/Home';
 import CreateAccount from './pages/CreateAccount';
 import Login from './pages/Login';
-import Navbar from './components/Navigation/Navbar';
+import Navbar from './components/Navigation/Navigation';
 import Footer from './components/General/Footer';
 import HabitCheckList from './pages/HabitCheckList';
 import Profile from './pages/Profile';
@@ -26,7 +26,7 @@ import Contact from './pages/Contact';
 //Overarching application
 const HabitTracker = ()=>{
     //Current user being held
-    const [user,setUser] = useState<UserDto>({username:"",dateCreated:""});
+    const [user,setUser] = useState<UserDto | undefined >();
     //Current monthly habits being viewed
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     //Flag for showing the menu after clicking hamburger
@@ -73,11 +73,8 @@ const HabitTracker = ()=>{
             const response = await UserService.GetUser();
             if(response.status==200){
                 const user = await response.json();
-                localStorage.setItem("loggedIn","true");
                 setUser(user);
             }
-            else
-                localStorage.setItem("loggedIn","false");
         }
         fetchUser();
     },[]);
@@ -91,14 +88,14 @@ const HabitTracker = ()=>{
         <Router >
             {displayMenu ?
                 //menu should be displayed regardless of path when necessary 
-                <Menu exitMenu={()=>setDisplayMenu(false)}/> : 
+                <Menu exitMenu={()=>setDisplayMenu(false)} loggedIn={user!==undefined} /> : 
                 <>
-                    <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen}/>
+                    <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen} loggedIn={user!==undefined}/>
                     <Routes>
-                        <Route path='' element={user.username==="" ? <HomePage/> : <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/>}/>
+                        <Route path='' element={user ? <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/> : <HomePage/>}/>
                         <Route path='CreateAccount' element={<CreateAccount setUser={setUser}/>}/>
                         <Route path='Login' element={<Login setUser={setUser}/>}/>
-                        <Route path='Profile' element={user.username==""? <HomePage/> : <Profile user={user} setUser={setUser}/>}/>
+                        <Route path='Profile' element={user? <Profile user={user} setUser={setUser}/> : <HomePage/> }/>
                         <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                         <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
                         <Route path='Statistics' element={<Statistics smallScreen={smallScreen}/>}/>
