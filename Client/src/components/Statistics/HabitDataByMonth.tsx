@@ -7,7 +7,7 @@ import HistoricalDate from "../../types/HistoricalDate";
 import HistoricalData from "../../types/HistoricalData";
 
 //Interactive calender on the statistics page in the statistics page
-const HabitDataByMonth = (
+const  HabitDataByMonth = (
     props:{
         totalValuesByMonth: Record<string,number>,
         historicalData?: HistoricalData
