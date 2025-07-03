@@ -10,10 +10,10 @@ const UserService ={
         return await API.get(url);
     },
     Logout: async ()=>{
-        return await API.post(`${url}/login`,{});
+        return await API.post(`${url}/logout`,{});
     },
     Login: async (username: string, password:string)=>{
-        return await API.post(`${url}/logout`,{Username: username, Password: password});
+        return await API.post(`${url}/login`,{Username: username, Password: password});
     },
     GetProfile: async ()=>{
         return await API.get(`${url}/profile`);
