@@ -317,4 +317,108 @@ public class TestMongoFriendService : IAsyncLifetime
 
         Assert.False(rejectFriendResult);
     }
+
+    [Fact]
+    public async Task TestGetFriends()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+
+        await friendService.SendFriendRequest(userSessionKey, friendUsername);
+        await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
+
+        Dictionary<string, string?>? friendsResult = await friendService.GetFriends(userSessionKey);
+        Assert.NotNull(friendsResult);
+        Assert.Single(friendsResult);
+    }
+
+    [Fact]
+    public async Task TestGetFriendsFaliure()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+
+        Dictionary<string, string?>? friendsResult = await friendService.GetFriends(userSessionKey);
+        Assert.NotNull(friendsResult);
+        Assert.Empty(friendsResult);
+
+        friendsResult = await friendService.GetFriends(ObjectId.GenerateNewId().ToString());
+        Assert.Null(friendsResult);
+    }
+
+    [Fact]
+    public async Task TestGetFriendProfile()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+
+        await friendService.SendFriendRequest(userSessionKey, friendUsername);
+        await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
+        await habitService.CreateHabit(friendSessionKey, new Habit
+        {
+            Name = "Test Habit",
+            DaysActive = daysOfWeek,
+        });
+        ProfileHabits? profileHabits = await friendService.GetFriendProfile(userSessionKey, friendUsername);
+        Assert.NotNull(profileHabits);
+        Assert.Single(profileHabits.CurrentHabits);
+        Assert.Single(profileHabits.CurrentMonthHabitsCompleted);
+        Assert.Equal("Test Habit", profileHabits.CurrentHabits[0].Name);
+    }
+
+    [Fact]
+    public async Task TestGetFriendProfileFailure()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+
+        await friendService.SendFriendRequest(userSessionKey, friendUsername);
+        await habitService.CreateHabit(friendSessionKey, new Habit
+        {
+            Name = "Test Habit",
+            DaysActive = daysOfWeek,
+        });
+        ProfileHabits? profileHabits = await friendService.GetFriendProfile(userSessionKey, friendUsername);
+        Assert.Null(profileHabits);
+    }
 }

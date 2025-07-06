@@ -2,6 +2,7 @@ namespace Server.service.concrete;
 
 using MongoDB.Driver;
 using Server.dtos;
+using Server.model.habit;
 using Server.model.user;
 using Server.service.interfaces;
 using Server.service.utils;
@@ -9,6 +10,7 @@ using Server.service.utils;
 public class MongoFriendService(IMongoDatabase database) : IFriendService
 {
     private readonly IMongoCollection<User> _users = database.GetCollection<User>("Users");
+    private readonly IMongoCollection<HabitCollection> _habitCollections = database.GetCollection<HabitCollection>("HabitCollection");
 
     //Send friend request to given user
     public async Task<bool> SendFriendRequest(string sessionKey, string username)
@@ -21,7 +23,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
             if (user.Friends.ContainsKey(friend.Username) || user.FriendRequestsSent.Contains(friend.Username) || user.FriendRequests.ContainsKey(friend.Username))
                 return false;
 
-            
+
             await _users.UpdateOneAsync(
                 u => u.Id == friend.Id,
                 BuilderUtils.userUpdate.
@@ -158,11 +160,30 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
     public async Task<Dictionary<string,string?>?> GetFriends(string sessionKey)
     {
-        return [];
-    }
-    public async Task<ProfileHabits> GetFriendProfile(string sessionKey)
-    {
-        return new ProfileHabits();
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user is not null)
+            return user.Friends;
+        return null;
     }
 
+    //Returns the profile habits of a given friend if they are friends
+    public async Task<ProfileHabits?> GetFriendProfile(string sessionKey, string username)
+    {
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        if (user is not null && friend is not null && user.Id != friend.Id)
+        {
+            if (!user.Friends.ContainsKey(friend.Username))
+                return null;
+
+            string friendId = friend.Id!;
+            HabitCollection? collection = await _habitCollections
+                .Find(hc => hc.Id!.Equals(friend.Id))
+                .FirstOrDefaultAsync();
+
+            if (collection is not null)
+                return UserUtils.GetProfileHabits(collection);
+        }
+        return null;
+    }
 }
