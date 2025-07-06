@@ -25,6 +25,9 @@ public class User
 
     public string? ProfilePhotoKey { get; set; }
 
-    public List<string> Friends { get; set; } = [];
+    //Map userid : photourl
+    public Dictionary<string, string?> Friends { get; set; } = [];
+    public Dictionary<string, string?> FriendRequests { get; set; } = [];
+    public List<string> FriendRequestsSent { get; set; } = [];
 
 }

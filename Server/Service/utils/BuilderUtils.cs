@@ -11,6 +11,7 @@ public static class BuilderUtils
     public static readonly UpdateDefinitionBuilder<HabitCollection> habitUpdate = Builders<HabitCollection>.Update;
     public static readonly UpdateDefinitionBuilder<User> userUpdate = Builders<User>.Update;
     public static readonly FindOneAndUpdateOptions<HabitCollection> habitOptions = new();
+    public static readonly FindOneAndUpdateOptions<User> userOptions = new();
     public static readonly ProjectionDefinitionBuilder<HabitCollection> habitProjection = Builders<HabitCollection>.Projection;
 
 }
