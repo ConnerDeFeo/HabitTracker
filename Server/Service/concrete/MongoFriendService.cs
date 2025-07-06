@@ -13,10 +13,10 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     private readonly IMongoCollection<HabitCollection> _habitCollections = database.GetCollection<HabitCollection>("HabitCollection");
 
     //Send friend request to given user
-    public async Task<bool> SendFriendRequest(string sessionKey, string username)
+    public async Task<bool> SendFriendRequest(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             //User cannot already be friends, have a pending request, or have sent a request
@@ -42,10 +42,10 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
 
     //Unsends friend request to given user
-    public async Task<bool> UnSendFriendRequest(string sessionKey, string username)
+    public async Task<bool> UnSendFriendRequest(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             string friendId = friend.Id!;
@@ -71,10 +71,10 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
 
     //Removes the given friend from friend requests and 
-    public async Task<Dictionary<string,string?>?> AcceptFriendRequest(string sessionKey, string username)
+    public async Task<Dictionary<string,string?>?> AcceptFriendRequest(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             string friendId = friend.Id!;
@@ -102,10 +102,10 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         return null;
     }
 
-    public async Task<Dictionary<string, string?>?> RemoveFriend(string sessionKey, string username)
+    public async Task<Dictionary<string, string?>?> RemoveFriend(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             string friendId = friend.Id!;
@@ -130,10 +130,10 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         }
         return null;
     }
-    public async Task<bool> RejectFriend(string sessionKey, string username)
+    public async Task<bool> RejectFriendRequest(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             if (!user.FriendRequests.ContainsKey(friend.Username))
@@ -167,10 +167,10 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
 
     //Returns the profile habits of a given friend if they are friends
-    public async Task<ProfileHabits?> GetFriendProfile(string sessionKey, string username)
+    public async Task<ProfileHabits?> GetFriendProfile(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             if (!user.Friends.ContainsKey(friend.Username))

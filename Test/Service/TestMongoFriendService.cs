@@ -281,7 +281,7 @@ public class TestMongoFriendService : IAsyncLifetime
         string userUsername = user.Username;
 
         await friendService.SendFriendRequest(userSessionKey, friendUsername);
-        bool rejectFriendResult = await friendService.RejectFriend(friendSessionKey, userUsername);
+        bool rejectFriendResult = await friendService.RejectFriendRequest(friendSessionKey, userUsername);
         Assert.True(rejectFriendResult);
 
         UserDto? postUserDto = await userService.GetUser(userSessionKey);
@@ -313,7 +313,7 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.NotNull(friend);
         string friendUsername = friend.Username;
         string userUsername = user.Username;
-        bool rejectFriendResult = await friendService.RejectFriend(friendSessionKey, userUsername);
+        bool rejectFriendResult = await friendService.RejectFriendRequest(friendSessionKey, userUsername);
 
         Assert.False(rejectFriendResult);
     }
