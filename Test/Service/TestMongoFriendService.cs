@@ -181,8 +181,8 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestAcceptFriendRequest()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner3", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend3", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -204,8 +204,8 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestAcceptFriendRequestFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner3", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend3", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner6", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend6", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -221,4 +221,100 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.Null(acceptFriendResult);
     }
 
+    [Fact]
+    public async Task TestRemoveFriend()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner7", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend7", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+
+        await friendService.SendFriendRequest(userSessionKey, friendUsername);
+        await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
+        Dictionary<string, string?>? removeFriendResult = await friendService.RemoveFriend(userSessionKey, friendUsername);
+
+        Assert.NotNull(removeFriendResult);
+        Assert.Empty(removeFriendResult);
+    }
+
+    [Fact]
+    public async Task TestRemoveFriendFaliure()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner7", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend7", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+
+        Dictionary<string, string?>? removeFriendResult = await friendService.RemoveFriend(userSessionKey, friendUsername);
+        Assert.Null(removeFriendResult);
+    }
+
+    [Fact]
+    public async Task TestRejectFriendRequest()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner8", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend8", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+
+        await friendService.SendFriendRequest(userSessionKey, friendUsername);
+        bool rejectFriendResult = await friendService.RejectFriend(friendSessionKey, userUsername);
+        Assert.True(rejectFriendResult);
+
+        UserDto? postUserDto = await userService.GetUser(userSessionKey);
+        Assert.NotNull(postUserDto);
+        Assert.Empty(postUserDto.Friends);
+        Assert.Empty(postUserDto.FriendRequests);
+        Assert.Empty(postUserDto.FriendRequestsSent);
+
+        UserDto? postFriendDto = await userService.GetUser(friendSessionKey);
+        Assert.NotNull(postFriendDto);
+        Assert.Empty(postFriendDto.FriendRequests);
+        Assert.Empty(postFriendDto.Friends);
+        Assert.Empty(postFriendDto.FriendRequestsSent);
+
+    }
+
+    [Fact]
+    public async Task TestRejectFriendRequestFaliure()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner9", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend9", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
+        string userUsername = user.Username;
+        bool rejectFriendResult = await friendService.RejectFriend(friendSessionKey, userUsername);
+
+        Assert.False(rejectFriendResult);
+    }
 }

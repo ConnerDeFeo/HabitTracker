@@ -76,7 +76,6 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
             string friendId = friend.Id!;
-
             if (!user.FriendRequests.ContainsKey(friend.Username))
                 return null;
 
@@ -101,12 +100,60 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         return null;
     }
 
-    public async Task<Dictionary<string,string?>?> RemoveFriend(string sessionKey, string username)
+    public async Task<Dictionary<string, string?>?> RemoveFriend(string sessionKey, string username)
     {
-        return [];
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        if (user is not null && friend is not null && user.Id != friend.Id)
+        {
+            string friendId = friend.Id!;
+            if (!user.Friends.ContainsKey(friend.Username))
+                return null;
+
+            await _users.UpdateOneAsync(
+                u => u.Id == friendId,
+                BuilderUtils.userUpdate.
+                Unset($"Friends.{user.Username}")
+            );
+
+            BuilderUtils.userOptions.ReturnDocument = ReturnDocument.After;
+            User? updatedUser = await _users.FindOneAndUpdateAsync(
+                u => u.Id == user.Id,
+                BuilderUtils.userUpdate.
+                Unset($"Friends.{friend.Username}"),
+                BuilderUtils.userOptions
+            );
+
+            return updatedUser.Friends;
+        }
+        return null;
     }
     public async Task<bool> RejectFriend(string sessionKey, string username)
     {
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        User? friend = await UserUtils.GetUserByUsername(username, _users);
+        if (user is not null && friend is not null && user.Id != friend.Id)
+        {
+            if (!user.FriendRequests.ContainsKey(friend.Username))
+                return false;
+
+            string userId = user.Id!;
+            string friendId = friend.Id!;
+
+            await _users.UpdateOneAsync(
+                u => u.Id == userId,
+                BuilderUtils.userUpdate.
+                Unset($"FriendRequests.{friend.Username}")
+            );
+
+            await _users.UpdateOneAsync(
+                u => u.Id == friendId,
+                BuilderUtils.userUpdate.
+                PullFilter(u => u.FriendRequestsSent, username => username == user.Username)
+            );
+
+            return true;
+        }
         return false;
     }
     public async Task<Dictionary<string,string?>?> GetFriends(string sessionKey)
