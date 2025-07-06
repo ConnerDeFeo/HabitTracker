@@ -17,10 +17,11 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         User? friend = await UserUtils.GetUserByUsername(username, _users);
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
-
+            //User cannot already be friends, have a pending request, or have sent a request
             if (user.Friends.ContainsKey(friend.Username) || user.FriendRequestsSent.Contains(friend.Username) || user.FriendRequests.ContainsKey(friend.Username))
                 return false;
 
+            
             await _users.UpdateOneAsync(
                 u => u.Id == friend.Id,
                 BuilderUtils.userUpdate.
@@ -76,7 +77,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         {
             string friendId = friend.Id!;
 
-            if (!user.FriendRequests.ContainsKey(user.Username))
+            if (!user.FriendRequests.ContainsKey(friend.Username))
                 return null;
 
             BuilderUtils.userOptions.ReturnDocument = ReturnDocument.After;
