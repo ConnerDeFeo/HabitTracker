@@ -18,6 +18,9 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         if (user is not null && friend is not null && user.Id != friend.Id)
         {
 
+            if (user.Friends.ContainsKey(friend.Username) || user.FriendRequestsSent.Contains(friend.Username) || user.FriendRequests.ContainsKey(friend.Username))
+                return false;
+
             await _users.UpdateOneAsync(
                 u => u.Id == friend.Id,
                 BuilderUtils.userUpdate.

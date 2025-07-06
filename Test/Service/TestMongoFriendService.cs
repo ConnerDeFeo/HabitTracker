@@ -20,6 +20,7 @@ public class TestMongoFriendService : IAsyncLifetime
     IMongoDatabase database;
     IUserService userService;
     IHabitService habitService;
+    IFriendService friendService;
     HashSet<string> daysOfWeek;
 
     public TestMongoFriendService()
@@ -29,6 +30,7 @@ public class TestMongoFriendService : IAsyncLifetime
         database = Client.GetDatabase(dbName);
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
+        friendService = new MongoFriendService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
         daysOfWeek = new HashSet<string> { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
@@ -42,14 +44,22 @@ public class TestMongoFriendService : IAsyncLifetime
         await Client.DropDatabaseAsync(dbName);
     }
 
+    [Fact]
     public async Task TestSendFriendRequest()
     {
-        UserDto? user = await userService.CreateUser("Conner", "12341234");
-        UserDto? friend = await userService.CreateUser("Friend", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend", "12341234");
 
-        string userSessionKey = user?.SessionKey;
-        string friendUserName = friend?.username;
-        bool addFriendResult = await userService.AddFriend(userSessionKey, friendUserName);
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
+
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+
+        string friendUsername = friend.Username;
+        bool addFriendResult = await friendService.SendFriendRequest(userSessionKey, friendUsername);
 
         Assert.True(addFriendResult);
 
@@ -59,37 +69,32 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.Empty(postUserDto.FriendRequests);
         Assert.Single(postUserDto.FriendRequestsSent);
 
-        UserDto? postFriendDto = await userService.GetUser(friend?.SessionKey);
+        UserDto? postFriendDto = await userService.GetUser(friendSessionKey);
         Assert.NotNull(postFriendDto);
         Assert.Single(postFriendDto.FriendRequests);
         Assert.Empty(postFriendDto.Friends);
         Assert.Empty(postFriendDto.FriendRequestsSent);
 
-        bool addFriendResult = await userService.AddFriend(userSessionKey, friendUserName);
-        Assert.True(addFriendResult);
-
-        postUserDto = await userService.GetUser(userSessionKey);
-        Assert.NotNull(postUserDto);
-        Assert.Single(postUserDto?.Friends);
-        Assert.Empty(postUserDto?.FriendRequests);
-        Assert.Empty(postFriendDto.FriendRequestsSent);
-
-        postFriendDto = await userService.GetUser(friend?.SessionKey);
-        Assert.NotNull(postFriendDto);
-        Assert.Single(postFriendDto?.Friends);
-        Assert.Empty(postFriendDto.FriendRequestsSent);
-
     }
+
+    [Fact]
     public async Task TestSendFriendRequestFaliure()
     {
-        UserDto? user = await userService.CreateUser("Conner2", "12341234");
-        UserDto? friend = await userService.CreateUser("Friend2", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner2", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend2", "12341234");
 
-        string userSessionKey = user?.SessionKey;
-        string friendUserName = friend?.username;
-        bool addFriendResult = await userService.AddFriend(userSessionKey, friendUserName);
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
 
-        addFriendResult = await userService.AddFriend(userSessionKey, friendUserName);
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+
+        string friendUsername = friend.Username;
+        bool addFriendResult = await friendService.SendFriendRequest(userSessionKey, friendUsername);
+
+        addFriendResult = await friendService.SendFriendRequest(userSessionKey, friendUsername);
         Assert.False(addFriendResult);
 
         UserDto? postUserDto = await userService.GetUser(userSessionKey);
@@ -98,7 +103,7 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.Empty(postUserDto.FriendRequests);
         Assert.Single(postUserDto.FriendRequestsSent);
 
-        UserDto? postFriendDto = await userService.GetUser(friend?.SessionKey);
+        UserDto? postFriendDto = await userService.GetUser(friendSessionKey);
         Assert.NotNull(postFriendDto);
         Assert.Single(postFriendDto.FriendRequests);
         Assert.Empty(postFriendDto.Friends);
@@ -106,18 +111,23 @@ public class TestMongoFriendService : IAsyncLifetime
 
     }
 
+    [Fact]
     public async Task TestUnSendFriendRequest()
     {
-        User? user = await userService.CreateUser("Conner3", "12341234");
-        User? friend = await userService.CreateUser("Friend3", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner3", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend3", "12341234");
 
-        string userSessionKey = user?.SessionKey;
-        string friendUserName = friend?.username;
-        bool addFriendResult = await userService.AddFriend(userSessionKey, friendUserName);
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
 
-        Assert.True(addFriendResult);
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+        string friendUsername = friend.Username;
 
-        bool unSendFriendResult = await userService.UnSendFriendRequest(userSessionKey, friendUserName);
+        await friendService.SendFriendRequest(userSessionKey, friendUsername);
+        bool unSendFriendResult = await friendService.UnSendFriendRequest(userSessionKey, friendUsername);
 
         Assert.True(unSendFriendResult);
 
@@ -127,34 +137,43 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.Empty(postUserDto.FriendRequests);
         Assert.Empty(postUserDto.FriendRequestsSent);
 
-        UserDto? postFriendDto = await userService.GetUser(friend?.SessionKey);
+        UserDto? postFriendDto = await userService.GetUser(friendSessionKey);
         Assert.NotNull(postFriendDto);
         Assert.Empty(postFriendDto.FriendRequests);
         Assert.Empty(postFriendDto.Friends);
         Assert.Empty(postFriendDto.FriendRequestsSent);
 
     }
+
+    [Fact]
     public async Task TestUnSendFriendRequestFaliure()
     {
-        User? user = await userService.CreateUser("Conner4", "12341234");
-        User? friend = await userService.CreateUser("Friend4", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner4", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend4", "12341234");
 
-        string userSessionKey = user?.SessionKey;
-        string friendUserName = friend?.username;
+        string userSessionKey = userLoginResult!.SessionKey;
+        string friendSessionKey = friendLoginResult!.SessionKey;
 
-        bool unSendFriendResult = await userService.UnSendFriendRequest(userSessionKey, friendUserName);
+        UserDto? friend = await userService.GetUser(friendSessionKey);
+        UserDto? user = await userService.GetUser(userSessionKey);
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
 
-        Assert.True(unSendFriendResult);
+        string friendUsername = friend.Username;
+
+        bool unSendFriendResult = await friendService.UnSendFriendRequest(userSessionKey, friendUsername);
+
+        Assert.False(unSendFriendResult);
 
         UserDto? postUserDto = await userService.GetUser(userSessionKey);
         Assert.NotNull(postUserDto);
         Assert.Empty(postUserDto.Friends);
         Assert.Empty(postUserDto.FriendRequests);
-        Assert.Single(postUserDto.FriendRequestsSent);
+        Assert.Empty(postUserDto.FriendRequestsSent);
 
-        UserDto? postFriendDto = await userService.GetUser(friend?.SessionKey);
+        UserDto? postFriendDto = await userService.GetUser(friendSessionKey);
         Assert.NotNull(postFriendDto);
-        Assert.Single(postFriendDto.FriendRequests);
+        Assert.Empty(postFriendDto.FriendRequests);
         Assert.Empty(postFriendDto.Friends);
         Assert.Empty(postFriendDto.FriendRequestsSent);
 
