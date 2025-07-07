@@ -210,7 +210,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         Dictionary<string, string?> usersAndProfilePics = [];
         var regexFilter = Builders<User>.Filter.Regex(
             u => u.Username,
-            new BsonRegularExpression($"^{Regex.Escape(phrase)}", "i")
+            new BsonRegularExpression($"{Regex.Escape(phrase)}", "i")
         );
         List<User> users = await _users.Find(regexFilter).Limit(5).ToListAsync();
         foreach (User u in users)

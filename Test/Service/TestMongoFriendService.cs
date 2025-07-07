@@ -321,8 +321,8 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestGetFriends()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner10", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend10", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -345,8 +345,8 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendsFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner11", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend11", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -369,8 +369,8 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendProfile()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner12", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend12", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -399,8 +399,8 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendProfileFailure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner13", "12341234");
+        LoginResult? friendLoginResult = await userService.CreateUser("Friend13", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -420,5 +420,45 @@ public class TestMongoFriendService : IAsyncLifetime
         });
         ProfileHabits? profileHabits = await friendService.GetFriendProfile(userSessionKey, friendUsername);
         Assert.Null(profileHabits);
+    }
+
+    [Fact]
+    public async Task TestFindUser()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        await userService.CreateUser("person1", "12341234");
+        await userService.CreateUser("erson2", "12341234");
+        await userService.CreateUser("3person3", "12341234");
+        await userService.CreateUser("234perso", "12341234");
+        await userService.CreateUser("234person1", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+
+        Dictionary<string, string?>? found = await friendService.FindUser(userSessionKey, "person");
+
+        Assert.NotNull(found);
+        Assert.Equal(3, found.Count);
+
+        found = await friendService.FindUser(userSessionKey, "asdf");
+        Assert.NotNull(found);
+        Assert.Empty(found);
+    }
+
+
+    [Fact]
+    public async Task TestFindUserFaliure()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        await userService.CreateUser("person1", "12341234");
+        await userService.CreateUser("erson2", "12341234");
+        await userService.CreateUser("3person3", "12341234");
+        await userService.CreateUser("234perso", "12341234");
+        await userService.CreateUser("234person1", "12341234");
+
+        string userSessionKey = userLoginResult!.SessionKey;
+
+        Dictionary<string, string?>? found = await friendService.FindUser(ObjectId.GenerateNewId().ToString(), "person");
+
+        Assert.Null(found);
     }
 }
