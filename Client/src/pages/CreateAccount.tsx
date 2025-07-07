@@ -32,7 +32,10 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
             setMessage("Enter Username");
         }
         else if(password.length<8){
-            setMessage("Password: 8 Character long");
+            setMessage("Password must be at least 8 Character long");
+        }
+        else if(username.length>25){
+            setMessage("Username must not be longer than 25 Character long");
         }else{
             setWaiting(true);
             const response = await UserService.PostUser(username,password);
