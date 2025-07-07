@@ -16,7 +16,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
 
     const today = new Date();
     //Post fixes for the various days, so 14th, or 1rst for instance
-    const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd", 4:"rth"};
+    const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd"};
     /*post fix has to bge checked like this due to 11-14 ending with "th" 
     and other numbers ending with 1-4 containing the above post fixes*/
     const postFix = ()=>{
@@ -79,7 +79,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                     />
                 }
             </div>
-            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} inverse={true} className="top-[12rem] left-[1rem] sm:left-[7rem] lg:left-[10rem] lg:top-[15rem]"/>
+            <Arrow onClick={()=>setDate(DateService.decreaseDay(date))} inverse={true} className="top-[12rem] left-[1rem] sm:left-[7rem] lg:left-[10rem] md:top-[15rem] lg:top-[20rem]"/>
             <div className="grid md:grid-cols-2 text-center gap-x-2 w-[60%] mx-auto mt-20 gap-y-10" >
                 {habits.map((habit)=>
                     <p 
@@ -89,7 +89,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
                     </p>
                 )}
             </div>
-            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} className="top-[12rem] right-[1rem] sm:right-[7rem] md:right-[10rem] md:top-[20rem]" show={!dateIsToday} />      
+            <Arrow onClick={()=>{setDate(DateService.increaseDay(date))}} className="top-[12rem] right-[1rem] sm:right-[7rem] lg:right-[10rem] md:top-[15rem] lg:top-[20rem]" show={!dateIsToday} />      
         </div>      
     );
 }

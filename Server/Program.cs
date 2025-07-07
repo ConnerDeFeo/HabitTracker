@@ -73,6 +73,7 @@ public class Program
         builder.Services.AddScoped<IHabitHistoryService, MongoHabitHistoryService>();
         builder.Services.AddScoped<IHabitStatisticService, MongoHabitStatisticService>();
         builder.Services.AddScoped<PhotoService>();
+        builder.Services.AddScoped<IFriendService, MongoFriendService>();
 
         //Mix everything and haza we have a server
         var app = builder.Build();
