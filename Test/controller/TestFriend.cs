@@ -118,6 +118,21 @@ public class TestFriend
             }
         );
 
+        mockFriendService
+        .Setup(hs => hs.FindUser(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns<string, string>((sessionKey, phrase) =>
+            {
+                if (sessionKey.Equals("TestSessionKey"))
+                {
+                    if (phrase == "test")
+                        return Task.FromResult<Dictionary<string, string?>?>([]);
+                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                }
+                else
+                    return Task.FromResult<Dictionary<string, string?>?>(null);
+            }
+        );
+
         friendController = new FriendController(mockFriendService.Object);
     }
 
@@ -253,7 +268,7 @@ public class TestFriend
         result = await friendController.RejectFriendRequest("Invalidtest");
         Assert.IsType<NotFoundResult>(result);
     }
-    
+
     [Fact]
     public async Task TestRemoveFriend()
     {
@@ -272,6 +287,27 @@ public class TestFriend
 
         SetValidSessionKey();
         result = await friendController.RemoveFriend("Invalidtest");
+        Assert.IsType<NotFoundResult>(result);
+    }
+    
+    [Fact]
+    public async Task TestFindUser()
+    {
+        SetValidSessionKey();
+        IActionResult result = await friendController.FindUser("test");
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.IsType<Dictionary<string, string?>>(okResult.Value);
+    }
+
+    [Fact]
+    public async Task TestFindUserFaliure()
+    {
+        SetInvalidSessionKey();
+        IActionResult result = await friendController.FindUser("test");
+        Assert.IsType<NotFoundResult>(result);
+
+        SetValidSessionKey();
+        result = await friendController.FindUser("Invalidtest");
         Assert.IsType<NotFoundResult>(result);
     }
 }

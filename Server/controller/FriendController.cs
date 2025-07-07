@@ -32,8 +32,8 @@ public class FriendController(IFriendService friendService) : ControllerBase
         return Unauthorized();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetFriendsProfile([FromBody] string friendUsername)
+    [HttpGet("profile/{friendUsername}")]
+    public async Task<IActionResult> GetFriendsProfile(string friendUsername)
     {
         string? sesionKey = Request.Cookies["sessionKey"];
 
@@ -122,4 +122,18 @@ public class FriendController(IFriendService friendService) : ControllerBase
         return Unauthorized();
     }
 
+    [HttpGet("find/{phrase}")]
+    public async Task<IActionResult> FindUser(string phrase)
+    {
+        string? sesionKey = Request.Cookies["sessionKey"];
+
+        if (sesionKey != null)
+        {
+            Dictionary<string, string?>? users = await _friendService.FindUser(sesionKey, phrase);
+            if (users is not null)
+                return Ok(users);
+            return NotFound();
+        }
+        return Unauthorized();
+    }
 }
