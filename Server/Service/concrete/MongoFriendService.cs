@@ -1,5 +1,7 @@
 namespace Server.service.concrete;
 
+using System.Text.RegularExpressions;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Server.dtos;
 using Server.model.habit;
@@ -23,13 +25,14 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
             if (user.Friends.ContainsKey(friend.Username) || user.FriendRequestsSent.Contains(friend.Username) || user.FriendRequests.ContainsKey(friend.Username))
                 return false;
 
-
+            //Add to the other persons friend requests
             await _users.UpdateOneAsync(
                 u => u.Id == friend.Id,
                 BuilderUtils.userUpdate.
                 Set($"FriendRequests.{user.Username}", user.ProfilePhotoKey)
             );
 
+            //Add to the users friend request sent
             await _users.UpdateOneAsync(
                 u => u.Id == user.Id,
                 BuilderUtils.userUpdate.
@@ -53,12 +56,14 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
             if (!friend.FriendRequests.ContainsKey(user.Username))
                 return false;
 
+            //Unset friend request for the other person
             await _users.UpdateOneAsync(
-                    u => u.Id == friend.Id,
-                    BuilderUtils.userUpdate.
-                    Unset($"FriendRequests.{user.Username}")
+                u => u.Id == friend.Id,
+                BuilderUtils.userUpdate.
+                Unset($"FriendRequests.{user.Username}")
             );
 
+            //Remove from friend request sent
             await _users.UpdateOneAsync(
                 u => u.Id == user.Id,
                 BuilderUtils.userUpdate.
@@ -71,7 +76,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
 
     //Removes the given friend from friend requests and 
-    public async Task<Dictionary<string,string?>?> AcceptFriendRequest(string sessionKey, string friendUsername)
+    public async Task<Dictionary<string, string?>?> AcceptFriendRequest(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
@@ -83,6 +88,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
 
             BuilderUtils.userOptions.ReturnDocument = ReturnDocument.After;
 
+            //Add to friend list and remove fromt pending requests
             User? updatedUser = await _users.FindOneAndUpdateAsync(
                 u => u.Id == user.Id,
                 BuilderUtils.userUpdate.
@@ -91,10 +97,12 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
                 BuilderUtils.userOptions
             );
 
+            //Add to other persons friend list and pull request from their friend requests sent
             await _users.UpdateOneAsync(
                 u => u.Id == friendId,
                 BuilderUtils.userUpdate.
-                Set($"Friends.{user.Username}", user.ProfilePhotoKey)
+                Set($"Friends.{user.Username}", user.ProfilePhotoKey).
+                PullFilter(u => u.FriendRequestsSent, username => username == friend.Username)
             );
 
             return updatedUser.Friends;
@@ -158,7 +166,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         }
         return false;
     }
-    public async Task<Dictionary<string,string?>?> GetFriends(string sessionKey)
+    public async Task<Dictionary<string, string?>?> GetFriends(string sessionKey)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is not null)
@@ -185,5 +193,29 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
                 return UserUtils.GetProfileHabits(collection);
         }
         return null;
+    }
+
+    /// <summary>
+    /// Finds user with a given phrase in their username case in-sensitive
+    /// </summary>
+    /// <param name="sessionKey">sessionkey of user checking</param>
+    /// <param name="phrase">phrase being searches</param>
+    /// <returns>List of users (max 5) that contain the given phrase</returns>
+    public async Task<Dictionary<string, string?>?> FindUser(string sessionKey, string phrase)
+    {
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user is null)
+            return null;
+
+        Dictionary<string, string?> usersAndProfilePics = [];
+        var regexFilter = Builders<User>.Filter.Regex(
+            u => u.Username,
+            new BsonRegularExpression($"^{Regex.Escape(phrase)}", "i")
+        );
+        List<User> users = await _users.Find(regexFilter).Limit(5).ToListAsync();
+        foreach (User u in users)
+            usersAndProfilePics[u.Username] = u.ProfilePhotoKey;
+
+        return usersAndProfilePics;
     }
 }
