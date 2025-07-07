@@ -9,7 +9,7 @@ const AddFriend = (
     }
 )=>{
     const {displayedUsers,setAddFriends,setDisplayedUsers} = props;
-    const pfpSizing = "h-15 w-15 border-2 rounded-full";
+    const pfpSizing = "h-15 w-15 md:h-20 md:w-20 border-2 rounded-full";
     const [searchPhrase,setSearchPhrase] = useState<string>("");
 
     //Fetches the entered phrase
@@ -21,6 +21,7 @@ const AddFriend = (
         } 
     }
 
+    //Allows enter key to be pressed for a search
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') 
             fetchUsers();
@@ -37,7 +38,7 @@ const AddFriend = (
             </div>
             <div className="grid gap-y-10 py-10">
                 { Object.entries(displayedUsers).map(([key, value]) =>
-                    <div key={key} className="habitBorder w-[85%] max-w-125 mx-auto flex justify-between items-center mx-auto px-[5%] h-30">
+                    <div key={key} className="habitBorder w-[85%] max-w-125 mx-auto flex justify-between items-center mx-auto px-5 h-25 md:h-30 md:px-10">
                         {value ? 
                             <img src={`https://habit-tracker-photos.s3.amazonaws.com/${value}`} alt={`${key} pfp`} className={pfpSizing}/>
                             :

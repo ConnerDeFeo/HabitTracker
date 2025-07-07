@@ -125,15 +125,18 @@ public static class HabitUtils
             while (lastLogin <= toDate)
             {
                 DayOfWeek dayOfWeek = lastLogin.DayOfWeek;
+                //we only need to do this once for each day of the week
                 if (!daysToHabits.ContainsKey(dayOfWeek))
-                    daysToHabits[dayOfWeek] = new()
-                    {
-                        AllHabitsCompleted = false
-                    };
+                {
+                    daysToHabits[dayOfWeek] = new();
 
-                foreach (Habit habit in collection.ActiveHabits)
-                    if (habit.DaysActive.Contains(lastLogin.DayOfWeek.ToString()))
-                        daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
+                    foreach (Habit habit in collection.ActiveHabits)
+                        if (habit.DaysActive.Contains(lastLogin.DayOfWeek.ToString()))
+                        {
+                            daysToHabits[lastLogin.DayOfWeek].Habits[habit.Id!] = habit;
+                            daysToHabits[dayOfWeek].AllHabitsCompleted = false;
+                        }
+                }
 
                 //add the dict to the db
                 habitHistoryUpdates.Add(

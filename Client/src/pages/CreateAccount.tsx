@@ -34,7 +34,7 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
         else if(password.length<8){
             setMessage("Password must be at least 8 Character long");
         }
-        else if(username.length>25){
+        else if(username.length>20){
             setMessage("Username must not be longer than 25 Character long");
         }else{
             setWaiting(true);
