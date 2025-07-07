@@ -8,6 +8,7 @@ const Navbar = (props:{loggedIn:boolean})=>{
             <NavigationItem name="MyHabits" imagePath="/Arrows.png" alt="MyHabits" navigateTo="/MyHabits"/>
             <NavigationItem name="Schedule" imagePath="/Calender.png" alt="calender" navigateTo="/Schedule"/>
             <NavigationItem name="Statistics" imagePath="/Statistics.png" alt="Statistics" navigateTo="/Statistics"/>
+            <NavigationItem name="Friends" imagePath="/Friends.png" alt="Friends" navigateTo="/Friends"/>
             <NavigationItem name="About" navigateTo="/About"/>
             <NavigationItem name="Contact" navigateTo="/Contact"/>
         </>

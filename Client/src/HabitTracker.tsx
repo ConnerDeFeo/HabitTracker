@@ -22,6 +22,7 @@ import Statistics from './pages/Statistics';
 import Menu from './components/Navigation/Menu';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Friends from './pages/Friends';
 
 //Overarching application
 const HabitTracker = ()=>{
@@ -99,8 +100,10 @@ const HabitTracker = ()=>{
                         <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                         <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
                         <Route path='Statistics' element={<Statistics smallScreen={smallScreen}/>}/>
+                        <Route path='Friends' element={<Friends/>}/>
                         <Route path='About' element={<About/>}/>
                         <Route path='Contact' element={<Contact/>}/>
+
                     </Routes>
                     <Footer/>
                 </>
