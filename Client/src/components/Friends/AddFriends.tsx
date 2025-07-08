@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import FriendService from "../../services/FriendService";
+import Friend from "./Friend";
 
 //Displayed after user clicks AddFriends button on friends page
 const AddFriend = (
     props:{
-        displayedUsers:Record<string,string>,
+        displayedUsers:Record<string,string |undefined>,
         setAddFriends:React.Dispatch<React.SetStateAction<boolean>>, 
-        setDisplayedUsers:React.Dispatch<React.SetStateAction<Record<string,string>>>,
+        setDisplayedUsers:React.Dispatch<React.SetStateAction<Record<string,string |undefined>>>,
         fetchUser: ()=>void,
         friendRequestsSent: string[]
     }
 )=>{
     const {displayedUsers,setAddFriends,setDisplayedUsers, fetchUser, friendRequestsSent} = props;
-    const pfpSizing = "h-15 w-15 md:h-20 md:w-20 border-2 rounded-full";
     //Phrase being searched
     const [searchPhrase,setSearchPhrase] = useState<string>("");
 
@@ -70,19 +70,13 @@ const AddFriend = (
             {/** displayed users*/}
             <div className="grid gap-y-10 py-10">
                 { Object.entries(displayedUsers).map(([key, value]) =>
-                    <div key={key} className="habitBorder w-[85%] max-w-125 mx-auto flex justify-between items-center mx-auto px-5 h-25 md:h-30 md:px-10">
-                        {value ? 
-                            <img src={`https://habit-tracker-photos.s3.amazonaws.com/${value}`} alt={`${key} pfp`} className={pfpSizing}/>
-                            :
-                            <img src="UserIcon.png" alt="missing pfp" className={pfpSizing}/>
-                        }
-                        <p className={key.length < 15 ? "text-4xl" : "text-2xl"}>{key}</p>
-                        {friendRequestsSent.some(u=> u===key) ? 
-                            <img src="checkMark.webp" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>unSendFriendRequest(key)}/>
-                            :
-                            <img src="Add.svg" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>sendFriendRequest(key)}/>
-                        }
-                    </div>
+                    <Friend key={key} username={key} profilePic={value} buttons={
+                        friendRequestsSent.some(u=> u===key) ? 
+                        <img src="checkMark.webp" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>unSendFriendRequest(key)}/>
+                        :
+                        <img src="Add.svg" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>sendFriendRequest(key)}/>
+                        
+                    }/>
                 )}
             </div>
         </div>
