@@ -51,7 +51,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                                     onClick={()=>removeFriend(key)}
                                 />
                             }
-                            onClick={()=>removeFriend(key)}
+                            onClick={()=>alert("testing")}
                         />
                     )
                 }
