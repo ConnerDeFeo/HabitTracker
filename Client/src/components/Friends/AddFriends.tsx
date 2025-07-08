@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import FriendService from "../../services/FriendService";
-import UserDto from "../../types/UserDto";
 
 const AddFriend = (
     props:{
@@ -8,10 +7,10 @@ const AddFriend = (
         setAddFriends:React.Dispatch<React.SetStateAction<boolean>>, 
         setDisplayedUsers:React.Dispatch<React.SetStateAction<Record<string,string>>>,
         fetchUser: ()=>void,
-        user: UserDto | undefined
+        friendRequestsSent: string[]
     }
 )=>{
-    const {displayedUsers,setAddFriends,setDisplayedUsers, fetchUser, user} = props;
+    const {displayedUsers,setAddFriends,setDisplayedUsers, fetchUser, friendRequestsSent} = props;
     const pfpSizing = "h-15 w-15 md:h-20 md:w-20 border-2 rounded-full";
     const [searchPhrase,setSearchPhrase] = useState<string>("");
 
@@ -73,7 +72,7 @@ const AddFriend = (
                             <img src="UserIcon.png" alt="missing pfp" className={pfpSizing}/>
                         }
                         <p className={key.length < 15 ? "text-4xl" : "text-2xl"}>{key}</p>
-                        {user && user.friendRequestsSent.some(u=> u===key) ? 
+                        {friendRequestsSent.some(u=> u===key) ? 
                             <img src="checkMark.webp" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>unSendFriendRequest(key)}/>
                             :
                             <img src="Add.svg" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>sendFriendRequest(key)}/>

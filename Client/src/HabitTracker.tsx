@@ -104,7 +104,6 @@ const HabitTracker = ()=>{
                         <Route path='Friends' element={<Friends user={user} fetchUser={fetchUser}/>}/>
                         <Route path='About' element={<About/>}/>
                         <Route path='Contact' element={<Contact/>}/>
-
                     </Routes>
                     <Footer/>
                 </>

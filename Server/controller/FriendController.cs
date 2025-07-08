@@ -76,8 +76,8 @@ public class FriendController(IFriendService friendService) : ControllerBase
         return Unauthorized();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AcceptFriendRequest([FromBody] string friendUsername)
+    [HttpPost("{friendUsername}")]
+    public async Task<IActionResult> AcceptFriendRequest(string friendUsername)
     {
         string? sesionKey = Request.Cookies["sessionKey"];
 
@@ -91,7 +91,7 @@ public class FriendController(IFriendService friendService) : ControllerBase
         return Unauthorized();
     }
 
-    [HttpDelete("Reject/{friendUsername}")]
+    [HttpDelete("reject/{friendUsername}")]
     public async Task<IActionResult> RejectFriendRequest(string friendUsername)
     {
         string? sesionKey = Request.Cookies["sessionKey"];

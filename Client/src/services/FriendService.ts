@@ -15,6 +15,12 @@ const FriendService ={
     unSendFriendRequest: async (friendUsername:string)=>{
         return await API.delete(`${url}/${friendUsername}`);
     },
+    acceptFriendRequest: async (friendUsername:string)=>{
+        return await API.post(`${url}/${friendUsername}`);
+    },
+    rejectFriendRequest: async (friendUsername:string)=>{
+        return await API.delete(`${url}/${friendUsername}`);
+    },
 }
 
 export default FriendService;
