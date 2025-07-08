@@ -218,4 +218,20 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
 
         return usersAndProfilePics;
     }
+
+    public async Task<Dictionary<string, string?>?> GetRandomUsers(string sessionKey)
+    {
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user is null)
+            return null;
+        BsonDocument sampleStage = new("$sample", new BsonDocument("size", 5));
+        BsonDocument[] pipeline = [sampleStage];
+
+        List<User> randomUsers = await _users.Aggregate<User>(pipeline).ToListAsync();
+        Dictionary<string, string?> usernameToProfilePic = [];
+        foreach (User u in randomUsers)
+            usernameToProfilePic[u.Username] = u.ProfilePhotoKey;
+        return usernameToProfilePic;
+        
+    }
 }

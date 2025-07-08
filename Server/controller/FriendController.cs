@@ -136,4 +136,19 @@ public class FriendController(IFriendService friendService) : ControllerBase
         }
         return Unauthorized();
     }
+
+    [HttpGet("random")]
+    public async Task<IActionResult> GetRandomUsers()
+    {
+        string? sesionKey = Request.Cookies["sessionKey"];
+
+        if (sesionKey != null)
+        {
+            Dictionary<string, string?>? users = await _friendService.GetRandomUsers(sesionKey);
+            if (users is not null)
+                return Ok(users);
+            return NotFound();
+        }
+        return Unauthorized();
+    }
 }

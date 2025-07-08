@@ -4,6 +4,7 @@ namespace Server.service.interfaces;
 
 public interface IFriendService
 {
+    Task<Dictionary<string, string?>?> GetRandomUsers(string sessionKey);
     Task<Dictionary<string, string?>?> FindUser(string sessionKey, string phrase);
     Task<Dictionary<string, string?>?> GetFriends(string sessionKey);
     Task<ProfileHabits?> GetFriendProfile(string sessionKey,string friendUsername);

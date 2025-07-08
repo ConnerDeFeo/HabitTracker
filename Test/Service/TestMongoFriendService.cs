@@ -455,10 +455,39 @@ public class TestMongoFriendService : IAsyncLifetime
         await userService.CreateUser("234perso", "12341234");
         await userService.CreateUser("234person1", "12341234");
 
+        Dictionary<string, string?>? found = await friendService.FindUser(ObjectId.GenerateNewId().ToString(), "person");
+        Assert.Null(found);
+    }
+
+    [Fact]
+    public async Task TestGetRandomUsers()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        await userService.CreateUser("person1", "12341234");
+        await userService.CreateUser("erson2", "12341234");
+        await userService.CreateUser("3person3", "12341234");
+        await userService.CreateUser("234perso", "12341234");
+        await userService.CreateUser("234person1", "12341234");
+
         string userSessionKey = userLoginResult!.SessionKey;
 
-        Dictionary<string, string?>? found = await friendService.FindUser(ObjectId.GenerateNewId().ToString(), "person");
+        Dictionary<string, string?>? users = await friendService.GetRandomUsers(userSessionKey);
 
-        Assert.Null(found);
+        Assert.NotNull(users);
+        Assert.Equal(5, users.Count);
+    }
+
+    [Fact]
+    public async Task TestGetRandomUsersFaliure()
+    {
+        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        await userService.CreateUser("person1", "12341234");
+        await userService.CreateUser("erson2", "12341234");
+        await userService.CreateUser("3person3", "12341234");
+        await userService.CreateUser("234perso", "12341234");
+        await userService.CreateUser("234person1", "12341234");
+
+        Dictionary<string, string?>? users = await friendService.GetRandomUsers(ObjectId.GenerateNewId().ToString());
+        Assert.Null(users);
     }
 }
