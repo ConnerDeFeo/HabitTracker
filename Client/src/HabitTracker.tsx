@@ -65,18 +65,19 @@ const HabitTracker = ()=>{
         }
     }
 
+    const fetchUser = async()=>{
+        const response = await UserService.GetUser();
+        if(response.status==200){
+            const user: UserDto = await response.json();
+            setUser(user);
+        }
+    }
+
     /**
      * Fetches user on load of application so that all relevant data can
      * immediately be updated
      */
     useEffect(()=>{
-        const fetchUser = async()=>{
-            const response = await UserService.GetUser();
-            if(response.status==200){
-                const user = await response.json();
-                setUser(user);
-            }
-        }
         fetchUser();
     },[]);
 
@@ -100,7 +101,7 @@ const HabitTracker = ()=>{
                         <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                         <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
                         <Route path='Statistics' element={<Statistics smallScreen={smallScreen}/>}/>
-                        <Route path='Friends' element={<Friends/>}/>
+                        <Route path='Friends' element={<Friends user={user} fetchUser={fetchUser}/>}/>
                         <Route path='About' element={<About/>}/>
                         <Route path='Contact' element={<Contact/>}/>
 

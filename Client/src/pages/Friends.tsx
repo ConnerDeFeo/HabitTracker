@@ -1,7 +1,9 @@
 import {useState } from "react";
 import AddFriend from "../components/Friends/AddFriends";
+import UserDto from "../types/UserDto";
 
-const Friends = ()=>{
+const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
+    const {user,fetchUser} = props;
     //flag for showing the addfriends page
     const [addFriends,setAddFriends] = useState<boolean>(false);
     //flag for showing the friend requests page
@@ -10,7 +12,7 @@ const Friends = ()=>{
     
 
     return addFriends ?
-            <AddFriend setDisplayedUsers={setDisplayedUsers} displayedUsers={displayedUsers} setAddFriends={setAddFriends}/>
+            <AddFriend setDisplayedUsers={setDisplayedUsers} displayedUsers={displayedUsers} setAddFriends={setAddFriends} fetchUser={fetchUser} user={user}/>
             :
             <>
                 <div className="flex justify-between w-[85%] mx-auto text-2xl my-5">

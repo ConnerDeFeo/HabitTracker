@@ -1,16 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FriendService from "../../services/FriendService";
+import UserDto from "../../types/UserDto";
 
 const AddFriend = (
     props:{
         displayedUsers:Record<string,string>,
         setAddFriends:React.Dispatch<React.SetStateAction<boolean>>, 
-        setDisplayedUsers:React.Dispatch<React.SetStateAction<Record<string,string>>>
+        setDisplayedUsers:React.Dispatch<React.SetStateAction<Record<string,string>>>,
+        fetchUser: ()=>void,
+        user: UserDto | undefined
     }
 )=>{
-    const {displayedUsers,setAddFriends,setDisplayedUsers} = props;
+    const {displayedUsers,setAddFriends,setDisplayedUsers, fetchUser, user} = props;
     const pfpSizing = "h-15 w-15 md:h-20 md:w-20 border-2 rounded-full";
     const [searchPhrase,setSearchPhrase] = useState<string>("");
+
+    useEffect(()=>{
+        const fetchRandomUsers = async ()=>{
+            const resp = await FriendService.getRandomUsers();
+            if(resp.status==200){
+                const users = await resp.json();
+                setDisplayedUsers(users);
+            }
+        }
+        fetchRandomUsers();
+    },[])
 
     //Fetches the entered phrase
     const fetchUsers = async ()=>{
@@ -18,6 +32,20 @@ const AddFriend = (
         if(resp.status==200){
             const users:Record<string,string> = await resp.json();
             setDisplayedUsers(users); 
+        } 
+    }
+
+    const sendFriendRequest= async(username:string)=>{
+        const resp = await FriendService.sendFriendRequest(username);
+        if(resp.status==200){
+            fetchUser();
+        } 
+    }
+
+    const unSendFriendRequest= async(username:string)=>{
+        const resp = await FriendService.unSendFriendRequest(username);
+        if(resp.status==200){
+            fetchUser();
         } 
     }
 
@@ -45,7 +73,11 @@ const AddFriend = (
                             <img src="UserIcon.png" alt="missing pfp" className={pfpSizing}/>
                         }
                         <p className={key.length < 15 ? "text-4xl" : "text-2xl"}>{key}</p>
-                        <img src="Add.svg" className="h-6 w-6 my-auto cursor-pointer"/>
+                        {user && user.friendRequestsSent.some(u=> u===key) ? 
+                            <img src="checkMark.webp" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>unSendFriendRequest(key)}/>
+                            :
+                            <img src="Add.svg" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>sendFriendRequest(key)}/>
+                        }
                     </div>
                 )}
             </div>
