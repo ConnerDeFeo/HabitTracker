@@ -1,5 +1,6 @@
 import FriendService from "../../services/FriendService";
 
+//Displayed after user clicks FriendRequests button on friends page
 const FriendRequests = (
     props:{
         friendRequests:Record<string,string | undefined>,
@@ -25,9 +26,11 @@ const FriendRequests = (
 
     return(
         <div className="my-10">
+            {/** arrow*/}
             <div className="w-70 sm:w-100 md:w-125 mx-auto">
                 <img src="BasicArrow.png" alt="basic arrow" className="rotate-180 h-8 w-8 my-5 cursor-pointer" onClick={setFriendRequests}/>
             </div>
+            {/** displayed users*/}
             {Object.keys(friendRequests).length > 0 ? 
                 <>
                     { Object.entries(friendRequests).map(([key, value]) =>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import FriendService from "../../services/FriendService";
 
+//Displayed after user clicks AddFriends button on friends page
 const AddFriend = (
     props:{
         displayedUsers:Record<string,string>,
@@ -12,8 +13,10 @@ const AddFriend = (
 )=>{
     const {displayedUsers,setAddFriends,setDisplayedUsers, fetchUser, friendRequestsSent} = props;
     const pfpSizing = "h-15 w-15 md:h-20 md:w-20 border-2 rounded-full";
+    //Phrase being searched
     const [searchPhrase,setSearchPhrase] = useState<string>("");
 
+    //onload fetch random users to display
     useEffect(()=>{
         const fetchRandomUsers = async ()=>{
             const resp = await FriendService.getRandomUsers();
@@ -25,7 +28,7 @@ const AddFriend = (
         fetchRandomUsers();
     },[])
 
-    //Fetches the entered phrase
+    //Fetches any users with the phrase in their name
     const fetchUsers = async ()=>{
         const resp = await FriendService.findUsers(searchPhrase);
         if(resp.status==200){
@@ -55,7 +58,8 @@ const AddFriend = (
     };
 
     return(
-        <>
+        <div>
+            {/**Seach bar */}
             <div className="w-70 sm:w-100 md:w-125 mx-auto">
                 <img src="BasicArrow.png" alt="basic arrow" className="rotate-180 h-8 w-8 my-5 cursor-pointer" onClick={()=>setAddFriends(false)}/>
                 <div className="relative text-xl h-10 habitBorder mx-auto flex">
@@ -63,6 +67,7 @@ const AddFriend = (
                     <img className="absolute h-6 w-6 right-3 top-[0.3rem] cursor-pointer" src="Search.png" alt="search" onClick={fetchUsers}/>
                 </div>
             </div>
+            {/** displayed users*/}
             <div className="grid gap-y-10 py-10">
                 { Object.entries(displayedUsers).map(([key, value]) =>
                     <div key={key} className="habitBorder w-[85%] max-w-125 mx-auto flex justify-between items-center mx-auto px-5 h-25 md:h-30 md:px-10">
@@ -80,7 +85,7 @@ const AddFriend = (
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 }
 
