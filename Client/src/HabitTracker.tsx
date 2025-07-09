@@ -69,7 +69,6 @@ const HabitTracker = ()=>{
         const response = await UserService.GetUser();
         if(response.status==200){
             const user: UserDto = await response.json();
-            console.log(user);
             setUser(user);
         }
     }

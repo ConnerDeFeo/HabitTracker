@@ -439,7 +439,7 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.NotNull(found);
         Assert.Equal(3, found.Count);
 
-        found = await friendService.FindUser(userSessionKey, "asdf");
+        found = await friendService.FindUser(userSessionKey, "Conner14");
         Assert.NotNull(found);
         Assert.Empty(found);
     }
@@ -466,15 +466,13 @@ public class TestMongoFriendService : IAsyncLifetime
         await userService.CreateUser("person1", "12341234");
         await userService.CreateUser("erson2", "12341234");
         await userService.CreateUser("3person3", "12341234");
-        await userService.CreateUser("234perso", "12341234");
-        await userService.CreateUser("234person1", "12341234");
 
         string userSessionKey = userLoginResult!.SessionKey;
 
         Dictionary<string, string?>? users = await friendService.GetRandomUsers(userSessionKey);
 
         Assert.NotNull(users);
-        Assert.Equal(5, users.Count);
+        Assert.Equal(3, users.Count);
     }
 
     [Fact]

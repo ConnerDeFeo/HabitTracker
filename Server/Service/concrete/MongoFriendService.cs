@@ -207,12 +207,16 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         if (user is null)
             return null;
 
+        //Find the given users based on the name search excluding the user themselves
         Dictionary<string, string?> usersAndProfilePics = [];
-        var regexFilter = Builders<User>.Filter.Regex(
+        var regexFilter = BuilderUtils.userFilter.Regex(
             u => u.Username,
             new BsonRegularExpression($"{Regex.Escape(phrase)}", "i")
         );
-        List<User> users = await _users.Find(regexFilter).Limit(5).ToListAsync();
+        var excludeCurrentUser = BuilderUtils.userFilter.Ne(u => u.Id, user.Id);
+        var finalFilter = BuilderUtils.userFilter.And(regexFilter, excludeCurrentUser);
+
+        List<User> users = await _users.Find(finalFilter).ToListAsync();
         foreach (User u in users)
             usersAndProfilePics[u.Username] = u.ProfilePhotoKey;
 
@@ -224,13 +228,21 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is null)
             return null;
-        BsonDocument sampleStage = new("$sample", new BsonDocument("size", 5));
-        BsonDocument[] pipeline = [sampleStage];
+        
+        //id cannot be equal to the users id, need to convert to a mongo object id for this exclusion to work
+        var matchStage = new BsonDocument("$match", new BsonDocument("_id", new BsonDocument("$ne", new ObjectId(user.Id!.ToString()))));
+        //Sample 5 randoms not including user
+        var sampleStage = new BsonDocument("$sample", new BsonDocument("size", 5));
+
+        BsonDocument[] pipeline = [matchStage, sampleStage];
+
+        var excludeCurrentUser = BuilderUtils.userFilter.Ne(u => u.Id, user.Id);
 
         List<User> randomUsers = await _users.Aggregate<User>(pipeline).ToListAsync();
         Dictionary<string, string?> usernameToProfilePic = [];
         foreach (User u in randomUsers)
             usernameToProfilePic[u.Username] = u.ProfilePhotoKey;
+        
         return usernameToProfilePic;
         
     }
