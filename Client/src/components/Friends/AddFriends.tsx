@@ -78,7 +78,7 @@ const AddFriend = (
             {/** displayed users*/}
             <div className="grid gap-y-10 py-10">
                 { Object.entries(displayedUsers).map(([key, value]) =>
-                    <Friend key={key} username={key} profilePic={value} buttons={
+                    <Friend key={key} username={key} userId={value} buttons={
                         //friend request sent
                         friendRequestsSent.some(u=> u===key) ? 
                         <img src="checkMark.webp" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>unSendFriendRequest(key)}/>

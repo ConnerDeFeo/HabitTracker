@@ -21,6 +21,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
             fetchUser();
     }
     
+    console.log(user)
     return addFriends ? //add friends clicked
         <AddFriend 
             setAddFriends={setAddFriends} 
@@ -47,7 +48,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                     <Friend 
                         key={key} 
                         username={key} 
-                        profilePic={value} 
+                        userId={value} 
                         buttons={
                             <img 
                                 src="Minus.png" 
