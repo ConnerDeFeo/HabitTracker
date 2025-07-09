@@ -127,7 +127,7 @@ const AddProfilePic = (
                     }}/>
                 }
             </div>
-        } onClose={onClose} display={!hidden}/>
+        } onClose={onClose} display={!hidden} className="h-200 w-175"/>
     );
 }
 

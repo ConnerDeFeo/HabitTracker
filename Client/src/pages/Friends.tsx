@@ -13,7 +13,6 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
     const [displayFriendRequests,setSisplayFriendRequests] = useState<boolean>(false); //flag for showing the friend requests component
 
     const [removeFriendModal, setRemoveFriendModal] = useState<boolean>(false);
-    const [displayedUsers,setDisplayedUsers] = useState<Record<string,string|undefined>>({});
     const totalFriendRequests:number = user ? Object.keys(user.friendRequests).length : 0;
 
     const removeFriend = async (username:string)=>{
@@ -24,11 +23,10 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
     
     return addFriends ? //add friends clicked
         <AddFriend 
-            setDisplayedUsers={setDisplayedUsers} 
-            displayedUsers={displayedUsers} 
             setAddFriends={setAddFriends} 
             fetchUser={fetchUser} 
             friendRequestsSent={user ? user.friendRequestsSent : []}
+            friends={user?.friends || {}}
         />
         :
         displayFriendRequests ? //friend request button clicked
@@ -57,7 +55,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                                 className="h-8" 
                                 onClick={(e)=>{
                                     e.stopPropagation(); //prevents outer button from being clicked
-                                    removeFriend(key);
+                                    setRemoveFriendModal(true);
                                 }}
                             />
                         }
@@ -65,7 +63,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                     />
                 )}
             </div>
-            <Modal content={<>asdf</>} onClose={()=>setRemoveFriendModal(false)} display={removeFriendModal}/>
+            <Modal content={<div className="h-10 border"></div>} onClose={()=>setRemoveFriendModal(false)} display={removeFriendModal}/>
         </div>;
 }
 

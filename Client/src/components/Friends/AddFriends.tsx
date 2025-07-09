@@ -5,16 +5,18 @@ import Friend from "./Friend";
 //Displayed after user clicks AddFriends button on friends page
 const AddFriend = (
     props:{
-        displayedUsers:Record<string,string |undefined>,
         setAddFriends:React.Dispatch<React.SetStateAction<boolean>>, 
-        setDisplayedUsers:React.Dispatch<React.SetStateAction<Record<string,string |undefined>>>,
         fetchUser: ()=>void,
-        friendRequestsSent: string[]
+        friendRequestsSent: string[],
+        friends: Record<string,string | undefined>
     }
 )=>{
-    const {displayedUsers,setAddFriends,setDisplayedUsers, fetchUser, friendRequestsSent} = props;
+    
+    const {setAddFriends, fetchUser, friendRequestsSent,friends} = props;
     //Phrase being searched
     const [searchPhrase,setSearchPhrase] = useState<string>("");
+    
+    const [displayedUsers,setDisplayedUsers] = useState<Record<string,string|undefined>>({});
 
     //onload fetch random users to display
     useEffect(()=>{
@@ -57,6 +59,12 @@ const AddFriend = (
             fetchUsers();
     };
 
+    const removeFriend = async (username:string)=>{
+        const resp = await FriendService.removeFriend(username);
+        if(resp.status===200)
+            fetchUser();
+    }
+
     return(
         <div>
             {/**Seach bar */}
@@ -71,8 +79,21 @@ const AddFriend = (
             <div className="grid gap-y-10 py-10">
                 { Object.entries(displayedUsers).map(([key, value]) =>
                     <Friend key={key} username={key} profilePic={value} buttons={
+                        //friend request sent
                         friendRequestsSent.some(u=> u===key) ? 
                         <img src="checkMark.webp" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>unSendFriendRequest(key)}/>
+                        :
+                        //already friends
+                        friends && key in friends ? 
+                        <img 
+                            src="Minus.png" 
+                            alt="remove friend" 
+                            className="h-8 cursor-pointer" 
+                            onClick={(e)=>{
+                                e.stopPropagation(); //prevents outer button from being clicked
+                                removeFriend(key);
+                            }}
+                        />
                         :
                         <img src="Add.svg" className="h-6 w-6 my-auto cursor-pointer" onClick={()=>sendFriendRequest(key)}/>
                         
