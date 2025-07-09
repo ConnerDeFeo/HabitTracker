@@ -9,7 +9,6 @@ const HabitHistoryService ={
     completeHabit: async (habitId: string, date:string, completed: boolean)=>{
         return await API.put(url,{ HabitId:habitId, Date: date, Completed: completed });
     },
-
 }
 
 export default HabitHistoryService;

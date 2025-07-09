@@ -1,3 +1,5 @@
+
+//This is the box that displays username, profile pic, and some buttons on the right hand side of the component
 const Friend = (
     props:{
         username:string,
