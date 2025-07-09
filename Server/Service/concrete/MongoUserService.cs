@@ -53,7 +53,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             {
                 Username = user.Username,
                 DateCreated = user.DateCreated,
-                ProfilePhotoKey = user.ProfilePhotoKey,
                 FriendRequests = user.FriendRequests,
                 Friends = user.Friends,
                 FriendRequestsSent = user.FriendRequestsSent
@@ -125,7 +124,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 {
                     Username = username,
                     DateCreated = user.DateCreated,
-                    ProfilePhotoKey = user.ProfilePhotoKey,
                     FriendRequests = user.FriendRequests,
                     Friends = user.Friends,
                     FriendRequestsSent = user.FriendRequestsSent

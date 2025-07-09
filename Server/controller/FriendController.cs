@@ -24,7 +24,7 @@ public class FriendController(IFriendService friendService) : ControllerBase
 
         if (sesionKey != null)
         {
-            Dictionary<string, string?>? friends = await _friendService.GetFriends(sesionKey);
+            Dictionary<string, string>? friends = await _friendService.GetFriends(sesionKey);
             if (friends != null)
                 return Ok(friends);
             return NotFound();
@@ -83,7 +83,7 @@ public class FriendController(IFriendService friendService) : ControllerBase
 
         if (sesionKey != null)
         {
-            Dictionary<string, string?>? newFriends = await _friendService.AcceptFriendRequest(sesionKey, friendUsername);
+            Dictionary<string, string>? newFriends = await _friendService.AcceptFriendRequest(sesionKey, friendUsername);
             if (newFriends is not null)
                 return Ok(newFriends);
             return NotFound();
@@ -113,7 +113,7 @@ public class FriendController(IFriendService friendService) : ControllerBase
 
         if (sesionKey != null)
         {
-            Dictionary<string, string?>? newFriends = await _friendService.RemoveFriend(sesionKey, friendUsername);
+            Dictionary<string, string>? newFriends = await _friendService.RemoveFriend(sesionKey, friendUsername);
             if (newFriends is not null)
                 return Ok(newFriends);
             return NotFound();
@@ -128,7 +128,7 @@ public class FriendController(IFriendService friendService) : ControllerBase
 
         if (sesionKey != null)
         {
-            Dictionary<string, string?>? users = await _friendService.FindUser(sesionKey, phrase);
+            Dictionary<string, string>? users = await _friendService.FindUser(sesionKey, phrase);
             if (users is not null)
                 return Ok(users);
             return NotFound();
@@ -143,7 +143,7 @@ public class FriendController(IFriendService friendService) : ControllerBase
 
         if (sesionKey != null)
         {
-            Dictionary<string, string?>? users = await _friendService.GetRandomUsers(sesionKey);
+            Dictionary<string, string>? users = await _friendService.GetRandomUsers(sesionKey);
             if (users is not null)
                 return Ok(users);
             return NotFound();

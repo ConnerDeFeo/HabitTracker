@@ -29,7 +29,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
             await _users.UpdateOneAsync(
                 u => u.Id == friend.Id,
                 BuilderUtils.userUpdate.
-                Set($"FriendRequests.{user.Username}", user.ProfilePhotoKey)
+                Set($"FriendRequests.{user.Username}", user.Id)
             );
 
             //Add to the users friend request sent
@@ -76,7 +76,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
 
     //Removes the given friend from friend requests and 
-    public async Task<Dictionary<string, string?>?> AcceptFriendRequest(string sessionKey, string friendUsername)
+    public async Task<Dictionary<string, string>?> AcceptFriendRequest(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
@@ -92,7 +92,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
             User? updatedUser = await _users.FindOneAndUpdateAsync(
                 u => u.Id == user.Id,
                 BuilderUtils.userUpdate.
-                Set($"Friends.{friend.Username}", friend.ProfilePhotoKey).
+                Set($"Friends.{friend.Username}", friend.Id).
                 Unset($"FriendRequests.{friend.Username}"),
                 BuilderUtils.userOptions
             );
@@ -101,7 +101,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
             await _users.UpdateOneAsync(
                 u => u.Id == friendId,
                 BuilderUtils.userUpdate.
-                Set($"Friends.{user.Username}", user.ProfilePhotoKey).
+                Set($"Friends.{user.Username}", user.Id).
                 PullFilter(u => u.FriendRequestsSent, username => username == user.Username)
             );
 
@@ -110,7 +110,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         return null;
     }
 
-    public async Task<Dictionary<string, string?>?> RemoveFriend(string sessionKey, string friendUsername)
+    public async Task<Dictionary<string, string>?> RemoveFriend(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
@@ -166,7 +166,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         }
         return false;
     }
-    public async Task<Dictionary<string, string?>?> GetFriends(string sessionKey)
+    public async Task<Dictionary<string, string>?> GetFriends(string sessionKey)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is not null)
@@ -201,14 +201,14 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     /// <param name="sessionKey">sessionkey of user checking</param>
     /// <param name="phrase">phrase being searches</param>
     /// <returns>List of users (max 5) that contain the given phrase</returns>
-    public async Task<Dictionary<string, string?>?> FindUser(string sessionKey, string phrase)
+    public async Task<Dictionary<string, string>?> FindUser(string sessionKey, string phrase)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is null)
             return null;
 
         //Find the given users based on the name search excluding the user themselves
-        Dictionary<string, string?> usersAndProfilePics = [];
+        Dictionary<string, string> usersAndProfilePics = [];
         var regexFilter = BuilderUtils.userFilter.Regex(
             u => u.Username,
             new BsonRegularExpression($"{Regex.Escape(phrase)}", "i")
@@ -218,12 +218,12 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
 
         List<User> users = await _users.Find(finalFilter).ToListAsync();
         foreach (User u in users)
-            usersAndProfilePics[u.Username] = u.ProfilePhotoKey;
+            usersAndProfilePics[u.Username] = u.Id!;
 
         return usersAndProfilePics;
     }
 
-    public async Task<Dictionary<string, string?>?> GetRandomUsers(string sessionKey)
+    public async Task<Dictionary<string, string>?> GetRandomUsers(string sessionKey)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is null)
@@ -239,9 +239,9 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
         var excludeCurrentUser = BuilderUtils.userFilter.Ne(u => u.Id, user.Id);
 
         List<User> randomUsers = await _users.Aggregate<User>(pipeline).ToListAsync();
-        Dictionary<string, string?> usernameToProfilePic = [];
+        Dictionary<string, string> usernameToProfilePic = [];
         foreach (User u in randomUsers)
-            usernameToProfilePic[u.Username] = u.ProfilePhotoKey;
+            usernameToProfilePic[u.Username] = u.Id!;
         
         return usernameToProfilePic;
         

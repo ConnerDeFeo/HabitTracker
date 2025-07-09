@@ -23,11 +23,9 @@ public class User
 
     public string DateCreated { get; set; } = string.Empty;
 
-    public string? ProfilePhotoKey { get; set; }
-
     //Map userid : photourl
-    public Dictionary<string, string?> Friends { get; set; } = [];
-    public Dictionary<string, string?> FriendRequests { get; set; } = [];
+    public Dictionary<string, string> Friends { get; set; } = [];
+    public Dictionary<string, string> FriendRequests { get; set; } = [];
     public List<string> FriendRequestsSent { get; set; } = [];
 
 }

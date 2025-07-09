@@ -195,7 +195,7 @@ public class TestMongoFriendService : IAsyncLifetime
         string userUsername = user.Username;
 
         await friendService.SendFriendRequest(userSessionKey, friendUsername);
-        Dictionary<string, string?>? acceptFriendResult = await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
+        Dictionary<string, string>? acceptFriendResult = await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
 
         Assert.NotNull(acceptFriendResult);
         Assert.Single(acceptFriendResult);
@@ -230,7 +230,7 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.NotNull(friend);
         string friendUsername = friend.Username;
         string userUsername = user.Username;
-        Dictionary<string, string?>? acceptFriendResult = await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
+        Dictionary<string, string>? acceptFriendResult = await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
 
         Assert.Null(acceptFriendResult);
     }
@@ -253,7 +253,7 @@ public class TestMongoFriendService : IAsyncLifetime
 
         await friendService.SendFriendRequest(userSessionKey, friendUsername);
         await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
-        Dictionary<string, string?>? removeFriendResult = await friendService.RemoveFriend(userSessionKey, friendUsername);
+        Dictionary<string, string>? removeFriendResult = await friendService.RemoveFriend(userSessionKey, friendUsername);
 
         Assert.NotNull(removeFriendResult);
         Assert.Empty(removeFriendResult);
@@ -274,7 +274,7 @@ public class TestMongoFriendService : IAsyncLifetime
         Assert.NotNull(friend);
         string friendUsername = friend.Username;
 
-        Dictionary<string, string?>? removeFriendResult = await friendService.RemoveFriend(userSessionKey, friendUsername);
+        Dictionary<string, string>? removeFriendResult = await friendService.RemoveFriend(userSessionKey, friendUsername);
         Assert.Null(removeFriendResult);
     }
 
@@ -351,7 +351,7 @@ public class TestMongoFriendService : IAsyncLifetime
         await friendService.SendFriendRequest(userSessionKey, friendUsername);
         await friendService.AcceptFriendRequest(friendSessionKey, userUsername);
 
-        Dictionary<string, string?>? friendsResult = await friendService.GetFriends(userSessionKey);
+        Dictionary<string, string>? friendsResult = await friendService.GetFriends(userSessionKey);
         Assert.NotNull(friendsResult);
         Assert.Single(friendsResult);
     }
@@ -372,7 +372,7 @@ public class TestMongoFriendService : IAsyncLifetime
         string friendUsername = friend.Username;
         string userUsername = user.Username;
 
-        Dictionary<string, string?>? friendsResult = await friendService.GetFriends(userSessionKey);
+        Dictionary<string, string>? friendsResult = await friendService.GetFriends(userSessionKey);
         Assert.NotNull(friendsResult);
         Assert.Empty(friendsResult);
 
@@ -448,7 +448,7 @@ public class TestMongoFriendService : IAsyncLifetime
 
         string userSessionKey = userLoginResult!.SessionKey;
 
-        Dictionary<string, string?>? found = await friendService.FindUser(userSessionKey, "person");
+        Dictionary<string, string>? found = await friendService.FindUser(userSessionKey, "person");
 
         Assert.NotNull(found);
         Assert.Equal(3, found.Count);
@@ -469,7 +469,7 @@ public class TestMongoFriendService : IAsyncLifetime
         await userService.CreateUser("234perso", "12341234");
         await userService.CreateUser("234person1", "12341234");
 
-        Dictionary<string, string?>? found = await friendService.FindUser(ObjectId.GenerateNewId().ToString(), "person");
+        Dictionary<string, string>? found = await friendService.FindUser(ObjectId.GenerateNewId().ToString(), "person");
         Assert.Null(found);
     }
 
@@ -483,7 +483,7 @@ public class TestMongoFriendService : IAsyncLifetime
 
         string userSessionKey = userLoginResult!.SessionKey;
 
-        Dictionary<string, string?>? users = await friendService.GetRandomUsers(userSessionKey);
+        Dictionary<string, string>? users = await friendService.GetRandomUsers(userSessionKey);
 
         Assert.NotNull(users);
         Assert.Equal(3, users.Count);
@@ -499,7 +499,7 @@ public class TestMongoFriendService : IAsyncLifetime
         await userService.CreateUser("234perso", "12341234");
         await userService.CreateUser("234person1", "12341234");
 
-        Dictionary<string, string?>? users = await friendService.GetRandomUsers(ObjectId.GenerateNewId().ToString());
+        Dictionary<string, string>? users = await friendService.GetRandomUsers(ObjectId.GenerateNewId().ToString());
         Assert.Null(users);
     }
 }

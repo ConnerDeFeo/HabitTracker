@@ -27,22 +27,10 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         if (file is null || file.Length == 0 || user is null)
             return null;
 
-        var key = $"profilePhotos/{Guid.NewGuid()}";
-
+        string key = user.Id!;
         //send as stream
         using var newMemoryStream = new MemoryStream();
         await file.CopyToAsync(newMemoryStream);
-
-        //Delete the previous profile picture uploaded
-        if (user.ProfilePhotoKey is not null)
-        { 
-            DeleteObjectRequest deleteRequest = new()
-            {
-                BucketName = _bucketName,
-                Key = user.ProfilePhotoKey
-            };
-            await _s3Client.DeleteObjectAsync(deleteRequest);
-        }
 
         //Upload the new photo, transfer utility is used to handle poltentially larger files
         var uploadRequest = new TransferUtilityUploadRequest
@@ -60,7 +48,7 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         string url = $"https://{_bucketName}.s3.amazonaws.com/{key}";
         await _users.UpdateOneAsync(
             u => u.SessionKey == sessionKey,
-            Builders<User>.Update.Set(u => u.ProfilePhotoKey, key)
+            Builders<User>.Update.Set(u => u.Id, key)
         );
 
         return url;
@@ -69,9 +57,9 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
     public async Task<string?> GetProfilePhoto(string sessionKey)
     {
         var user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        if (user == null || string.IsNullOrEmpty(user.ProfilePhotoKey))
+        if (user == null)
             return null;
 
-        return $"https://{_bucketName}.s3.amazonaws.com/{user.ProfilePhotoKey}";
+        return $"https://{_bucketName}.s3.amazonaws.com/{user.Id}";
     }
 }

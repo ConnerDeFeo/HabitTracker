@@ -22,9 +22,9 @@ public class TestFriend
         .Returns<string>((sessionKey) =>
             {
                 if (sessionKey.Equals("TestSessionKey"))
-                    return Task.FromResult<Dictionary<string, string?>?>([]);
+                    return Task.FromResult<Dictionary<string, string>?>([]);
                 else
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
             }
         );
 
@@ -80,11 +80,11 @@ public class TestFriend
                 if (sessionKey.Equals("TestSessionKey"))
                 {
                     if (friendUsername == "test")
-                        return Task.FromResult<Dictionary<string, string?>?>([]);
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                        return Task.FromResult<Dictionary<string, string>?>([]);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
                 }
                 else
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
             }
         );
 
@@ -95,11 +95,11 @@ public class TestFriend
                 if (sessionKey.Equals("TestSessionKey"))
                 {
                     if (friendUsername == "test")
-                        return Task.FromResult<Dictionary<string, string?>?>([]);
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                        return Task.FromResult<Dictionary<string, string>?>([]);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
                 }
                 else
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
             }
         );
 
@@ -125,11 +125,11 @@ public class TestFriend
                 if (sessionKey.Equals("TestSessionKey"))
                 {
                     if (phrase == "test")
-                        return Task.FromResult<Dictionary<string, string?>?>([]);
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                        return Task.FromResult<Dictionary<string, string>?>([]);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
                 }
                 else
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
             }
         );
 
@@ -138,9 +138,9 @@ public class TestFriend
         .Returns<string>((sessionKey) =>
             {
                 if (sessionKey.Equals("TestSessionKey"))
-                    return Task.FromResult<Dictionary<string, string?>?>([]);
+                    return Task.FromResult<Dictionary<string, string>?>([]);
                 else
-                    return Task.FromResult<Dictionary<string, string?>?>(null);
+                    return Task.FromResult<Dictionary<string, string>?>(null);
             }
         );
 
@@ -167,7 +167,7 @@ public class TestFriend
         SetValidSessionKey();
         IActionResult result = await friendController.GetFriends();
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.IsType<Dictionary<string, string?>>(okResult.Value);
+        Assert.IsType<Dictionary<string, string>>(okResult.Value);
     }
 
     [Fact]
@@ -245,7 +245,7 @@ public class TestFriend
         SetValidSessionKey();
         IActionResult result = await friendController.AcceptFriendRequest("test");
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.IsType<Dictionary<string, string?>>(okResult.Value);
+        Assert.IsType<Dictionary<string, string>>(okResult.Value);
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class TestFriend
         SetValidSessionKey();
         IActionResult result = await friendController.RemoveFriend("test");
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.IsType<Dictionary<string, string?>>(okResult.Value);
+        Assert.IsType<Dictionary<string, string>>(okResult.Value);
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class TestFriend
         SetValidSessionKey();
         IActionResult result = await friendController.FindUser("test");
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.IsType<Dictionary<string, string?>>(okResult.Value);
+        Assert.IsType<Dictionary<string, string>>(okResult.Value);
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public class TestFriend
         SetValidSessionKey();
         IActionResult result = await friendController.GetRandomUsers();
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.IsType<Dictionary<string, string?>>(okResult.Value);
+        Assert.IsType<Dictionary<string, string>>(okResult.Value);
     }
 
     [Fact]
