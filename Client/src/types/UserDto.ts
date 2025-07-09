@@ -1,7 +1,7 @@
 type UserDto = {
     username: string,
     dateCreated: string,
-    profilePhotoKey?: string
+    id: string
     friends: Record<string,string | undefined>,
     friendRequests: Record<string,string | undefined>,
     friendRequestsSent: string[]

@@ -10,7 +10,7 @@ public class UserDto
 
     public string DateCreated { get; set; } = null!;
 
-    public string UserId { get; set; } = null!;
+    public string Id { get; set; } = null!;
 
     public Dictionary<string,string> Friends { get; set; } = [];
     public Dictionary<string,string> FriendRequests { get; set; } = [];

@@ -27,7 +27,7 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         if (file is null || file.Length == 0 || user is null)
             return null;
 
-        string key = user.Id!;
+        string key = $"profilePhotos/{user.Id}";
         //send as stream
         using var newMemoryStream = new MemoryStream();
         await file.CopyToAsync(newMemoryStream);
@@ -45,21 +45,15 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         await transferUtility.UploadAsync(uploadRequest);
 
         //This is where the front end can find the photo
-        string url = $"https://{_bucketName}.s3.amazonaws.com/{key}";
-        await _users.UpdateOneAsync(
-            u => u.SessionKey == sessionKey,
-            Builders<User>.Update.Set(u => u.Id, key)
-        );
-
-        return url;
+        return $"https://{_bucketName}.s3.amazonaws.com/{key}";
     }
 
     public async Task<string?> GetProfilePhoto(string sessionKey)
     {
         var user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        if (user == null)
+        if (user is null)
             return null;
 
-        return $"https://{_bucketName}.s3.amazonaws.com/{user.Id}";
+        return $"https://{_bucketName}.s3.amazonaws.com/profilePhotos/{user.Id}";
     }
 }

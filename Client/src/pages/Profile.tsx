@@ -13,17 +13,11 @@ const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
     const {user,setUser} = props;
     const navigate = useNavigate();
 
-    const [imageUrl, setImageUrl] = useState<string>("");
+    const [imageUrl, setImageUrl] = useState<string>(`https://habit-tracker-photos.s3.amazonaws.com/profilePhotos/${user.id}`);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [currentHabits, setCurrentHabits] = useState<ProfileHabit[]>([]);
     const [currentMonthHabitsCompleted, setCurrentMonthHabitsCompleted] = useState<Record<string,boolean>>({});
 
-    //On load, fetch profile photo, then set canvascrop
-    useEffect(()=>{
-        if(user.profilePhotoKey)
-            setImageUrl(`https://habit-tracker-photos.s3.amazonaws.com/${user.profilePhotoKey}`);
-        
-    },[user.profilePhotoKey]);
 
     useEffect(()=>{
         const fetchProfileHabits = async ()=>{

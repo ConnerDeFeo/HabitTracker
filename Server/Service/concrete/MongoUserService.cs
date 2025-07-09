@@ -53,6 +53,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             {
                 Username = user.Username,
                 DateCreated = user.DateCreated,
+                Id = user.Id!,
                 FriendRequests = user.FriendRequests,
                 Friends = user.Friends,
                 FriendRequestsSent = user.FriendRequestsSent
@@ -92,7 +93,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         collection.HabitHistory[thisMonth] = [];
         collection.HabitHistory[thisMonth][thisDay] = new();
         await _habitCollections.InsertOneAsync(collection);
-        return new LoginResult { SessionKey = sessionKey, User=new UserDto { Username = username, DateCreated = today } };
+        return new LoginResult { SessionKey = sessionKey, User=new UserDto { Username = username, DateCreated = today, Id = id } };
     }
 
     /// <summary>
@@ -124,6 +125,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 {
                     Username = username,
                     DateCreated = user.DateCreated,
+                    Id = user.Id!,
                     FriendRequests = user.FriendRequests,
                     Friends = user.Friends,
                     FriendRequestsSent = user.FriendRequestsSent
