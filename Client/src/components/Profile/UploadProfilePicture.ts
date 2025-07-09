@@ -35,7 +35,6 @@ const UploadProfilePicture = async (canvas: HTMLCanvasElement, setImageUrl:React
     const resp = await PhotoService.uploadProfilePhoto(file);
     if (resp.status === 200) {
         const url = await resp.text();
-        console.log(url)
         setImageUrl(url);
     }
     onClose();
