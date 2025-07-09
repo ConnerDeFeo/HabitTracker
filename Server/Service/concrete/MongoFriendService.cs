@@ -102,7 +102,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
                 u => u.Id == friendId,
                 BuilderUtils.userUpdate.
                 Set($"Friends.{user.Username}", user.ProfilePhotoKey).
-                PullFilter(u => u.FriendRequestsSent, username => username == friend.Username)
+                PullFilter(u => u.FriendRequestsSent, username => username == user.Username)
             );
 
             return updatedUser.Friends;

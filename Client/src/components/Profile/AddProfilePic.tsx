@@ -10,10 +10,11 @@ import UploadProfilePicture from "./UploadProfilePicture";
 const AddProfilePic = (
     props:{ 
         onClose: ()=>void,
-        setImageUrl: React.Dispatch<React.SetStateAction<string>>
+        setImageUrl: React.Dispatch<React.SetStateAction<string>>,
+        hidden:boolean
     }
 ) =>{
-    const {onClose, setImageUrl} = props;
+    const {onClose, setImageUrl, hidden} = props;
     const canvas: HTMLCanvasElement = document.createElement("canvas");
     canvas.width=150;
     canvas.height=150;
@@ -126,7 +127,7 @@ const AddProfilePic = (
                     }}/>
                 }
             </div>
-        } onClose={onClose}/>
+        } onClose={onClose} display={!hidden}/>
     );
 }
 

@@ -138,12 +138,11 @@ const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
                 </div>
             </div>
             {/**Modal*/}
-            {modalOpen && 
-                <AddProfilePic
-                    onClose={()=>setModalOpen(false)}
-                    setImageUrl={setImageUrl}
-                />
-            }
+            <AddProfilePic
+                onClose={()=>setModalOpen(false)}
+                setImageUrl={setImageUrl}
+                hidden={!modalOpen}
+            />
         </div>
     );
 }

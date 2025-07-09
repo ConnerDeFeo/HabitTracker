@@ -199,6 +199,20 @@ public class TestMongoFriendService : IAsyncLifetime
 
         Assert.NotNull(acceptFriendResult);
         Assert.Single(acceptFriendResult);
+
+        friend = await userService.GetUser(friendSessionKey);
+        user = await userService.GetUser(userSessionKey);
+
+        Assert.NotNull(user);
+        Assert.NotNull(friend);
+
+        Assert.Single(user.Friends);
+        Assert.Single(friend.Friends);
+        Assert.Empty(friend.FriendRequests);
+        Assert.Empty(user.FriendRequests);
+        Assert.Empty(friend.FriendRequestsSent);
+        Assert.Empty(user.FriendRequestsSent);
+        
     }
 
     [Fact]
