@@ -35,11 +35,11 @@ public class TestFriend
                 if (sessionKey.Equals("TestSessionKey"))
                 {
                     if (friendUsername == "test")
-                        return Task.FromResult<ProfileHabits?>(new());
-                    return Task.FromResult<ProfileHabits?>(null);
+                        return Task.FromResult<Profile?>(new());
+                    return Task.FromResult<Profile?>(null);
                 }
                 else
-                    return Task.FromResult<ProfileHabits?>(null);
+                    return Task.FromResult<Profile?>(null);
             }
         );
 
@@ -184,7 +184,7 @@ public class TestFriend
         SetValidSessionKey();
         IActionResult result = await friendController.GetFriendsProfile("test");
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.IsType<ProfileHabits?>(okResult.Value);
+        Assert.IsType<Profile?>(okResult.Value);
     }
 
     [Fact]

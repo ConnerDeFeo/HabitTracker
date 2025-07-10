@@ -76,16 +76,16 @@ public class TestUser
             });
 
         MockUserService
-            .Setup(us => us.GetProfileHabits(It.IsAny<string>()))
+            .Setup(us => us.Getprofile(It.IsAny<string>()))
             .Returns<string>((sessionKey) =>
             {
                 if (sessionKey.Equals("TestSessionKey"))
                 {
-                    return Task.FromResult<ProfileHabits?>(new ProfileHabits());
+                    return Task.FromResult<Profile?>(new Profile());
                 }
                 else
                 {
-                    return Task.FromResult<ProfileHabits?>(null);
+                    return Task.FromResult<Profile?>(null);
                 }
             });
 
@@ -209,7 +209,7 @@ public class TestUser
 
         IActionResult result = await userController.GetUserProfile();
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var profileHabits = Assert.IsType<ProfileHabits>(okResult.Value);
+        var profile = Assert.IsType<Profile>(okResult.Value);
         Assert.Equal(200, okResult.StatusCode);
     }
 

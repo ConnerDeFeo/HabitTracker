@@ -180,7 +180,7 @@ public class TestMongoUser : IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestGetProfileHabits()
+    public async Task TestGetprofile()
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo8", "12345678");
         string sessionKey = result.SessionKey;
@@ -191,7 +191,7 @@ public class TestMongoUser : IAsyncLifetime
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2", DaysActive = daysActive });
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3", DaysActive = daysActive });
 
-        ProfileHabits? habits = await userService.GetProfileHabits(sessionKey);
+        Profile? habits = await userService.Getprofile(sessionKey);
         Assert.NotNull(habits);
         Assert.Equal(3, habits.CurrentHabits.Count);
         Assert.Equal(0, habits.CurrentHabits[0].CurrentStreak);
@@ -199,12 +199,12 @@ public class TestMongoUser : IAsyncLifetime
         Assert.Equal(0, habits.CurrentHabits[2].CurrentStreak);
 
         await habitHistoryService.SetHabitCompletion(sessionKey, $"{DateTime.Today:yyyy-MM-dd}", habit!.Id!, true);
-        habits = await userService.GetProfileHabits(sessionKey);
+        habits = await userService.Getprofile(sessionKey);
         Assert.Equal(1, habits!.CurrentHabits[0].CurrentStreak);
     }
     
     [Fact]
-    public async Task TestGetProfileHabitsFaliure()
+    public async Task TestGetprofileFaliure()
     { 
         LoginResult result = await userService.CreateUser("ConnerDeFeo9", "12345678");
         string sessionKey = result.SessionKey;
@@ -214,7 +214,7 @@ public class TestMongoUser : IAsyncLifetime
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2"});
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3" });
 
-        ProfileHabits? habits = await userService.GetProfileHabits("sessionKey");
+        Profile? habits = await userService.Getprofile("sessionKey");
         Assert.Null(habits);
     }
 

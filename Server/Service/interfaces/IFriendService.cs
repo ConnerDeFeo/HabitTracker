@@ -7,7 +7,7 @@ public interface IFriendService
     Task<Dictionary<string, string>?> GetRandomUsers(string sessionKey);
     Task<Dictionary<string, string>?> FindUser(string sessionKey, string phrase);
     Task<Dictionary<string, string>?> GetFriends(string sessionKey);
-    Task<ProfileHabits?> GetFriendProfile(string sessionKey,string friendUsername);
+    Task<Profile?> GetFriendProfile(string sessionKey,string friendUsername);
     Task<bool> SendFriendRequest(string sessionKey, string friendUsername);
     Task<bool> UnSendFriendRequest(string sessionKey, string friendUsername);
     Task<Dictionary<string,string>?> AcceptFriendRequest(string sessionKey, string friendUsername);

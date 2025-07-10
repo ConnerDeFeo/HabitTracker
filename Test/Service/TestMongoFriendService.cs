@@ -403,11 +403,11 @@ public class TestMongoFriendService : IAsyncLifetime
             Name = "Test Habit",
             DaysActive = daysOfWeek,
         });
-        ProfileHabits? profileHabits = await friendService.GetFriendProfile(userSessionKey, friendUsername);
-        Assert.NotNull(profileHabits);
-        Assert.Single(profileHabits.CurrentHabits);
-        Assert.Single(profileHabits.CurrentMonthHabitsCompleted);
-        Assert.Equal("Test Habit", profileHabits.CurrentHabits[0].Name);
+        Profile? profile = await friendService.GetFriendProfile(userSessionKey, friendUsername);
+        Assert.NotNull(profile);
+        Assert.Single(profile.CurrentHabits);
+        Assert.Single(profile.CurrentMonthHabitsCompleted);
+        Assert.Equal("Test Habit", profile.CurrentHabits[0].Name);
     }
 
     [Fact]
@@ -432,8 +432,8 @@ public class TestMongoFriendService : IAsyncLifetime
             Name = "Test Habit",
             DaysActive = daysOfWeek,
         });
-        ProfileHabits? profileHabits = await friendService.GetFriendProfile(userSessionKey, friendUsername);
-        Assert.Null(profileHabits);
+        Profile? profile = await friendService.GetFriendProfile(userSessionKey, friendUsername);
+        Assert.Null(profile);
     }
 
     [Fact]

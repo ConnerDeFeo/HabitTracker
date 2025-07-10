@@ -3,7 +3,6 @@ namespace Server.controller;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Server.dtos;
-using Server.model.habit;
 using Server.service.interfaces;
 
 /// <summary>
@@ -39,9 +38,9 @@ public class FriendController(IFriendService friendService) : ControllerBase
 
         if (sesionKey != null)
         {
-            ProfileHabits? profileHabits = await _friendService.GetFriendProfile(sesionKey, friendUsername);
-            if (profileHabits != null)
-                return Ok(profileHabits);
+            Profile? profile = await _friendService.GetFriendProfile(sesionKey, friendUsername);
+            if (profile != null)
+                return Ok(profile);
             return NotFound();
         }
         return Unauthorized();

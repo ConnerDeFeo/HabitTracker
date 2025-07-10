@@ -26,10 +26,10 @@ public static class UserUtils
     private static List<ProfileHabit> GetCurrentHabits(HabitCollection collection)
     {
         List<Habit> activeHabits = collection.ActiveHabits;
-        List<ProfileHabit> profileHabits = [];
+        List<ProfileHabit> profile = [];
         foreach (Habit habit in activeHabits)
         {
-            profileHabits.Add(
+            profile.Add(
                 new ProfileHabit
                 {
                     Name = habit.Name,
@@ -39,7 +39,7 @@ public static class UserUtils
             );
         }
 
-        return profileHabits;
+        return profile;
     }
 
     //Returns all days completed for a given month for a given habit without all the internal habits
@@ -67,17 +67,20 @@ public static class UserUtils
     }
 
     //Returns a the current profile of a given user for a calender overview and all active habit stats
-    public static ProfileHabits GetProfileHabits(HabitCollection collection)
+    public static dtos.Profile Getprofile(HabitCollection collection, User user)
     {
         List<ProfileHabit> currentHabits = GetCurrentHabits(collection);
 
         Dictionary<string, HistoricalDate> dates = collection.HabitHistory[DateTime.Today.ToString("yyyy-MM")];
         Dictionary<string, bool> daysCompleted = GetDaysCompleted(dates);
 
-        return new ProfileHabits
+        return new dtos.Profile
         {
             CurrentHabits = currentHabits,
-            CurrentMonthHabitsCompleted = daysCompleted
+            CurrentMonthHabitsCompleted = daysCompleted,
+            Username = user.Username,
+            Id = user.Id!,
+            DateCreated = user.DateCreated
         };
 
     }

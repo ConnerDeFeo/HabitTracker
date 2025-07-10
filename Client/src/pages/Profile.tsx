@@ -20,15 +20,15 @@ const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
 
 
     useEffect(()=>{
-        const fetchProfileHabits = async ()=>{
+        const fetchprofile = async ()=>{
             const resp = await UserService.GetProfile();
             if(resp.status==200){
-                const profileHabits = await resp.json();
-                setCurrentHabits(profileHabits.currentHabits);
-                setCurrentMonthHabitsCompleted(profileHabits.currentMonthHabitsCompleted);
+                const profile = await resp.json();
+                setCurrentHabits(profile.currentHabits);
+                setCurrentMonthHabitsCompleted(profile.currentMonthHabitsCompleted);
             }
         }
-        fetchProfileHabits();
+        fetchprofile();
     },[])
 
 

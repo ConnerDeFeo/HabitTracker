@@ -175,7 +175,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
     }
 
     //Returns the profile habits of a given friend if they are friends
-    public async Task<ProfileHabits?> GetFriendProfile(string sessionKey, string friendUsername)
+    public async Task<Profile?> GetFriendProfile(string sessionKey, string friendUsername)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         User? friend = await UserUtils.GetUserByUsername(friendUsername, _users);
@@ -190,7 +190,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
                 .FirstOrDefaultAsync();
 
             if (collection is not null)
-                return UserUtils.GetProfileHabits(collection);
+                return UserUtils.Getprofile(collection,user);
         }
         return null;
     }

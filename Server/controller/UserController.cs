@@ -91,7 +91,7 @@ public class UserController(IUserService _userService) : ControllerBase
         var sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            ProfileHabits? result = await _userService.GetProfileHabits(sesionKey);
+            Profile? result = await _userService.Getprofile(sesionKey);
 
             if (result != null)
                 return Ok(result);

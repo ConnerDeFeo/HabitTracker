@@ -23,6 +23,9 @@ const FriendService ={
     },
     removeFriend: async(friendUsername:string)=>{
         return await API.delete(`${url}/remove/${friendUsername}`);
+    },
+    getFriendProfile: async(friendUsername:string)=>{
+        return await API.get(`${url}/profile/${friendUsername}`);
     }
 }
 
