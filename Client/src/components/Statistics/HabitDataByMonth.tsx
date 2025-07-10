@@ -42,7 +42,7 @@ const  HabitDataByMonth = (
     /*When user clicks on a month in the initial panel, this is dwhat displays the 
     individual days in the month with the respecitve colorings*/
     const renderMonth = ()=>{
-        const daysInMonth:number = new Date(date.year,date.month,0).getDate();
+        const daysInMonth:number = new Date(date.year,date.month+1,0).getDate();
         const habitId:string = historicalData?.habit.id! || "";
         return (
             <>

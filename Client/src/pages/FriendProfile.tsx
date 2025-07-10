@@ -1,6 +1,5 @@
 import ProfilePicture from "../components/Profile/ProfilePicture";
 import { useEffect, useState } from "react";
-import PhotoService from "../services/PhotoService";
 import CurrentHabits from "../components/Profile/CurrentHabits";
 import RenderCurrentMonth from "../components/Profile/RenderCurrentMonth";
 import Profile from "../types/Profile";
@@ -10,9 +9,8 @@ import FriendService from "../services/FriendService";
 
 //Friend profile page the user sees
 const FriendProfile =()=>{
-    const [profile,setProfile] = useState<Profile | undefined>();
     const {username} = useParams(); //from url
-    const [validImgUrl, setValidImgUrl] = useState<boolean>(false);
+    const [profile,setProfile] = useState<Profile | undefined>();
     const imgUrl = `https://habit-tracker-photos.s3.amazonaws.com/profilePhotos/${profile?.id}`;
 
     //fetch profile
@@ -29,15 +27,6 @@ const FriendProfile =()=>{
         fetchProfile();
     },[username]);
 
-    //fetch image url validation
-    useEffect(()=>{
-        const validate = async ()=>{
-            if(await PhotoService.validateImageUrl(imgUrl))
-                setValidImgUrl(true);
-        }
-        validate();
-    },[profile]);
-
     if(!profile)
         return <Waiting/>
 
@@ -46,7 +35,7 @@ const FriendProfile =()=>{
             <div className="grid md:grid-cols-2 w-[85%] mx-auto">
                 {/**Profile picture*/}
                 <div className="grid justify-center md:flex md:justify-between items-center">
-                    <ProfilePicture imageUrl={validImgUrl ? imgUrl : "UserIcon.png"} />
+                    <ProfilePicture imageUrl={imgUrl} />
                     <p className={`${profile.username.length > 12 ? "text-2xl" : "text-4xl"} lg:text-4xl text-center my-5`}>{profile.username}</p>
                 </div>
                 {/**Current Habits*/}

@@ -5,7 +5,7 @@ import DateService from "../../services/DateService";
 const RenderCurrentMonth = (props:{currentMonthHabitsCompleted:Record<string,boolean>})=>{
     const {currentMonthHabitsCompleted}= props;
     const now = new Date();
-    const daysInCurrentMonth: number = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const daysInCurrentMonth: number = new Date(now.getFullYear(), now.getMonth()+1 , 0).getDate();
     const firtDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
     return(
             <div>
@@ -18,8 +18,6 @@ const RenderCurrentMonth = (props:{currentMonthHabitsCompleted:Record<string,boo
                             {day.substring(0,1)}
                         </p>
                     )}
-                </div>
-                <div className="grid grid-cols-7 justify-items-center mx-auto mt-2">
                     {Array.from({ length: daysInCurrentMonth }, (_, i) => i + 1).map((day) =>{
                         const habitsCompleted = currentMonthHabitsCompleted?.[DateService.padZero(day)];
                         let bgClass = "";
