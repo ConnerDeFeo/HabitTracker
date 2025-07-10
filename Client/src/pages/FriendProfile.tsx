@@ -5,7 +5,7 @@ import RenderCurrentMonth from "../components/Profile/RenderCurrentMonth";
 import Profile from "../types/Profile";
 import Waiting from "../components/General/Waiting";
 import { useParams } from "react-router-dom";
-import FriendService from "../services/FriendService";
+import SocialDataService from "../services/SocialDataService";
 
 //Friend profile page the user sees
 const FriendProfile =()=>{
@@ -17,7 +17,7 @@ const FriendProfile =()=>{
     useEffect(()=>{
         const fetchProfile = async ()=>{
             if(username){
-                const resp = await FriendService.getFriendProfile(username);
+                const resp = await SocialDataService.getProfile(username);
                 if(resp.ok){
                     const profile:Profile = await resp.json();
                     setProfile(profile);

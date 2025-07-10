@@ -1,6 +1,6 @@
 import API from "./API";
 
-const url = import.meta.env.VITE_SERVER_URL+"friends";
+const url = import.meta.env.VITE_SERVER_URL+"socialData";
 
 const SocialDataService ={
     findUsers: async (phrase:string)=>{

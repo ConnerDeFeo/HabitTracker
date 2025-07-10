@@ -3,10 +3,10 @@ import AddFriend from "../components/Friends/AddFriends";
 import UserDto from "../types/UserDto";
 import FriendRequests from "../components/Friends/FriendRequests";
 import Friend from "../components/Friends/Friend";
-import FriendService from "../services/FriendService";
 import Modal from "../components/General/Modal";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/General/Button";
+import FriendModificationService from "../services/FriendModificationService";
 
 const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
     const {user,fetchUser} = props;
@@ -17,13 +17,12 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
     const totalFriendRequests:number = user ? Object.keys(user.friendRequests).length : 0;
 
     const removeFriend = async (username:string)=>{
-        const resp = await FriendService.removeFriend(username);
+        const resp = await FriendModificationService.removeFriend(username);
         if(resp.status===200)
             fetchUser();
         setRemoveFriendModal("");
     }
     
-    console.log(user)
     return addFriends ? //add friends clicked
         <AddFriend 
             setAddFriends={setAddFriends} 

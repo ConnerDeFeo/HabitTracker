@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import FriendService from "../../services/FriendService";
 import Friend from "./Friend";
+import SocialDataService from "../../services/SocialDataService";
+import FriendModificationService from "../../services/FriendModificationService";
 
 //Displayed after user clicks AddFriends button on friends page
 const AddFriend = (
@@ -21,7 +22,7 @@ const AddFriend = (
     //onload fetch random users to display
     useEffect(()=>{
         const fetchRandomUsers = async ()=>{
-            const resp = await FriendService.getRandomUsers();
+            const resp = await SocialDataService.getRandomUsers();
             if(resp.status==200){
                 const users = await resp.json();
                 setDisplayedUsers(users);
@@ -32,7 +33,7 @@ const AddFriend = (
 
     //Fetches any users with the phrase in their name
     const fetchUsers = async ()=>{
-        const resp = await FriendService.findUsers(searchPhrase);
+        const resp = await SocialDataService.findUsers(searchPhrase);
         if(resp.status==200){
             const users:Record<string,string> = await resp.json();
             setDisplayedUsers(users); 
@@ -40,14 +41,14 @@ const AddFriend = (
     }
 
     const sendFriendRequest= async(username:string)=>{
-        const resp = await FriendService.sendFriendRequest(username);
+        const resp = await FriendModificationService.sendFriendRequest(username);
         if(resp.status==200){
             fetchUser();
         } 
     }
 
     const unSendFriendRequest= async(username:string)=>{
-        const resp = await FriendService.unSendFriendRequest(username);
+        const resp = await FriendModificationService.unSendFriendRequest(username);
         if(resp.status==200){
             fetchUser();
         } 
@@ -60,7 +61,7 @@ const AddFriend = (
     };
 
     const removeFriend = async (username:string)=>{
-        const resp = await FriendService.removeFriend(username);
+        const resp = await FriendModificationService.removeFriend(username);
         if(resp.status===200)
             fetchUser();
     }

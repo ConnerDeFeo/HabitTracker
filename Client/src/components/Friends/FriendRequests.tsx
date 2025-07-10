@@ -1,4 +1,4 @@
-import FriendService from "../../services/FriendService";
+import FriendModificationService from "../../services/FriendModificationService";
 import Friend from "./Friend";
 
 //Displayed after user clicks FriendRequests button on friends page
@@ -12,14 +12,14 @@ const FriendRequests = (
     const {friendRequests, fetchUser, setFriendRequests} = props;
 
     const acceptFriendRequest = async (username:string)=>{
-        const resp = await FriendService.acceptFriendRequest(username);
+        const resp = await FriendModificationService.acceptFriendRequest(username);
         if(resp.status==200)
             fetchUser();
         
     }
 
     const rejectFriendRequest = async (username:string)=>{
-        const resp = await FriendService.rejectFriendRequest(username);
+        const resp = await FriendModificationService.rejectFriendRequest(username);
         if(resp.status==200)
             fetchUser();
     }
