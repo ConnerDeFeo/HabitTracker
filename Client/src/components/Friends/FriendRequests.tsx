@@ -34,7 +34,7 @@ const FriendRequests = (
             {Object.keys(friendRequests).length > 0 ? 
                 <>
                     { Object.entries(friendRequests).map(([key, value]) =>
-                        <Friend key={key} username={key} profilePic={value} buttons={
+                        <Friend key={key} username={key} userId={value} buttons={
                             <div className="">
                                 <img src="checkMark.webp" alt="check" className="h-8 w-8 m-auto cursor-pointer" onClick={()=>acceptFriendRequest(key)}/>
                                 <img src="x.webp" alt="x" className="h-10 w-10 m-auto cursor-pointer" onClick={()=>rejectFriendRequest(key)}/>
