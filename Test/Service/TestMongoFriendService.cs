@@ -462,7 +462,7 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestFindUserFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner15", "12341234");
         await userService.CreateUser("person1", "12341234");
         await userService.CreateUser("erson2", "12341234");
         await userService.CreateUser("3person3", "12341234");
@@ -476,7 +476,7 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestGetRandomUsers()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner16", "12341234");
         await userService.CreateUser("person1", "12341234");
         await userService.CreateUser("erson2", "12341234");
         await userService.CreateUser("3person3", "12341234");
@@ -492,7 +492,7 @@ public class TestMongoFriendService : IAsyncLifetime
     [Fact]
     public async Task TestGetRandomUsersFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
+        LoginResult? userLoginResult = await userService.CreateUser("Conner17", "12341234");
         await userService.CreateUser("person1", "12341234");
         await userService.CreateUser("erson2", "12341234");
         await userService.CreateUser("3person3", "12341234");
