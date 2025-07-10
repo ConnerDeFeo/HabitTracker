@@ -19,7 +19,7 @@ public class FriendModificationController(IFriendModificationService friendModif
         string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            bool sent = await friendModificationService.SendFriendRequest(sesionKey, friendUsername);
+            bool sent = await _friendModificationService.SendFriendRequest(sesionKey, friendUsername);
             if (sent)
                 return Ok();
             return NotFound();
@@ -34,7 +34,7 @@ public class FriendModificationController(IFriendModificationService friendModif
 
         if (sesionKey != null)
         {
-            bool unsent = await friendModificationService.UnSendFriendRequest(sesionKey, friendUsername);
+            bool unsent = await _friendModificationService.UnSendFriendRequest(sesionKey, friendUsername);
             if (unsent)
                 return Ok();
             return NotFound();
@@ -49,7 +49,7 @@ public class FriendModificationController(IFriendModificationService friendModif
 
         if (sesionKey != null)
         {
-            Dictionary<string, string>? newFriends = await friendModificationService.AcceptFriendRequest(sesionKey, friendUsername);
+            Dictionary<string, string>? newFriends = await _friendModificationService.AcceptFriendRequest(sesionKey, friendUsername);
             if (newFriends is not null)
                 return Ok(newFriends);
             return NotFound();
@@ -64,7 +64,7 @@ public class FriendModificationController(IFriendModificationService friendModif
 
         if (sesionKey != null)
         {
-            bool rejected = await friendModificationService.RejectFriendRequest(sesionKey, friendUsername);
+            bool rejected = await _friendModificationService.RejectFriendRequest(sesionKey, friendUsername);
             if (rejected)
                 return Ok();
             return NotFound();
@@ -79,7 +79,7 @@ public class FriendModificationController(IFriendModificationService friendModif
 
         if (sesionKey != null)
         {
-            Dictionary<string, string>? newFriends = await friendModificationService.RemoveFriend(sesionKey, friendUsername);
+            Dictionary<string, string>? newFriends = await _friendModificationService.RemoveFriend(sesionKey, friendUsername);
             if (newFriends is not null)
                 return Ok(newFriends);
             return NotFound();
