@@ -20,12 +20,12 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
     /// <param name="sessionKey">session key of the given user</param>
     /// <param name="file">photo being uploaded</param>
     /// <returns></returns>
-    public async Task<string?> UploadProfilePhoto(string sessionKey, IFormFile file)
+    public async Task<bool> UploadProfilePhoto(string sessionKey, IFormFile file)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         //File must exist and not be empty, user must be logged in
         if (file is null || file.Length == 0 || user is null)
-            return null;
+            return false;
 
         string key = $"profilePhotos/{user.Id}";
         //send as stream
@@ -45,15 +45,7 @@ public class PhotoService(IAmazonS3 s3Client, IMongoDatabase _database)
         await transferUtility.UploadAsync(uploadRequest);
 
         //This is where the front end can find the photo
-        return $"https://{_bucketName}.s3.amazonaws.com/{key}";
+        return true;
     }
 
-    public async Task<string?> GetProfilePhoto(string sessionKey)
-    {
-        var user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
-        if (user is null)
-            return null;
-
-        return $"https://{_bucketName}.s3.amazonaws.com/profilePhotos/{user.Id}";
-    }
 }

@@ -1,14 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 //Profile pictures that are displayed
-const ProfilePicture = (props:{imageUrl:string, editAction?:()=>void})=>{
-    const {imageUrl, editAction} = props;
+const ProfilePicture = (
+    props:{
+        imageUrl:string, 
+        editAction?:()=>void, 
+        height?:number, 
+        width?:number, 
+        className?:string, 
+        onClick?:()=>void
+    }
+)=>{
+    const {imageUrl, editAction, height, width, className, onClick} = props;
     const [imgError, setImgError] = useState(false);
 
+    useEffect(()=>{
+        setImgError(false);
+    },[imageUrl]);
     return(
         <div className="grid justify-center md:flex md:justify-between items-center">
             <div 
-                className="h-40 w-40 border-3 flex justify-center items-center rounded-full"
+                className={`border-3 flex justify-center items-center rounded-full h-${height} w-${width} ${className}`}
+                onClick={onClick}
             >
                 <div className="relative">
                     <img

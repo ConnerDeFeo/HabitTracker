@@ -24,6 +24,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Friends from './pages/Friends';
 import FriendProfile from './pages/FriendProfile';
+import PhotoService from './services/PhotoService';
 
 //Overarching application
 const HabitTracker = ()=>{
@@ -33,6 +34,7 @@ const HabitTracker = ()=>{
     const [monthlyHabits, setMonthlyHabits] = useState<Record<string,HistoricalDate>>();
     //Flag for showing the menu after clicking hamburger
     const [displayMenu, setDisplayMenu] = useState<boolean>(false);
+    const [imageUrl,setImageUrl] = useState<string>(PhotoService.getPhotoUrl(user?.id));
     const [smallScreen,setSmallScreen] = useState<boolean>(window.innerWidth<1024);
     const [date, setDate] = useState<DateInfo>(() => {
         const now = new Date();
@@ -42,6 +44,11 @@ const HabitTracker = ()=>{
             day: now.getDate()
         };
     });
+
+
+    useEffect(()=>{
+        setImageUrl(PhotoService.getPhotoUrl(user?.id));
+    },[user?.id])
 
     //Hamburger menu used instead if teh screen is smaller than medium
     useEffect(() => {
@@ -93,12 +100,12 @@ const HabitTracker = ()=>{
                 //menu should be displayed regardless of path when necessary 
                 <Menu exitMenu={()=>setDisplayMenu(false)} loggedIn={user!==undefined} /> : 
                 <>
-                    <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen} loggedIn={user!==undefined}/>
+                    <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen} loggedIn={user!==undefined} imageUrl={imageUrl}/>
                     <Routes>
                         <Route path='' element={user ? <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/> : <HomePage/>}/>
                         <Route path='CreateAccount' element={<CreateAccount setUser={setUser}/>}/>
                         <Route path='Login' element={<Login setUser={setUser}/>}/>
-                        <Route path='Profile' element={user? <Profile user={user} setUser={setUser}/> : <HomePage/> }/>
+                        <Route path='Profile' element={user ? <Profile user={user} setUser={setUser} updateUrl={()=>setImageUrl(PhotoService.getPhotoUrl(user.id))}/> : <HomePage/> }/>
                         <Route path='@/:username' element={<FriendProfile/> }/>
                         <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
                         <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>

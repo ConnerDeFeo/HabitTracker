@@ -2,20 +2,12 @@ import API from "./API";
 const url = import.meta.env.VITE_SERVER_URL+"photos";
 
 const PhotoService = {
-    getProfilePhoto: async ()=>{
-        return await API.get(url);
+    getPhotoUrl : (userId?:string): string=>{
+        return `${import.meta.env.VITE_PROFILE_PHOTO_URL}/${userId}?t=${Date.now()}`;
     },
     uploadProfilePhoto: async (file: File)=>{
         return await API.upload(url, file);
     },
-    validateImageUrl: async (imageUrl:string): Promise<boolean>=>{
-        if(imageUrl){
-            const res = await fetch(imageUrl, { method: "HEAD" });
-            if (res.ok) 
-                return true;
-        }
-        return false;
-    }
 }
 
 export default PhotoService;

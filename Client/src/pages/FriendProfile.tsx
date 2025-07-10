@@ -1,4 +1,4 @@
-import ProfilePicture from "../components/Profile/ProfilePicture";
+import ProfilePicture from "../components/General/ProfilePicture";
 import { useEffect, useState } from "react";
 import CurrentHabits from "../components/Profile/CurrentHabits";
 import RenderCurrentMonth from "../components/Profile/RenderCurrentMonth";
@@ -6,12 +6,13 @@ import Profile from "../types/Profile";
 import Waiting from "../components/General/Waiting";
 import { useParams } from "react-router-dom";
 import SocialDataService from "../services/SocialDataService";
+import PhotoService from "../services/PhotoService";
 
 //Friend profile page the user sees
 const FriendProfile =()=>{
     const {username} = useParams(); //from url
     const [profile,setProfile] = useState<Profile | undefined>();
-    const imgUrl = `https://habit-tracker-photos.s3.amazonaws.com/profilePhotos/${profile?.id}`;
+    const imgUrl = PhotoService.getPhotoUrl(profile?.id);
 
     //fetch profile
     useEffect(()=>{
@@ -35,7 +36,7 @@ const FriendProfile =()=>{
             <div className="grid md:grid-cols-2 w-[85%] mx-auto">
                 {/**Profile picture*/}
                 <div className="grid justify-center md:flex md:justify-between items-center">
-                    <ProfilePicture imageUrl={imgUrl} />
+                    <ProfilePicture imageUrl={imgUrl} height={40} width={40}/>
                     <p className={`${profile.username.length > 12 ? "text-2xl" : "text-4xl"} lg:text-4xl text-center my-5`}>{profile.username}</p>
                 </div>
                 {/**Current Habits*/}

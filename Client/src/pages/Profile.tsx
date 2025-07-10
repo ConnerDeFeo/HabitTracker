@@ -6,19 +6,26 @@ import AddProfilePic from "../components/Profile/AddProfilePic";
 import ProfileHabit from "../types/ProfileHabit";
 import RenderCurrentMonth from "../components/Profile/RenderCurrentMonth";
 import CurrentHabits from "../components/Profile/CurrentHabits";
-import ProfilePicture from "../components/Profile/ProfilePicture";
+import ProfilePicture from "../components/General/ProfilePicture";
+import PhotoService from "../services/PhotoService";
 
 //Profile page the user sees
-const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
-    const {user,setUser} = props;
+const Profile =(
+    props:{
+        user: UserDto, 
+        setUser: (user?:UserDto)=>void,
+        updateUrl:()=>void
+    }
+)=>{
+    const {user,setUser,updateUrl} = props;
     const navigate = useNavigate();
 
-    const [imageUrl, setImageUrl] = useState<string>(`https://habit-tracker-photos.s3.amazonaws.com/profilePhotos/${user.id}`);
-    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const imageUrl = PhotoService.getPhotoUrl(user.id);
+    const [modalOpen, setModalOpen] = useState<boolean>(false); //modal flag
     const [currentHabits, setCurrentHabits] = useState<ProfileHabit[]>([]);
     const [currentMonthHabitsCompleted, setCurrentMonthHabitsCompleted] = useState<Record<string,boolean>>({});
 
-
+    //Fetches the users profile
     useEffect(()=>{
         const fetchprofile = async ()=>{
             const resp = await UserService.GetProfile();
@@ -44,7 +51,7 @@ const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
             <div className="grid md:grid-cols-2 w-[85%] mx-auto">
                 {/**Profile picture*/}
                 <div className="grid justify-center md:flex md:justify-between items-center">
-                    <ProfilePicture imageUrl={imageUrl} editAction={()=>setModalOpen(true)}/>
+                    <ProfilePicture imageUrl={imageUrl} editAction={()=>setModalOpen(true)} height={40} width={40}/>
                     <p className={`${user.username.length > 12 ? "text-2xl" : "text-4xl"} lg:text-4xl text-center my-5`}>{user.username}</p>
                 </div>
                 {/**Current Habits*/}
@@ -63,8 +70,8 @@ const Profile =(props:{user: UserDto, setUser: (user?:UserDto)=>void})=>{
             {/**Modal for profile pic*/}
             <AddProfilePic
                 onClose={()=>setModalOpen(false)}
-                setImageUrl={setImageUrl}
                 hidden={!modalOpen}
+                updateUrl={updateUrl}
             />
         </div>
     );

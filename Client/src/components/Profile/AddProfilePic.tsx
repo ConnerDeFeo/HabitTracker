@@ -10,11 +10,11 @@ import UploadProfilePicture from "./UploadProfilePicture";
 const AddProfilePic = (
     props:{ 
         onClose: ()=>void,
-        setImageUrl: React.Dispatch<React.SetStateAction<string>>,
-        hidden:boolean
+        hidden:boolean,
+        updateUrl: ()=>void
     }
 ) =>{
-    const {onClose, setImageUrl, hidden} = props;
+    const {onClose, hidden, updateUrl} = props;
     const canvas: HTMLCanvasElement = document.createElement("canvas");
     canvas.width=150;
     canvas.height=150;
@@ -78,7 +78,7 @@ const AddProfilePic = (
 
     //On completion of the image being uploaded and cropped, send to backend for url
     const handleFileUpload = async () => {
-        UploadProfilePicture(canvas,setImageUrl,onClose)
+        UploadProfilePicture(canvas,onClose, updateUrl);
     };
 
     return(

@@ -1,9 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import ProfilePicture from "../General/ProfilePicture";
 
 //Navigation bar for the site
-const Navigation = (props:{displayMenu:()=>void, loggedIn:boolean, useHamburger:boolean})=>{
-    const {displayMenu,loggedIn, useHamburger} = props;
+const Navigation = (
+    props:{
+        displayMenu:()=>void, 
+        loggedIn:boolean, 
+        useHamburger:boolean, 
+        imageUrl:string,
+
+    }
+)=>{
+    const {displayMenu,loggedIn, useHamburger,imageUrl} = props;
     const navigate = useNavigate();
 
     return (
@@ -15,7 +24,11 @@ const Navigation = (props:{displayMenu:()=>void, loggedIn:boolean, useHamburger:
                     <Navbar loggedIn={loggedIn}/>
                 </div>
             }
-            <img src="/UserIcon.png" className="h-12 w-12 md:h-16 md:w-16 cursor-pointer" onClick={()=>navigate("/Profile")}/>
+            <ProfilePicture 
+                imageUrl={imageUrl} 
+                className=" h-12 w-12 md:h-16 md:w-16 cursor-pointer"
+                onClick={()=>navigate("/Profile")}
+            />
         </div>
     );
 } 
