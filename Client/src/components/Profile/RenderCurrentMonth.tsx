@@ -5,7 +5,7 @@ import DateService from "../../services/DateService";
 const RenderCurrentMonth = (props:{currentMonthHabitsCompleted:Record<string,boolean>})=>{
     const {currentMonthHabitsCompleted}= props;
     const now = new Date();
-    const daysInCurrentMonth: number = new Date(now.getFullYear(), now.getMonth()+1 , 0).getDate();
+    const daysInCurrentMonth: number = new Date(now.getFullYear(), now.getMonth()+1 , 0).getDate(); // plus one because 0 means end of previous month
     const firtDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
     return(
             <div>
