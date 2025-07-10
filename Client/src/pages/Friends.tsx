@@ -6,19 +6,21 @@ import Friend from "../components/Friends/Friend";
 import FriendService from "../services/FriendService";
 import Modal from "../components/General/Modal";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/General/Button";
 
 const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
     const {user,fetchUser} = props;
     const navigate = useNavigate();
     const [addFriends,setAddFriends] = useState<boolean>(false); //flag for showing the addfriends component
     const [displayFriendRequests,setSisplayFriendRequests] = useState<boolean>(false); //flag for showing the friend requests component
-    const [removeFriendModal, setRemoveFriendModal] = useState<boolean>(false); //Flag for remove friend modal?
+    const [removeFriendModal, setRemoveFriendModal] = useState<string>(""); //Flag for remove friend modal?
     const totalFriendRequests:number = user ? Object.keys(user.friendRequests).length : 0;
 
     const removeFriend = async (username:string)=>{
         const resp = await FriendService.removeFriend(username);
         if(resp.status===200)
             fetchUser();
+        setRemoveFriendModal("");
     }
     
     console.log(user)
@@ -56,7 +58,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                                 className="h-8" 
                                 onClick={(e)=>{
                                     e.stopPropagation(); //prevents outer button from being clicked
-                                    setRemoveFriendModal(true);
+                                    setRemoveFriendModal(key);
                                 }}
                             />
                         }
@@ -64,7 +66,16 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                     />
                 )}
             </div>
-            <Modal content={<div className="h-10 border"></div>} onClose={()=>setRemoveFriendModal(false)} display={removeFriendModal}/>
+            {/**Modal displayed when minus icon is hit */}
+            <Modal content={
+                <div className="h-40 w-75">
+                    <p className="text-4xl text-center mt-5 mb-15">Are you sure you want to remove {removeFriendModal}?</p>
+                    <div className="flex justify-between">
+                        <Button label="Yes" className="w-25" onClick={()=>removeFriend(removeFriendModal)}/>
+                        <Button label="No" className="w-25" onClick={()=>setRemoveFriendModal("")}/>
+                    </div>
+                </div>
+            } onClose={()=>setRemoveFriendModal("")} display={removeFriendModal!==""}/>
         </div>;
 }
 
