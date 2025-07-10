@@ -60,7 +60,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                                 }}
                             />
                         }
-                        onClick={()=>navigate(`/FriendProfile/${key}`)}
+                        onClick={()=>navigate(`/@/${key}`)}
                     />
                 )}
             </div>
