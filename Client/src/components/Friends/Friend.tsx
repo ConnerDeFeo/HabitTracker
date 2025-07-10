@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import PhotoService from "../../services/PhotoService";
+import {useState } from "react";
 
 //This is the box that displays username, profile pic, and some buttons on the right hand side of the component
 const Friend = (
