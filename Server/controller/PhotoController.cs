@@ -20,25 +20,12 @@ public class PhotoController(PhotoService _photoService) : ControllerBase
         string? sesionKey = Request.Cookies["sessionKey"];
         if (sesionKey != null)
         {
-            string? result = await _photoService.UploadProfilePhoto(sesionKey, file);
-            if (result is not null)
-                return Ok(result);
+            bool result = await _photoService.UploadProfilePhoto(sesionKey, file);
+            if (result)
+                return Ok();
             return NotFound();
         }
         return Unauthorized();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetProfilePhoto()
-    {
-        string? sesionKey = Request.Cookies["sessionKey"];
-        if (sesionKey != null)
-        {
-            string? result = await _photoService.GetProfilePhoto(sesionKey);
-            if (result is not null)
-                return Ok(result);
-            return NotFound();
-        }
-        return Unauthorized();
-    }
 }
