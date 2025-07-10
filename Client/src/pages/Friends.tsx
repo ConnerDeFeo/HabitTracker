@@ -5,14 +5,14 @@ import FriendRequests from "../components/Friends/FriendRequests";
 import Friend from "../components/Friends/Friend";
 import FriendService from "../services/FriendService";
 import Modal from "../components/General/Modal";
+import { useNavigate } from "react-router-dom";
 
 const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
     const {user,fetchUser} = props;
-
+    const navigate = useNavigate();
     const [addFriends,setAddFriends] = useState<boolean>(false); //flag for showing the addfriends component
     const [displayFriendRequests,setSisplayFriendRequests] = useState<boolean>(false); //flag for showing the friend requests component
-
-    const [removeFriendModal, setRemoveFriendModal] = useState<boolean>(false);
+    const [removeFriendModal, setRemoveFriendModal] = useState<boolean>(false); //Flag for remove friend modal?
     const totalFriendRequests:number = user ? Object.keys(user.friendRequests).length : 0;
 
     const removeFriend = async (username:string)=>{
@@ -60,7 +60,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                                 }}
                             />
                         }
-                        onClick={()=>alert("testing")}
+                        onClick={()=>navigate(`/FriendProfile/${key}`)}
                     />
                 )}
             </div>

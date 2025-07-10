@@ -76,7 +76,7 @@ public class TestUser
             });
 
         MockUserService
-            .Setup(us => us.Getprofile(It.IsAny<string>()))
+            .Setup(us => us.GetProfile(It.IsAny<string>()))
             .Returns<string>((sessionKey) =>
             {
                 if (sessionKey.Equals("TestSessionKey"))

@@ -67,7 +67,7 @@ public static class UserUtils
     }
 
     //Returns a the current profile of a given user for a calender overview and all active habit stats
-    public static dtos.Profile Getprofile(HabitCollection collection, User user)
+    public static dtos.Profile GetProfile(HabitCollection collection, User user)
     {
         List<ProfileHabit> currentHabits = GetCurrentHabits(collection);
 

@@ -180,7 +180,7 @@ public class TestMongoUser : IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestGetprofile()
+    public async Task TestGetProfile()
     {
         LoginResult result = await userService.CreateUser("ConnerDeFeo8", "12345678");
         string sessionKey = result.SessionKey;
@@ -191,7 +191,7 @@ public class TestMongoUser : IAsyncLifetime
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2", DaysActive = daysActive });
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3", DaysActive = daysActive });
 
-        Profile? habits = await userService.Getprofile(sessionKey);
+        Profile? habits = await userService.GetProfile(sessionKey);
         Assert.NotNull(habits);
         Assert.Equal(3, habits.CurrentHabits.Count);
         Assert.Equal(0, habits.CurrentHabits[0].CurrentStreak);
@@ -199,7 +199,7 @@ public class TestMongoUser : IAsyncLifetime
         Assert.Equal(0, habits.CurrentHabits[2].CurrentStreak);
 
         await habitHistoryService.SetHabitCompletion(sessionKey, $"{DateTime.Today:yyyy-MM-dd}", habit!.Id!, true);
-        habits = await userService.Getprofile(sessionKey);
+        habits = await userService.GetProfile(sessionKey);
         Assert.Equal(1, habits!.CurrentHabits[0].CurrentStreak);
     }
     
@@ -214,7 +214,7 @@ public class TestMongoUser : IAsyncLifetime
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2"});
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3" });
 
-        Profile? habits = await userService.Getprofile("sessionKey");
+        Profile? habits = await userService.GetProfile("sessionKey");
         Assert.Null(habits);
     }
 

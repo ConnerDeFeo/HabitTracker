@@ -145,7 +145,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     }
 
 
-    public async Task<Profile?> Getprofile(string sessionKey)
+    public async Task<Profile?> GetProfile(string sessionKey)
     {
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user is not null)
@@ -156,7 +156,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 .FirstOrDefaultAsync();
 
             if (collection is not null)
-                return UserUtils.Getprofile(collection,user);
+                return UserUtils.GetProfile(collection,user);
         }
         return null;
     }

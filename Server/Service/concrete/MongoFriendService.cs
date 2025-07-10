@@ -190,7 +190,7 @@ public class MongoFriendService(IMongoDatabase database) : IFriendService
                 .FirstOrDefaultAsync();
 
             if (collection is not null)
-                return UserUtils.Getprofile(collection,user);
+                return UserUtils.GetProfile(collection,friend);
         }
         return null;
     }

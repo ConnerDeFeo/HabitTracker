@@ -10,7 +10,7 @@ const PhotoService = {
     },
     validateImageUrl: async (imageUrl:string): Promise<boolean>=>{
         if(imageUrl){
-            const res = await fetch(imageUrl, { method: "HEAD" }); // HEAD is faster, gets headers only
+            const res = await fetch(imageUrl, { method: "HEAD" });
             if (res.ok) 
                 return true;
         }

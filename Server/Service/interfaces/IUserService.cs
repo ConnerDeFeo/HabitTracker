@@ -12,7 +12,7 @@ public interface IUserService
     Task<LoginResult> CreateUser(string username, string password);
     Task<LoginResult> Login(string username, string password);
     Task<bool> Logout(string sessionKey);
-    Task<Profile?> Getprofile(string sessionKey);
+    Task<Profile?> GetProfile(string sessionKey);
     void CreateSessionKeyIndexes();
 
 }
