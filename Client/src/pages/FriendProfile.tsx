@@ -32,7 +32,7 @@ const FriendProfile =()=>{
         return <Waiting/>
 
     return(
-        <div className="my-15 lg:w-[85%] mx-auto">
+        <div className="mt-15 lg:w-[85%] mx-auto">
             <div className="grid md:grid-cols-2 w-[85%] mx-auto">
                 {/**Profile picture*/}
                 <div className="grid justify-center md:flex md:justify-between items-center">

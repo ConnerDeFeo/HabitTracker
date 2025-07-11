@@ -65,7 +65,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
     }
 
     return(
-        <div className="flex flex-col mx-auto mb-[20vh] md:mb-[50vh] relative ">
+        <div className="flex flex-col relative ">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
                 <p className="text-3xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
                 <p className="absolute text-3xl md:text-6xl top-12 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>

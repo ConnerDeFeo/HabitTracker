@@ -1,6 +1,6 @@
 const About = ()=>{
     return(
-        <div className="grid w-[90%] mx-auto mb-10">
+        <div className="grid w-[90%] mx-auto">
             <p className="text-6xl text-center my-10">Tech Stack</p>
             <div className="grid gap-y-5 md:flex">
                 <img src="/mongo.jpg" alt="mongo" className="h-40 w-70 m-auto"/>

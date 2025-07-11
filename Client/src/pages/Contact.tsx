@@ -29,7 +29,7 @@ const Contact = ()=>{
     }
 
     return(
-        <div className="my-10">
+        <div className="mt-10">
             <form className="grid w-[85%] min-w-[300px] max-w-[760px] mx-auto gap-y-7" onSubmit={sendEmail}>
                 <p className="text-6xl">Reach Out!</p>
                 <Input value={name} updateValue={setName} placeholder="name" type="text" name="from_name"/>
