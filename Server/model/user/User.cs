@@ -17,7 +17,7 @@ public class User
 
     public string Password { get; set; } = string.Empty;
 
-    public string SessionKey { get; set; } = string.Empty;
+    public Dictionary<string,string> SessionKeys { get; set; } = [];
 
     public string LastLoginDate { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
 

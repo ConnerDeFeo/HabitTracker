@@ -21,6 +21,7 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     IUserService userService;
     IFriendModificationService friendModificationService;
     HashSet<string> daysOfWeek;
+    TestingUtils utils;
 
     public TestMongoFriendModificationService()
     {
@@ -28,6 +29,7 @@ public class TestMongoFriendModificationService : IAsyncLifetime
         dbName = $"TestMongoFriendService_{Guid.NewGuid().ToString()[..20]}";
         database = Client.GetDatabase(dbName);
         userService = new MongoUserService(database);
+        utils = new TestingUtils(userService);
         friendModificationService = new MongoFriendModificationService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
         dayKey = DateTime.Today.ToString("dd");
@@ -45,8 +47,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestSendFriendRequest()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -78,8 +80,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestSendFriendRequestFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner2", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend2", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner2");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend2");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -112,8 +114,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestUnSendFriendRequest()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner3", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend3", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner3");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend3");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -146,8 +148,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestUnSendFriendRequestFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner4", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend4", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner4");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend4");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -179,8 +181,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestAcceptFriendRequest()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner5", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend5", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner5");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend5");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -216,8 +218,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestAcceptFriendRequestFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner6", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend6", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner6");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend6");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -236,8 +238,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestRemoveFriend()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner7", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend7", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner7");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend7");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -260,8 +262,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestRemoveFriendFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner7", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend7", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner7");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend7");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -279,8 +281,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestRejectFriendRequest()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner8", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend8", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner8");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend8");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -313,8 +315,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
     [Fact]
     public async Task TestRejectFriendRequestFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner9", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend9", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner9");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend9");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;

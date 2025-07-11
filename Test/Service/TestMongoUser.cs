@@ -1,4 +1,5 @@
 namespace Test.service;
+
 using MongoDB.Driver;
 using Server.service.interfaces;
 using Server.service.utils;
@@ -17,6 +18,7 @@ public class TestMongoUser : IAsyncLifetime
     IUserService userService;
     IHabitService habitService;
     IHabitHistoryService habitHistoryService;
+    TestingUtils utils;
     public TestMongoUser()
     {
         dbName = $"TestMongoHabitHistoryService_{Guid.NewGuid().ToString()[..20]}";
@@ -24,6 +26,7 @@ public class TestMongoUser : IAsyncLifetime
         database = client.GetDatabase(dbName);
         userService = new MongoUserService(database);
         habitService = new MongoHabitService(database);
+        utils = new TestingUtils(userService);
         habitHistoryService = new MongoHabitHistoryService(database);
     }
 
@@ -38,7 +41,7 @@ public class TestMongoUser : IAsyncLifetime
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
     {
         User user = await database.GetCollection<User>("Users")
-        .Find(BuilderUtils.userFilter.Eq(u => u.SessionKey, sessionKey))
+        .Find(BuilderUtils.userFilter.Exists($"SessionKeys.{sessionKey}"))
         .FirstOrDefaultAsync();
         return await database.GetCollection<HabitCollection>("HabitCollection")
         .Find(BuilderUtils.habitFilter.Eq(hc => hc.Id, user.Id))
@@ -48,7 +51,7 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestGetUser()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo1", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo1");
 
         UserDto? user = await userService.GetUser(result.SessionKey);
 
@@ -66,7 +69,7 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestCreateUser()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo2", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo2");
 
         string sessionKey = result.SessionKey;
 
@@ -75,7 +78,7 @@ public class TestMongoUser : IAsyncLifetime
         Assert.Equal("ConnerDeFeo2", user!.Username);
         Assert.Equal(DateTime.Today.ToString("yyyy-MM-dd"), user!.DateCreated);
 
-        LoginResult Result = await userService.CreateUser("ConnerDeFeo2", "12345678");
+        LoginResult Result = await utils.CreateUser("ConnerDeFeo2");
 
         Assert.Equal("", Result.SessionKey);
 
@@ -84,13 +87,9 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestCreateUserFalse()
     {
-        await userService.CreateUser("ConnerDeFeo3", "12345678");
+        await utils.CreateUser("ConnerDeFeo3");
 
-        LoginResult Result = await userService.CreateUser("ConnerDeFeo3", "12345678");
-
-        Assert.Equal("", Result.SessionKey);
-
-        Result = await userService.CreateUser("Jack", "1234567");
+        LoginResult Result = await utils.CreateUser("ConnerDeFeo3");
 
         Assert.Equal("", Result.SessionKey);
     }
@@ -98,11 +97,11 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestLogin()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo4", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo4");
 
-        LoginResult Result = await userService.Login("ConnerDeFeo4", "12345678");
-        Assert.NotEqual("", Result.SessionKey);
+        LoginResult Result = await userService.Login(new LoginRequest { Username = "ConnerDeFeo4", Password = "12345678", DeviceId="1234"});
         Assert.NotNull(Result.SessionKey);
+        Assert.NotEqual("", Result.SessionKey);
 
     }
 
@@ -136,7 +135,7 @@ public class TestMongoUser : IAsyncLifetime
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
-        LoginResult result = await userService.Login(username, password);
+        LoginResult result = await userService.Login(new LoginRequest { Username = "Jack", Password = "asdfasdf", DeviceId="1234"});
 
         HabitCollection? habitCollectionUpdated = await GetHabitCollection(result.SessionKey);
 
@@ -153,16 +152,16 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestLoginFaliure()
     {
-        await userService.CreateUser("ConnerDeFeo5", "12345678");
+        await utils.CreateUser("ConnerDeFeo5");
 
-        LoginResult result = await userService.Login("ConnerDeFeo5", "Suk");
+        LoginResult result = await userService.Login(new LoginRequest { Username = "Jack", Password = "suk", DeviceId="1234"});
         Assert.Equal("", result.SessionKey);
     }
 
     [Fact]
     public async Task TestLogout()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo6", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo6");
 
         bool logedOut = await userService.Logout(result.SessionKey);
 
@@ -172,7 +171,7 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestLogoutFaliure()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo6", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo6");
 
         bool logedIn = await userService.Logout("");
 
@@ -182,7 +181,7 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestGetProfile()
     {
-        LoginResult result = await userService.CreateUser("ConnerDeFeo8", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo8");
         string sessionKey = result.SessionKey;
 
         HashSet<string> daysActive = new() { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
@@ -206,7 +205,7 @@ public class TestMongoUser : IAsyncLifetime
     [Fact]
     public async Task TestGetprofileFaliure()
     { 
-        LoginResult result = await userService.CreateUser("ConnerDeFeo9", "12345678");
+        LoginResult result = await utils.CreateUser("ConnerDeFeo9");
         string sessionKey = result.SessionKey;
 
 

@@ -67,15 +67,19 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     /// Generates a random sessionKey for the User to user immediately
     /// </summary>
     /// <returns>Login result containing sessionKey if succesful</returns>
-    public async Task<LoginResult> CreateUser(string username, string password){
+    public async Task<LoginResult> CreateUser(LoginRequest request){
 
+        string username = request.Username;
+        string password = request.Password;
         //username and password valid, User does not exists, password long enough 
-        if(username is null || username.Equals("") || password is null || password.Length<8 || await UserUtils.GetUserByUsername(username,_users) is not null){
-            return new LoginResult{SessionKey = ""};
+        if (username is null || username.Equals("") || password is null || password.Length < 8 || await UserUtils.GetUserByUsername(username, _users) is not null) {
+            return new LoginResult { SessionKey = "" };
         }
 
         string sessionKey = GenerateSessionKey();
         string id = ObjectId.GenerateNewId().ToString();
+        Dictionary<string, string> sessionKeys = [];
+        sessionKeys[sessionKey] = request.DeviceId;
         string today = $"{thisMonth}-{thisDay}";
         User user = new()
         {
@@ -83,7 +87,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             Username = username,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
-            SessionKey = sessionKey,
+            SessionKeys = sessionKeys,
             LastLoginDate = today,
             DateCreated = today
         };
@@ -101,20 +105,21 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     /// Uses PasswordHasher class for password decryption
     /// </summary>
     /// <returns>LoginRefult containing sessionKey if succsesful</returns>
-    public async Task<LoginResult> Login(string username, string password){
-        User? user = await UserUtils.GetUserByUsername(username,_users);
+    public async Task<LoginResult> Login(LoginRequest request){
+        User? user = await UserUtils.GetUserByUsername(request.Username, _users);
 
-        if (user is not null && PasswordHasher.VerifyPassword(password, user.Password))
+        if (user is not null && PasswordHasher.VerifyPassword(request.Password, user.Password))
         {
+            string username = request.Username;
             await UpdateUserHistory(user);
             
-                string sessionKey = GenerateSessionKey();
-                await _users.UpdateOneAsync(
-                    u => u.Username.Equals(username),
-                    BuilderUtils.userUpdate.Combine(
-                        BuilderUtils.userUpdate.Set(u => u.SessionKey, sessionKey),
-                        BuilderUtils.userUpdate.Set(u => u.LastLoginDate, DateTime.Today.ToString("yyyy-MM-dd"))
-                    )
+            string sessionKey = GenerateSessionKey();
+            await _users.UpdateOneAsync(
+                u => u.Username.Equals(username),
+                BuilderUtils.userUpdate.Combine(
+                    BuilderUtils.userUpdate.Set($"SessionKeys.{sessionKey}", request.DeviceId),
+                    BuilderUtils.userUpdate.Set(u => u.LastLoginDate, DateTime.Today.ToString("yyyy-MM-dd"))
+                )
             );
 
             return new LoginResult
@@ -137,8 +142,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
     public async Task<bool> Logout(string sessionKey){
         User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
-        if(user is not null && user.SessionKey.Equals(sessionKey)){
-            await _users.UpdateOneAsync(u=>u.SessionKey.Equals(sessionKey),BuilderUtils.userUpdate.Set(u=>u.SessionKey, ""));
+        if(user is not null){
+            await _users.UpdateOneAsync(u=>u.Id!.Equals(user.Id),BuilderUtils.userUpdate.Unset($"SessionKeys.{sessionKey}"));
             return true;
         }
         return false;
@@ -166,7 +171,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     /// </summary>
     public void CreateSessionKeyIndexes()
     {
-        var indexKeys = Builders<User>.IndexKeys.Ascending(u => u.SessionKey);
+        var indexKeys = Builders<User>.IndexKeys.Ascending(u => u.SessionKeys);
         var indexModel = new CreateIndexModel<User>(indexKeys);
         _users.Indexes.CreateOne(indexModel); // Run once on startup
     }

@@ -23,6 +23,7 @@ public class TestMongoSocialData : IAsyncLifetime
     ISocialDataService socialDataService;
     IFriendModificationService friendModificationService;
     HashSet<string> daysOfWeek;
+    TestingUtils utils;
 
     public TestMongoSocialData()
     {
@@ -30,6 +31,7 @@ public class TestMongoSocialData : IAsyncLifetime
         dbName = $"TestMongoFriendService_{Guid.NewGuid().ToString()[..20]}";
         database = Client.GetDatabase(dbName);
         userService = new MongoUserService(database);
+        utils = new TestingUtils(userService);
         habitService = new MongoHabitService(database);
         socialDataService = new MongoSocialDataService(database);
         friendModificationService = new MongoFriendModificationService(database);
@@ -49,8 +51,8 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetFriends()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner10", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend10", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner10");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend10");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -73,8 +75,8 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendsFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner11", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend11", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner11");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend11");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -97,8 +99,8 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendProfile()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner12", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend12", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner12");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend12");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -127,8 +129,8 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendProfileFailure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner13", "12341234");
-        LoginResult? friendLoginResult = await userService.CreateUser("Friend13", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner13");
+        LoginResult? friendLoginResult = await utils.CreateUser("Friend13");
 
         string userSessionKey = userLoginResult!.SessionKey;
         string friendSessionKey = friendLoginResult!.SessionKey;
@@ -153,12 +155,12 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestFindUser()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner14", "12341234");
-        await userService.CreateUser("person1", "12341234");
-        await userService.CreateUser("erson2", "12341234");
-        await userService.CreateUser("3person3", "12341234");
-        await userService.CreateUser("234perso", "12341234");
-        await userService.CreateUser("234person1", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner14");
+        await utils.CreateUser("person1");
+        await utils.CreateUser("erson2");
+        await utils.CreateUser("3person3");
+        await utils.CreateUser("234perso");
+        await utils.CreateUser("234person1");
 
         string userSessionKey = userLoginResult!.SessionKey;
 
@@ -176,12 +178,12 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestFindUserFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner15", "12341234");
-        await userService.CreateUser("person1", "12341234");
-        await userService.CreateUser("erson2", "12341234");
-        await userService.CreateUser("3person3", "12341234");
-        await userService.CreateUser("234perso", "12341234");
-        await userService.CreateUser("234person1", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner15");
+        await utils.CreateUser("person1");
+        await utils.CreateUser("erson2");
+        await utils.CreateUser("3person3");
+        await utils.CreateUser("234perso");
+        await utils.CreateUser("234person1");
 
         Dictionary<string, string>? found = await socialDataService.FindUser(ObjectId.GenerateNewId().ToString(), "person");
         Assert.Null(found);
@@ -190,10 +192,10 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetRandomUsers()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner16", "12341234");
-        await userService.CreateUser("person1", "12341234");
-        await userService.CreateUser("erson2", "12341234");
-        await userService.CreateUser("3person3", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner16");
+        await utils.CreateUser("person1");
+        await utils.CreateUser("erson2");
+        await utils.CreateUser("3person3");
 
         string userSessionKey = userLoginResult!.SessionKey;
 
@@ -206,12 +208,12 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetRandomUsersFaliure()
     {
-        LoginResult? userLoginResult = await userService.CreateUser("Conner17", "12341234");
-        await userService.CreateUser("person1", "12341234");
-        await userService.CreateUser("erson2", "12341234");
-        await userService.CreateUser("3person3", "12341234");
-        await userService.CreateUser("234perso", "12341234");
-        await userService.CreateUser("234person1", "12341234");
+        LoginResult? userLoginResult = await utils.CreateUser("Conner17");
+        await utils.CreateUser("person1");
+        await utils.CreateUser("erson2");
+        await utils.CreateUser("3person3");
+        await utils.CreateUser("234perso");
+        await utils.CreateUser("234person1");
 
         Dictionary<string, string>? users = await socialDataService.GetRandomUsers(ObjectId.GenerateNewId().ToString());
         Assert.Null(users);

@@ -20,6 +20,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
     IHabitService habitService;
     IHabitHistoryService habitHistoryService;
     HashSet<string> daysOfWeek;
+    TestingUtils utils;
   
     public TestMongoHabitHistory()
     {
@@ -27,6 +28,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
         dbName = $"TestMongoHabitHistoryService_{Guid.NewGuid().ToString()[..20]}";
         database = Client.GetDatabase(dbName);
         userService = new MongoUserService(database);
+        utils = new TestingUtils(userService);
         habitHistoryService = new MongoHabitHistoryService(database);
         habitService = new MongoHabitService(database);
         monthKey = DateTime.Today.ToString("yyyy-MM");
@@ -45,7 +47,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
     private async Task<HabitCollection> GetHabitCollection(string sessionKey)
     {
         User user = await database.GetCollection<User>("Users")
-        .Find(BuilderUtils.userFilter.Eq(u => u.SessionKey, sessionKey))
+        .Find(BuilderUtils.userFilter.Exists($"SessionKeys.{sessionKey}"))
         .FirstOrDefaultAsync();
         return await database.GetCollection<HabitCollection>("HabitCollection")
         .Find(BuilderUtils.habitFilter.Eq(hc => hc.Id, user.Id))
@@ -56,7 +58,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
     [Fact]
     public async Task TestSetHabitCompletion1()
     {
-        LoginResult result = await userService.CreateUser("Conner1", "12341234");
+        LoginResult result = await utils.CreateUser("Conner1");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
@@ -70,7 +72,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
     [Fact]
     public async Task TestSetHabitCompletionFailiure()
     {
-        LoginResult result = await userService.CreateUser("Conner2", "12341234");
+        LoginResult result = await utils.CreateUser("Conner2");
         string sessionKey = result.SessionKey;
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
@@ -90,7 +92,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
     [Fact]
     public async Task TestAllHabitsCompleted()
     {
-        LoginResult result = await userService.CreateUser("Conner3", "12341234");
+        LoginResult result = await utils.CreateUser("Conner3");
         string sessionKey = result.SessionKey;
         string today = DateTime.Today.ToString("yyyy-MM-dd");
 
@@ -166,7 +168,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
-        LoginResult result = await userService.Login(username, password);
+        LoginResult result = await userService.Login(new LoginRequest { Username = username, Password = password, DeviceId="1234"});
         string sessionKey = result.SessionKey;
 
         Dictionary<string, HistoricalDate>? datedHabits = await habitHistoryService.GetHabitHistoryByMonth(sessionKey, "0000-00");

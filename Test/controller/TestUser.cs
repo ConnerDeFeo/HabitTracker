@@ -22,15 +22,15 @@ public class TestUser
         dateCreated = DateTime.Today.ToString("yyyy-MM-dd");
 
         MockUserService
-        .Setup(us => us.CreateUser(It.IsAny<string>(), It.IsAny<string>()))
-        .Returns<string, string>((username, password) =>
+        .Setup(us => us.CreateUser(It.IsAny<LoginRequest>()))
+        .Returns<LoginRequest>((request) =>
         {
-            if (username.Equals("ConnerDeFeo") && password.Equals("12345678"))
+            if (request.Username.Equals("ConnerDeFeo") && request.Password.Equals("12345678"))
             {
                 return Task.FromResult(new LoginResult
                 {
                     SessionKey = "TestSessionKey",
-                    User = new UserDto { Username = username, DateCreated = dateCreated }
+                    User = new UserDto { Username = request.Username, DateCreated = dateCreated }
                 });
             }
             else
@@ -44,15 +44,15 @@ public class TestUser
         );
 
         MockUserService
-            .Setup(us => us.Login(It.IsAny<string>(), It.IsAny<string>()))
-            .Returns<string, string>((username, password) =>
+            .Setup(us => us.Login(It.IsAny<LoginRequest>()))
+            .Returns<LoginRequest>((request) =>
             {
-                if (username.Equals("ConnerDeFeo") && password.Equals("12345678"))
+                if (request.Username.Equals("ConnerDeFeo") && request.Password.Equals("12345678"))
                 {
                     return Task.FromResult(new LoginResult
                     {
                         SessionKey = "TestSessionKey",
-                        User = new UserDto { Username = username, DateCreated = dateCreated }
+                        User = new UserDto { Username = request.Username, DateCreated = dateCreated }
                     });
                 }
                 else
@@ -146,7 +146,7 @@ public class TestUser
     [Fact]
     public async Task TestCreateUser()
     {
-        IActionResult result = await userController.CreateUser(new User { Username = "ConnerDeFeo", Password = "12345678" });
+        IActionResult result = await userController.CreateUser(new LoginRequest { Username = "ConnerDeFeo", Password = "12345678", DeviceId="1234"});
         var OkResult = Assert.IsType<OkObjectResult>(result);
         var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
         Assert.Equal(200, OkResult.StatusCode);
@@ -156,7 +156,7 @@ public class TestUser
     [Fact]
     public async Task TestCreateUserFail()
     {
-        IActionResult result = await userController.CreateUser(new User { Username = "ConnerDeFeo", Password = "1234567" });
+        IActionResult result = await userController.CreateUser(new LoginRequest { Username = "ConnerDeFeo", Password = "1234567", DeviceId="1234"});
         var ConflictResult = Assert.IsType<ConflictObjectResult>(result);
         var LoginResult = Assert.IsType<LoginResult>(ConflictResult.Value);
         Assert.Equal("", LoginResult.SessionKey);
@@ -165,7 +165,7 @@ public class TestUser
     [Fact]
     public async Task TestLogin()
     {
-        IActionResult result = await userController.Login(new User { Username = "ConnerDeFeo", Password = "12345678" });
+        IActionResult result = await userController.Login(new LoginRequest { Username = "ConnerDeFeo", Password = "12345678", DeviceId="1234"});
         var OkResult = Assert.IsType<OkObjectResult>(result);
         var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
         Assert.Equal(200, OkResult.StatusCode);
@@ -175,7 +175,7 @@ public class TestUser
     [Fact]
     public async Task TestLoginFail()
     {
-        IActionResult result = await userController.Login(new User { Username = "ConnerDeFeo", Password = "1234567" });
+        IActionResult result = await userController.Login(new LoginRequest { Username = "ConnerDeFeo", Password = "1234567", DeviceId="1234"});
         var UnauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
         var LoginResult = Assert.IsType<LoginResult>(UnauthorizedResult.Value);
         Assert.Equal("", LoginResult.SessionKey);

@@ -37,9 +37,9 @@ public class UserController(IUserService _userService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] User user)
+    public async Task<IActionResult> CreateUser([FromBody] LoginRequest request)
     {
-        LoginResult result = await _userService.CreateUser(user.Username, user.Password);
+        LoginResult result = await _userService.CreateUser(request);
         if (result.SessionKey != "")
         {
             Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
@@ -55,9 +55,9 @@ public class UserController(IUserService _userService) : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] User user)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        LoginResult result = await _userService.Login(user.Username, user.Password);
+        LoginResult result = await _userService.Login(request);
         if (result.SessionKey != "")
         {
             Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions

@@ -89,7 +89,7 @@ public class TestMongoHabitStatistic : IAsyncLifetime
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
-        LoginResult result = await userService.Login(username, password);
+        LoginResult result = await userService.Login(new LoginRequest { Username = username, Password = password, DeviceId="1234"});
         string sessionKey = result.SessionKey;
         habit.Value = 50;
         await habitService.EditHabit(sessionKey, habit);
@@ -167,7 +167,7 @@ public class TestMongoHabitStatistic : IAsyncLifetime
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
-        LoginResult result = await userService.Login(username, password);
+        LoginResult result = await userService.Login(new LoginRequest { Username = username, Password = password, DeviceId="1234"});
         string sessionKey = result.SessionKey;
 
         //Only these 9 should be counted towards being complete

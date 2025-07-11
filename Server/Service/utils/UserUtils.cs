@@ -17,7 +17,7 @@ public static class UserUtils
 
     public static async Task<User?> GetUserBySessionKey(string sessionKey, IMongoCollection<User> _users)
     {
-        var Filter = BuilderUtils.userFilter.Eq(u => u.SessionKey, sessionKey);
+        var Filter = BuilderUtils.userFilter.Exists($"SessionKeys.{sessionKey}");
 
         return await _users.Find(Filter).FirstOrDefaultAsync();
     }
