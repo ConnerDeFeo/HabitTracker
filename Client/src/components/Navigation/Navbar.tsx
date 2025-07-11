@@ -13,7 +13,10 @@ const Navbar = (props:{loggedIn:boolean})=>{
             <NavigationItem name="Contact" navigateTo="/Contact"/>
         </>
         :
-        <></>;
+        <>
+            <NavigationItem name="Create Account" navigateTo="/CreateAccount"/>
+            <NavigationItem name="Login" navigateTo="/Login"/>
+        </>;
 }
 
 export default Navbar;

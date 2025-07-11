@@ -70,10 +70,10 @@ const AddFriend = (
         <div>
             {/**Seach bar */}
             <div className="w-70 sm:w-100 md:w-125 mx-auto">
-                <img src="BasicArrow.png" alt="basic arrow" className="rotate-180 h-8 w-8 my-5 cursor-pointer" onClick={()=>setAddFriends(false)}/>
+                <img src="/BasicArrow.png" alt="basic arrow" className="rotate-180 h-8 w-8 my-5 cursor-pointer" onClick={()=>setAddFriends(false)}/>
                 <div className="relative text-xl h-10 habitBorder mx-auto flex">
                     <input value={searchPhrase} onChange={(e)=>setSearchPhrase(e.target.value)} className="focus:outline-none pl-3" onKeyDown={handleKeyDown}/>
-                    <img className="absolute h-6 w-6 right-3 top-[0.3rem] cursor-pointer" src="Search.png" alt="search" onClick={fetchUsers}/>
+                    <img className="absolute h-6 w-6 right-3 top-[0.3rem] cursor-pointer" src="/Search.png" alt="search" onClick={fetchUsers}/>
                 </div>
             </div>
             {/** displayed users*/}
@@ -87,7 +87,7 @@ const AddFriend = (
                         //already friends
                         friends && key in friends ? 
                         <img 
-                            src="Minus.png" 
+                            src="/Minus.png" 
                             alt="remove friend" 
                             className="h-8 cursor-pointer" 
                             onClick={(e)=>{

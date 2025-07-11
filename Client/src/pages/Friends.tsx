@@ -40,7 +40,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                 <p className="cursor-pointer crossOut" onClick={()=>setSisplayFriendRequests(true)}>Friend Requests ({totalFriendRequests})</p>
                 <div className="flex crossOut items-center gap-x-1 cursor-pointer" onClick={()=>setAddFriends(true)}>
                     <p>AddFriends</p>
-                    <img src="Add.svg" alt="add" className="border-2 rounded-full h-5 w-5 p-[0.1rem]"/>
+                    <img src="/Add.svg" alt="add" className="border-2 rounded-full h-5 w-5 p-[0.1rem]"/>
                 </div>
             </div>
             {/**all displayed friends */}
@@ -52,7 +52,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
                         userId={value} 
                         buttons={
                             <img 
-                                src="Minus.png" 
+                                src="/Minus.png" 
                                 alt="remove friend" 
                                 className="h-8" 
                                 onClick={(e)=>{
