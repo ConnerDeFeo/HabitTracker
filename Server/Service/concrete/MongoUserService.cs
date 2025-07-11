@@ -112,19 +112,32 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         {
             string username = request.Username;
             await UpdateUserHistory(user);
-            
-            string sessionKey = GenerateSessionKey();
+
+            //New sessionKey for device
+            string newSessionKey = GenerateSessionKey();
+            List<UpdateDefinition<User>> updates = [];
+            updates.Add(
+                BuilderUtils.userUpdate.Set($"SessionKeys.{newSessionKey}", request.DeviceId).
+                Set(u => u.LastLoginDate, DateTime.Today.ToString("yyyy-MM-dd"))
+            );
+
+            //If there is an old sessionKey, get rid of it for the device
+            string? oldSessionKey = null;
+            foreach (var kvp in user.SessionKeys)
+                if (kvp.Value == request.DeviceId)
+                    oldSessionKey = kvp.Key;
+
+            if (oldSessionKey is not null)
+                updates.Add(BuilderUtils.userUpdate.Unset($"SessionKeys.{oldSessionKey}"));
+
             await _users.UpdateOneAsync(
                 u => u.Username.Equals(username),
-                BuilderUtils.userUpdate.Combine(
-                    BuilderUtils.userUpdate.Set($"SessionKeys.{sessionKey}", request.DeviceId),
-                    BuilderUtils.userUpdate.Set(u => u.LastLoginDate, DateTime.Today.ToString("yyyy-MM-dd"))
-                )
+                BuilderUtils.userUpdate.Combine(updates)
             );
 
             return new LoginResult
             {
-                SessionKey = sessionKey,
+                SessionKey = newSessionKey,
                 User =
                 new UserDto
                 {

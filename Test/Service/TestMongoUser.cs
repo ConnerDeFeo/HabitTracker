@@ -99,9 +99,25 @@ public class TestMongoUser : IAsyncLifetime
     {
         LoginResult result = await utils.CreateUser("ConnerDeFeo4");
 
-        LoginResult Result = await userService.Login(new LoginRequest { Username = "ConnerDeFeo4", Password = "12345678", DeviceId="1234"});
+        LoginResult Result = await userService.Login(new LoginRequest { Username = "ConnerDeFeo4", Password = "12345678", DeviceId = "1234" });
         Assert.NotNull(Result.SessionKey);
         Assert.NotEqual("", Result.SessionKey);
+        LoginResult Result2 = await userService.Login(new LoginRequest { Username = "ConnerDeFeo4", Password = "12345678", DeviceId = "1111" });
+        Assert.NotNull(Result2.SessionKey);
+        Assert.NotEqual("", Result2.SessionKey);
+
+        User user = await database.GetCollection<User>("Users")
+        .Find(BuilderUtils.userFilter.Exists($"SessionKeys.{Result2.SessionKey}"))
+        .FirstOrDefaultAsync();
+
+        Dictionary<string, string> sessionKeys = user.SessionKeys;
+
+        Assert.Equal(2, sessionKeys.Count);
+        Assert.True(sessionKeys.ContainsKey(Result.SessionKey));
+        Assert.True(sessionKeys.ContainsKey(Result2.SessionKey));
+        Assert.Equal("1234",sessionKeys[Result.SessionKey]);
+        Assert.Equal("1111",sessionKeys[Result2.SessionKey]);
+    
 
     }
 
