@@ -26,7 +26,12 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
     //When user attempt login
     const onSubmit = async ()=>{
             setWaiting(true);
-            const response = await UserService.Login(username,password);
+            let deviceId = localStorage.getItem("deviceId");
+            if (!deviceId) {
+                deviceId = crypto.randomUUID();
+                localStorage.setItem("deviceId", deviceId);
+            }
+            const response = await UserService.Login(username,password,deviceId);
             setWaiting(false);
             if(response.status!=200){
                 setMessage("Invalid Username or Password");

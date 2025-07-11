@@ -38,7 +38,12 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
             setMessage("Username must not be longer than 25 Character long");
         }else{
             setWaiting(true);
-            const response = await UserService.PostUser(username,password);
+            let deviceId = localStorage.getItem("deviceId");
+            if (!deviceId) {
+                deviceId = crypto.randomUUID();
+                localStorage.setItem("deviceId", deviceId);
+            }
+            const response = await UserService.PostUser(username,password,deviceId);
             setWaiting(false);
             if(response.status!=200){
                 setMessage("Username Taken");
