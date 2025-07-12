@@ -33,7 +33,6 @@ const RenderNonActiveHabits = (props:
     const handleHabitDeletion = async()=>{
         if(username==="Guest" ){
             //Checking for the base demo habits
-            console.log(habit.id);
             if(habit.id==="686f174e5c6dfd39ca6bb206" || habit.id==="686f175e5c6dfd39ca6bb207" || habit.id==="686f17785c6dfd39ca6bb208" || habit.id==="686f17965c6dfd39ca6bb209"){
                 alert("No deleting base guest habits! (create your own to delete).");
                 return;

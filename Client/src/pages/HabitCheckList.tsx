@@ -14,13 +14,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
-    const now = DateService.getUtcToday();
-    const today = new Date(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate()
-    );
-    console.log(today);
+    const today = DateService.getUtcToday();
     //Post fixes for the various days, so 14th, or 1rst for instance
     const postFixes: Record<number,string> = {1:"rst", 2:"nd", 3:"rd"};
     /*post fix has to bge checked like this due to 11-14 ending with "th" 
