@@ -18,8 +18,9 @@ public class User
     public string Username { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+    public string GoogleId { get; set; } = string.Empty;
 
-    public Dictionary<string,string> SessionKeys { get; set; } = [];
+    public Dictionary<string, string> SessionKeys { get; set; } = [];
 
     public string LastLoginDate { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd");
 

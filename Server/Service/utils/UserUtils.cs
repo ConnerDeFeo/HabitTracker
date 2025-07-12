@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Amazon;
 using MongoDB.Driver;
 using Server.dtos;
@@ -84,4 +85,51 @@ public static class UserUtils
         };
 
     }
+
+    public static string GenerateSessionKey()
+    {
+        byte[] key = RandomNumberGenerator.GetBytes(32);
+        return Convert.ToBase64String(key);
+    }
+
+    public async static Task UpdateUserHistory(User user, IMongoCollection<HabitCollection> habitCollection)
+    {
+        //Get habit collection for updating missing dates
+        var filter = Builders<HabitCollection>.Filter.Eq(hc => hc.Id, user.Id);
+        HabitCollection collection = await habitCollection
+            .Find(filter)
+            .Project<HabitCollection>(Builders<HabitCollection>.Projection.Include(hc => hc.ActiveHabits))
+            .FirstOrDefaultAsync();
+        DateTime today = DateTime.UtcNow.Date;
+        List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = HabitUtils.UpdateUserHabitHistory(user, collection, today);
+        if (habitHistoryUpdates.Count > 0)
+            await habitCollection.UpdateOneAsync(filter, Builders<HabitCollection>.Update.Combine(habitHistoryUpdates));
+    }
+
+    //Updates a users session key based on device being logged in from
+    public async static Task<string> UpdateSessionKeys(User user, string deviceId, IMongoCollection<User> users)
+    {
+        string newSessionKey = GenerateSessionKey();
+        List<UpdateDefinition<User>> updates = [];
+        updates.Add(
+            BuilderUtils.userUpdate.Set($"SessionKeys.{newSessionKey}", deviceId).
+            Set(u => u.LastLoginDate, DateTime.UtcNow.ToString("yyyy-MM-dd"))
+        );
+
+        //If there is an old sessionKey, get rid of it for the device
+        string? oldSessionKey = null;
+        foreach (var kvp in user.SessionKeys)
+            if (kvp.Value == deviceId)
+                oldSessionKey = kvp.Key;
+
+        if (oldSessionKey is not null)
+            updates.Add(BuilderUtils.userUpdate.Unset($"SessionKeys.{oldSessionKey}"));
+
+        await users.UpdateOneAsync(
+            u => u.Username.Equals(user.Username),
+            BuilderUtils.userUpdate.Combine(updates)
+        );
+
+        return newSessionKey;
+    } 
 }

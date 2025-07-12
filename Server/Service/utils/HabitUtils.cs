@@ -105,7 +105,7 @@ public static class HabitUtils
     
 
     /// <summary>
-    /// Updates list of updated user habit days based on days received
+    /// Returns list of updates needed for a given user loggin in
     /// </summary>
     /// <param name="user">user being updated</param>
     /// <param name="collection">collection of given user</param>

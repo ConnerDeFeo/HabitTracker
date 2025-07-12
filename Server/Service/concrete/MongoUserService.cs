@@ -19,28 +19,6 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     private readonly string thisMonth = DateTime.UtcNow.ToString("yyyy-MM");
     private readonly string thisDay = DateTime.UtcNow.ToString("dd");
 
-    //Generates random sessionKey
-    private static string GenerateSessionKey()
-    {
-        byte[] key = RandomNumberGenerator.GetBytes(32);
-        return Convert.ToBase64String(key);
-    }
-
-    //Updates users habit history to keep up with current dates
-    private async Task UpdateUserHistory(User user)
-    {
-        //Get habit collection for updating missing dates
-        var filter = Builders<HabitCollection>.Filter.Eq(hc => hc.Id, user.Id);
-        HabitCollection collection = await _habitCollections
-            .Find(filter)
-            .Project<HabitCollection>(Builders<HabitCollection>.Projection.Include(hc => hc.ActiveHabits))
-            .FirstOrDefaultAsync();
-        DateTime today = DateTime.UtcNow.Date;
-        List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = HabitUtils.UpdateUserHabitHistory(user, collection, today);
-        if(habitHistoryUpdates.Count > 0)
-            await _habitCollections.UpdateOneAsync(filter, Builders<HabitCollection>.Update.Combine(habitHistoryUpdates));
-    }
-
     //This is the public version of getUser, not exposing any sensitive info
     public async Task<UserDto?> GetUser(string sessionKey)
     {
@@ -48,7 +26,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
         if (user != null)
         {
-            await UpdateUserHistory(user);
+            await UserUtils.UpdateUserHistory(user, _habitCollections);
             return new UserDto
             {
                 Username = user.Username,
@@ -85,7 +63,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         if (exists is not null)
             return new LoginResult { SessionKey = "" };
 
-        string sessionKey = GenerateSessionKey();
+        string sessionKey = UserUtils.GenerateSessionKey();
         string id = ObjectId.GenerateNewId().ToString();
         Dictionary<string, string> sessionKeys = [];
         sessionKeys[sessionKey] = request.DeviceId;
@@ -121,29 +99,10 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         if (user is not null && PasswordHasher.VerifyPassword(request.Password, user.Password))
         {
             string username = request.Username;
-            await UpdateUserHistory(user);
+            await UserUtils.UpdateUserHistory(user,_habitCollections);
 
             //New sessionKey for device
-            string newSessionKey = GenerateSessionKey();
-            List<UpdateDefinition<User>> updates = [];
-            updates.Add(
-                BuilderUtils.userUpdate.Set($"SessionKeys.{newSessionKey}", request.DeviceId).
-                Set(u => u.LastLoginDate, DateTime.UtcNow.ToString("yyyy-MM-dd"))
-            );
-
-            //If there is an old sessionKey, get rid of it for the device
-            string? oldSessionKey = null;
-            foreach (var kvp in user.SessionKeys)
-                if (kvp.Value == request.DeviceId)
-                    oldSessionKey = kvp.Key;
-
-            if (oldSessionKey is not null)
-                updates.Add(BuilderUtils.userUpdate.Unset($"SessionKeys.{oldSessionKey}"));
-
-            await _users.UpdateOneAsync(
-                u => u.Username.Equals(username),
-                BuilderUtils.userUpdate.Combine(updates)
-            );
+            string newSessionKey = await UserUtils.UpdateSessionKeys(user, request.DeviceId, _users);
 
             return new LoginResult
             {

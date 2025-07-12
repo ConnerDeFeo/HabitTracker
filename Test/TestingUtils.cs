@@ -9,6 +9,6 @@ public class TestingUtils(IUserService userService)
     public async Task<LoginResult> CreateUser(string username)
     {
         return await
-        _userService.CreateUser(new LoginRequest { Username = username, Password = "12345678", DeviceId = "1234", Email = $"something{Counter++}" });
+        _userService.CreateUser(new LoginRequest { Username = username, Password = "12345678", DeviceId = "1234", Email = $"something{Counter++}"});
     }
 }
