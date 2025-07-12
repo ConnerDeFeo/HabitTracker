@@ -22,15 +22,15 @@ public class MongoGoogleAuthService(IMongoDatabase database) : IGoogleAuthServic
     /// </summary>
     /// <param name="jwtToken">token sent from google login </param>
     /// <returns>payload containing all sensitive info about user</returns>
-    private async static Task<GoogleJsonWebSignature.Payload?> VerifyGoogleTokenAsync(string jwtToken)
+    private async static Task<GoogleJsonWebSignature.Payload?> VerifyGoogleTokenAsync(string jwt)
     {
         try
         {
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = [Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")] // Replace this
+                Audience = [Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")]
             };
-            var payload = await GoogleJsonWebSignature.ValidateAsync(jwtToken, settings);
+            var payload = await GoogleJsonWebSignature.ValidateAsync(jwt, settings);
 
             return payload;
         }
@@ -53,9 +53,9 @@ public class MongoGoogleAuthService(IMongoDatabase database) : IGoogleAuthServic
     /// <param name="jwtToken">token sent from backend</param>
     /// <param name="deviceId">device sent from</param>
     /// <returns>login result if successful or not</returns>
-    public async Task<LoginResult> Login(string jwtToken, string deviceId)
+    public async Task<LoginResult> Login(string jwt, string deviceId)
     {
-        GoogleJsonWebSignature.Payload? payload = await VerifyGoogleTokenAsync(jwtToken);
+        GoogleJsonWebSignature.Payload? payload = await VerifyGoogleTokenAsync(jwt);
         if (payload is null)
             return new LoginResult { SessionKey = "" };
 
@@ -89,9 +89,9 @@ public class MongoGoogleAuthService(IMongoDatabase database) : IGoogleAuthServic
     /// <param name="jwtToken">token sent from backend</param>
     /// <param name="deviceId">device sent from</param>
     /// <returns>login result if successful or not</returns>
-    public async Task<LoginResult> CreateUser(string jwtToken, string deviceId)
+    public async Task<LoginResult> CreateUser(string jwt, string deviceId)
     {
-        GoogleJsonWebSignature.Payload? payload = await VerifyGoogleTokenAsync(jwtToken);
+        GoogleJsonWebSignature.Payload? payload = await VerifyGoogleTokenAsync(jwt);
         if (payload is null)
             return new LoginResult { SessionKey = "" };
 
