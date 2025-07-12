@@ -7,6 +7,7 @@ import AllHabits from "../components/Statistics/AllHabits";
 import HabitData from "../components/Statistics/HabitData";
 import HabitDataByMonth from "../components/Statistics/HabitDataByMonth";
 import DateInfo from "../types/DateInfo";
+import DateService from "../services/DateService";
 
 //Statistics page, obviously
 const Statistics = (props:{smallScreen:boolean})=>{
@@ -17,11 +18,11 @@ const Statistics = (props:{smallScreen:boolean})=>{
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
     const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
     const [date, setDate] = useState<DateInfo>(() => {
-        const now = new Date();
+        const now = DateService.getUtcToday();
         return{
-            year: now.getFullYear(),
-            month: now.getMonth(), 
-            day: now.getDate()
+            year: now.getUTCFullYear(),
+            month: now.getUTCMonth(), 
+            day: now.getUTCDate()
         };
     });
     

@@ -14,7 +14,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
 
     const [habits,setHabits] = useState<Habit[]>([]);
 
-    const now = new Date();
+    const now = DateService.getUtcToday();
     const today = new Date(
         now.getUTCFullYear(),
         now.getUTCMonth(),
@@ -34,7 +34,7 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
         return "th"
     }
     //flag for if the upper right button "go to today" will be shown
-    const dateIsToday = today.getFullYear()===date.year && today.getMonth() === date.month && today.getDate()===date.day;
+    const dateIsToday = today.getUTCFullYear()===date.year && today.getUTCMonth() === date.month && today.getUTCDate()===date.day;
     //Used for habit completion, string of date in yyyy-MM-dd format to interact with the backend
     const dayInStringFormat = `${date.year}-${DateService.padZero(date.month+1)}-${DateService.padZero(date.day)}`;
 
@@ -74,13 +74,13 @@ const HabitCheckList = (props:{date:DateInfo, fetchMonth: ()=>void, setDate: Rea
         <div className="flex flex-col relative ">
             <div className="flex justify-between items-center w-[75%] mx-auto mt-8 relative">
                 <p className="text-3xl md:text-6xl">{`${DateData.months[date.month]} ${date.day}${postFix()}, ${date.year}`}</p>
-                <p className="absolute text-3xl md:text-6xl top-12 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getDay()]}</p>
+                <p className="absolute text-3xl md:text-6xl top-12 left-0 md:left-1/2 md:-translate-x-1/2">{DateData.days[new Date(date.year,date.month,date.day).getUTCDay()]}</p>
    
                 {
                     !dateIsToday &&
                     <Button 
                         label="Today" 
-                        onClick={()=>{setDate({day:today.getDate(), month: today.getMonth(), year: today.getFullYear()})}}
+                        onClick={()=>{setDate({day:today.getUTCDate(), month: today.getUTCMonth(), year: today.getUTCFullYear()})}}
                         className="w-20"
                     />
                 }

@@ -4,12 +4,12 @@ import DateService from "../../services/DateService";
 //month thats displayed for user profile and friends profile
 const RenderCurrentMonth = (props:{currentMonthHabitsCompleted:Record<string,boolean>})=>{
     const {currentMonthHabitsCompleted}= props;
-    const now = new Date();
-    const daysInCurrentMonth: number = new Date(now.getFullYear(), now.getMonth()+1 , 0).getDate(); // plus one because 0 means end of previous month
-    const firtDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+    const now  = DateService.getUtcToday();
+    const daysInCurrentMonth: number = new Date(now.getUTCFullYear(), now.getUTCMonth()+1 , 0).getUTCDate(); // plus one because 0 means end of previous month
+    const firtDayOfMonth = new Date(now.getUTCFullYear(), now.getUTCMonth(), 1).getUTCDay();
     return(
             <div>
-                <h2 className="text-3xl md:text-5xl md:mt-5 font-hand text-center">{DateData.months[new Date().getMonth()]}</h2>
+                <h2 className="text-3xl md:text-5xl md:mt-5 font-hand text-center">{DateData.months[now.getUTCMonth()]}</h2>
                 <div className="grid grid-cols-7 justify-items-center mx-auto mt-2">
                     {DateData.days.map((day,i)=>
                         <p className={"text-2xl md:text-4xl "+(i < firtDayOfMonth && "row-span-2")} 

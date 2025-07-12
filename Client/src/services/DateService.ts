@@ -33,24 +33,32 @@ const DateService={
     },
     increaseDay: (date: DateInfo): DateInfo =>{
         const newDate = new Date(date.year,date.month,date.day);
-        newDate.setDate(newDate.getDate()+1);
+        newDate.setDate(newDate.getUTCDate()+1);
 
         return{
-            day: newDate.getDate(),
-            month: newDate.getMonth(),
-            year: newDate.getFullYear()
+            day: newDate.getUTCDate(),
+            month: newDate.getUTCMonth(),
+            year: newDate.getUTCFullYear()
         }
     },
     decreaseDay: (date: DateInfo): DateInfo =>{
         const newDate = new Date(date.year,date.month,date.day);
-        newDate.setDate(newDate.getDate()-1);
+        newDate.setDate(newDate.getUTCDate()-1);
 
         return{
-            day: newDate.getDate(),
-            month: newDate.getMonth(),
-            year: newDate.getFullYear()
+            day: newDate.getUTCDate(),
+            month: newDate.getUTCMonth(),
+            year: newDate.getUTCFullYear()
         }
     },
+    getUtcToday:():Date=>{
+        const now = new Date();
+        return new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate()
+        ));
+    }
 }
 
 export default DateService;

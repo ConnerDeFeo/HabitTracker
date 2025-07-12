@@ -15,8 +15,8 @@ const Schedule = (props:{
     const navigate = useNavigate();
 
     //Used for to determine which days to show where and how many
-    const firtDayOfMonth = new Date(date.year, date.month, 1).getDay();
-    const daysInMonth = new Date(date.year, date.month+1, 0).getDate();
+    const firtDayOfMonth = new Date(date.year, date.month, 1).getUTCDay();
+    const daysInMonth = new Date(date.year, date.month+1, 0).getUTCDate();
 
 
     //Depending on weather all habits were completed for a give day, return respective image
@@ -35,7 +35,7 @@ const Schedule = (props:{
 
     //On a given date being clicked by user
     const handleDateSelection = (day: number)=>{
-        const today = new Date();
+        const today = DateService.getUtcToday();
         const selectedDate = new Date(date.year,date.month,day);
 
         if(selectedDate<=today)
@@ -46,9 +46,9 @@ const Schedule = (props:{
             });
         else
             setDate({
-                day: today.getDate(),
-                month: today.getMonth(),
-                year: today.getFullYear()
+                day: today.getUTCDate(),
+                month: today.getUTCMonth(),
+                year: today.getUTCFullYear()
             });
 
         navigate("/");

@@ -25,6 +25,7 @@ import Contact from './pages/Contact';
 import Friends from './pages/Friends';
 import FriendProfile from './pages/FriendProfile';
 import PhotoService from './services/PhotoService';
+import DateService from './services/DateService';
 
 //Overarching application
 const HabitTracker = ()=>{
@@ -37,11 +38,11 @@ const HabitTracker = ()=>{
     const [imageUrl,setImageUrl] = useState<string>(PhotoService.getPhotoUrl(user?.id));
     const [smallScreen,setSmallScreen] = useState<boolean>(window.innerWidth<1024);
     const [date, setDate] = useState<DateInfo>(() => {
-        const now = new Date();
+        const now = DateService.getUtcToday();
         return{
-            year: now.getFullYear(),
-            month: now.getMonth(), 
-            day: now.getDate()
+            year: now.getUTCFullYear(),
+            month: now.getUTCMonth(), 
+            day: now.getUTCDate()
         };
     });
 

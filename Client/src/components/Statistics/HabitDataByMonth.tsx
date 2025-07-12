@@ -23,26 +23,26 @@ const  HabitDataByMonth = (
 
     //Date created in object form for the currently viewed habit
     const parsedHabitCreatedDate = new Date(historicalData?.habit.dateCreated+"T00:00:01");
-    const firtDayOfMonth = new Date(date.year, date.month, 1).getDay();
+    const firtDayOfMonth = new Date(date.year, date.month, 1).getUTCDay();
 
     /*Compares the current month being rendered to the 
     creation date of the habit and today to see if the given month is valid for
     a date that the current habit could have existed in*/
     const compareMonth = (index: number): boolean => {
-        const today = new Date();
+        const today = DateService.getUtcToday();
         const target = new Date(date.year, index, 1);
 
         // Check if target month is before habit creation and after current month
         return (
-            target >= new Date(parsedHabitCreatedDate.getFullYear(), parsedHabitCreatedDate.getMonth(), 1) &&
-            target <= new Date(today.getFullYear(), today.getMonth(), 1)
+            target >= new Date(parsedHabitCreatedDate.getUTCFullYear(), parsedHabitCreatedDate.getUTCMonth(), 1) &&
+            target <= new Date(today.getUTCFullYear(), today.getUTCMonth(), 1)
         );
     };
 
     /*When user clicks on a month in the initial panel, this is dwhat displays the 
     individual days in the month with the respecitve colorings*/
     const renderMonth = ()=>{
-        const daysInMonth:number = new Date(date.year,date.month+1,0).getDate();
+        const daysInMonth:number = new Date(date.year,date.month+1,0).getUTCDate();
         const habitId:string = historicalData?.habit.id! || "";
         return (
             <>
@@ -53,7 +53,7 @@ const  HabitDataByMonth = (
                     dates to no longer include that date, the previous dates will still 
                     be counted towards long term statistics */
                     const containsHabit = monthlyHabits?.[DateService.padZero(day)]?.habits?.[habitId];
-                    const dayOfWeek = DateData.days[new Date(date.year,date.month,day).getDay()];
+                    const dayOfWeek = DateData.days[new Date(date.year,date.month,day).getUTCDay()];
                     const containsDay = historicalData?.habit.daysActive.includes(dayOfWeek);
 
                     let bgClass = "";
