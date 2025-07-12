@@ -71,8 +71,9 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 
         string username = request.Username;
         string password = request.Password;
+        string? email = request.Email;
         //username and password valid, User does not exists, password long enough 
-        if (username is null || username.Equals("") || password is null || password.Length < 8 || await UserUtils.GetUserByUsername(username, _users) is not null) {
+        if (string.IsNullOrEmpty(username) || password is null || password.Length < 8 || email is null || await UserUtils.GetUserByUsername(username, _users) is not null) {
             return new LoginResult { SessionKey = "" };
         }
 
@@ -85,6 +86,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         {
             Id = id,
             Username = username,
+            Email = email,
             //Hash the password before storing in database
             Password = PasswordHasher.HashPassword(password),
             SessionKeys = sessionKeys,
