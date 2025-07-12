@@ -19,7 +19,7 @@ public class TestUser
     public TestUser()
     {
         var MockUserService = new Mock<IUserService>();
-        dateCreated = DateTime.Today.ToString("yyyy-MM-dd");
+        dateCreated = DateTime.UtcNow.ToString("yyyy-MM-dd");
 
         MockUserService
         .Setup(us => us.CreateUser(It.IsAny<LoginRequest>()))

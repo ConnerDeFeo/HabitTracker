@@ -16,8 +16,8 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
 {
     private readonly IMongoCollection<User> _users = _database.GetCollection<User>("Users");
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
-    private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
-    private readonly string thisDay = DateTime.Today.ToString("dd");
+    private readonly string thisMonth = DateTime.UtcNow.ToString("yyyy-MM");
+    private readonly string thisDay = DateTime.UtcNow.ToString("dd");
 
     //Generates random sessionKey
     private static string GenerateSessionKey()
@@ -35,7 +35,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             .Find(filter)
             .Project<HabitCollection>(Builders<HabitCollection>.Projection.Include(hc => hc.ActiveHabits))
             .FirstOrDefaultAsync();
-        DateTime today = DateTime.Today.Date;
+        DateTime today = DateTime.UtcNow.Date;
         List<UpdateDefinition<HabitCollection>> habitHistoryUpdates = HabitUtils.UpdateUserHabitHistory(user, collection, today);
         if(habitHistoryUpdates.Count > 0)
             await _habitCollections.UpdateOneAsync(filter, Builders<HabitCollection>.Update.Combine(habitHistoryUpdates));
@@ -118,7 +118,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             List<UpdateDefinition<User>> updates = [];
             updates.Add(
                 BuilderUtils.userUpdate.Set($"SessionKeys.{newSessionKey}", request.DeviceId).
-                Set(u => u.LastLoginDate, DateTime.Today.ToString("yyyy-MM-dd"))
+                Set(u => u.LastLoginDate, DateTime.UtcNow.ToString("yyyy-MM-dd"))
             );
 
             //If there is an old sessionKey, get rid of it for the device

@@ -19,7 +19,7 @@ public class User
 
     public Dictionary<string,string> SessionKeys { get; set; } = [];
 
-    public string LastLoginDate { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
+    public string LastLoginDate { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd");
 
     public string DateCreated { get; set; } = string.Empty;
 

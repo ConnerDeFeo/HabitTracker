@@ -31,8 +31,8 @@ public class TestMongoHabitStatistic : IAsyncLifetime
         habitService = new MongoHabitService(database);
         habitHistoryService = new MongoHabitHistoryService(database);
         habitStatisticService = new MongoHabitStatisticService(database);
-        monthKey = DateTime.Today.ToString("yyyy-MM");
-        dayKey = DateTime.Today.ToString("dd");
+        monthKey = DateTime.UtcNow.ToString("yyyy-MM");
+        dayKey = DateTime.UtcNow.ToString("dd");
         daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     }
 
@@ -48,13 +48,13 @@ public class TestMongoHabitStatistic : IAsyncLifetime
     [Fact]
     public async Task TestGetHistoricalData()
     {
-        DateTime today = DateTime.Today;
+        DateTime today = DateTime.UtcNow;
 
         IMongoCollection<User> users = database.GetCollection<User>("Users");
         IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
 
         string id = ObjectId.GenerateNewId().ToString();
-        string past = DateTime.Today.AddDays(-15).ToString("yyyy-MM-dd");
+        string past = DateTime.UtcNow.AddDays(-15).ToString("yyyy-MM-dd");
         string password = "asdfasdf";
         string username = "Jack1";
 

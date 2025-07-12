@@ -34,7 +34,7 @@ public class HabitCollection
     public int GetCurrentStreak(Habit habit)
     {
         HashSet<string> daysActive = habit.DaysActive;
-        DateTime currentDate = DateTime.Today;
+        DateTime currentDate = DateTime.UtcNow;
         string habitId = habit.Id!;
         int currentStreak = 0;
         
@@ -77,7 +77,7 @@ public class HabitCollection
     //Gets longest streak for a given habit
     public int GetLongestStreak(Habit habit)
     {
-        DateTime currentDate = DateTime.Today;
+        DateTime currentDate = DateTime.UtcNow;
         HashSet<string> daysActive = habit.DaysActive;
         string habitId = habit.Id!;
         int highestStreak = 0;

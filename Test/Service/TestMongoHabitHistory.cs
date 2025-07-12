@@ -31,8 +31,8 @@ public class TestMongoHabitHistory: IAsyncLifetime
         utils = new TestingUtils(userService);
         habitHistoryService = new MongoHabitHistoryService(database);
         habitService = new MongoHabitService(database);
-        monthKey = DateTime.Today.ToString("yyyy-MM");
-        dayKey = DateTime.Today.ToString("dd");
+        monthKey = DateTime.UtcNow.ToString("yyyy-MM");
+        dayKey = DateTime.UtcNow.ToString("dd");
         daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     }
 
@@ -94,7 +94,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
     {
         LoginResult result = await utils.CreateUser("Conner3");
         string sessionKey = result.SessionKey;
-        string today = DateTime.Today.ToString("yyyy-MM-dd");
+        string today = DateTime.UtcNow.ToString("yyyy-MM-dd");
 
         Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit", DaysActive = daysOfWeek });
         await habitHistoryService.SetHabitCompletion(sessionKey, today, habit!.Id!, true);
@@ -135,7 +135,7 @@ public class TestMongoHabitHistory: IAsyncLifetime
         IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
 
         string id = ObjectId.GenerateNewId().ToString();
-        string today = DateTime.Today.ToString("yyyy-MM-dd");
+        string today = DateTime.UtcNow.ToString("yyyy-MM-dd");
         string password = "asdfasdf";
         string username = "Conner4";
 

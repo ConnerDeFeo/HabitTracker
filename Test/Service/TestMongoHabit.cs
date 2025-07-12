@@ -31,8 +31,8 @@ public class TestMongoHabit : IAsyncLifetime
         userService = new MongoUserService(database);
         utils = new TestingUtils(userService);
         habitService = new MongoHabitService(database);
-        monthKey = DateTime.Today.ToString("yyyy-MM");
-        dayKey = DateTime.Today.ToString("dd");
+        monthKey = DateTime.UtcNow.ToString("yyyy-MM");
+        dayKey = DateTime.UtcNow.ToString("dd");
         daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     }
 

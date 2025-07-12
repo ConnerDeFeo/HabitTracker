@@ -36,7 +36,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
             
             if (!DateTime.TryParse(habit.DateCreated, out DateTime dateCreated))
                 throw new Exception("Date could not be parsed properly");
-            DateTime today = DateTime.Today;
+            DateTime today = DateTime.UtcNow;
             DateTime thisMonth = new(today.Year, today.Month, 1);
 
             var filter = BuilderUtils.habitFilter.Eq(hc => hc.Id, userId);
@@ -91,7 +91,7 @@ public class MongoHabitStatisticService(IMongoDatabase _database) : IHabitStatis
 
             DateTime startDate = new DateTime(year, 1, 1).Date;
             DateTime endDate = new DateTime(year, 12, 1).Date;
-            DateTime currentDate = DateTime.Today.Date;
+            DateTime currentDate = DateTime.UtcNow.Date;
 
             List<ProjectionDefinition<HabitCollection>> habitHistoryProjections = [];
             //We Only Want to include months that have actually happened or are happening

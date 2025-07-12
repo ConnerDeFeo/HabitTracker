@@ -31,8 +31,8 @@ public class TestMongoFriendModificationService : IAsyncLifetime
         userService = new MongoUserService(database);
         utils = new TestingUtils(userService);
         friendModificationService = new MongoFriendModificationService(database);
-        monthKey = DateTime.Today.ToString("yyyy-MM");
-        dayKey = DateTime.Today.ToString("dd");
+        monthKey = DateTime.UtcNow.ToString("yyyy-MM");
+        dayKey = DateTime.UtcNow.ToString("dd");
         daysOfWeek = new HashSet<string> { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
     }
 

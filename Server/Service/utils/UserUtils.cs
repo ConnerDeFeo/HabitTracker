@@ -45,7 +45,7 @@ public static class UserUtils
     //Returns all days completed for a given month for a given habit without all the internal habits
     private static Dictionary<string, bool> GetDaysCompleted(Dictionary<string, HistoricalDate> dates)
     {
-        DateTime today = DateTime.Today.Date;
+        DateTime today = DateTime.UtcNow.Date;
         DateTime curr = new(today.Year, today.Month, 1);
 
         Dictionary<string, bool> daysCompleted = [];
@@ -71,7 +71,7 @@ public static class UserUtils
     {
         List<ProfileHabit> currentHabits = GetCurrentHabits(collection);
 
-        Dictionary<string, HistoricalDate> dates = collection.HabitHistory[DateTime.Today.ToString("yyyy-MM")];
+        Dictionary<string, HistoricalDate> dates = collection.HabitHistory[DateTime.UtcNow.ToString("yyyy-MM")];
         Dictionary<string, bool> daysCompleted = GetDaysCompleted(dates);
 
         return new dtos.Profile

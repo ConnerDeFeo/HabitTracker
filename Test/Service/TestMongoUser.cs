@@ -76,7 +76,7 @@ public class TestMongoUser : IAsyncLifetime
         UserDto? user = await userService.GetUser(result.SessionKey);
 
         Assert.Equal("ConnerDeFeo2", user!.Username);
-        Assert.Equal(DateTime.Today.ToString("yyyy-MM-dd"), user!.DateCreated);
+        Assert.Equal(DateTime.UtcNow.ToString("yyyy-MM-dd"), user!.DateCreated);
 
         LoginResult Result = await utils.CreateUser("ConnerDeFeo2");
 
@@ -128,7 +128,7 @@ public class TestMongoUser : IAsyncLifetime
         IMongoCollection<HabitCollection> collection = database.GetCollection<HabitCollection>("HabitCollection");
 
         string id = ObjectId.GenerateNewId().ToString();
-        string past = DateTime.Today.AddDays(-5).ToString("yyyy-MM-dd");
+        string past = DateTime.UtcNow.AddDays(-5).ToString("yyyy-MM-dd");
         string password = "asdfasdf";
         string username = "Jack";
 
@@ -213,7 +213,7 @@ public class TestMongoUser : IAsyncLifetime
         Assert.Equal(0, habits.CurrentHabits[1].CurrentStreak);
         Assert.Equal(0, habits.CurrentHabits[2].CurrentStreak);
 
-        await habitHistoryService.SetHabitCompletion(sessionKey, $"{DateTime.Today:yyyy-MM-dd}", habit!.Id!, true);
+        await habitHistoryService.SetHabitCompletion(sessionKey, $"{DateTime.UtcNow:yyyy-MM-dd}", habit!.Id!, true);
         habits = await userService.GetProfile(sessionKey);
         Assert.Equal(1, habits!.CurrentHabits[0].CurrentStreak);
     }

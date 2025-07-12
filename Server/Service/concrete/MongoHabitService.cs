@@ -19,8 +19,8 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
     private readonly IMongoCollection<HabitCollection> _habitCollections = _database.GetCollection<HabitCollection>("HabitCollection");
     //The followiong are stored filters, updates, and projections that are rather common in the methods for HabitService
 
-    private readonly string thisMonth = DateTime.Today.ToString("yyyy-MM");
-    private readonly string thisDay = DateTime.Today.ToString("dd");
+    private readonly string thisMonth = DateTime.UtcNow.ToString("yyyy-MM");
+    private readonly string thisDay = DateTime.UtcNow.ToString("dd");
 
     /// <summary>
     /// Get habits for a specific user for a specific date
@@ -75,7 +75,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             
             //Habit id needs to be mannually made sense it will be held in a list
             habit.Id = ObjectId.GenerateNewId().ToString();
-            DateTime today = DateTime.Today;
+            DateTime today = DateTime.UtcNow;
             habit.DateCreated = today.ToString("yyyy-MM-dd");
 
             List<UpdateDefinition<HabitCollection>> updates = [];
@@ -171,7 +171,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
 
             /*If habit has today as a active date, set it for today.
             This also makes todas allhabits completed false*/
-            if (habit.DaysActive.Contains(DateTime.Today.DayOfWeek.ToString()))
+            if (habit.DaysActive.Contains(DateTime.UtcNow.DayOfWeek.ToString()))
                 updates.Add(
                     BuilderUtils.habitUpdate
                     .Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habitId}", habit)
@@ -287,7 +287,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             );
 
             //Set or unset habit for today based on the new selected days
-            if (habit.DaysActive.Contains(DateTime.Today.DayOfWeek.ToString()))
+            if (habit.DaysActive.Contains(DateTime.UtcNow.DayOfWeek.ToString()))
                 updates.Add(
                     BuilderUtils.habitUpdate.Set($"HabitHistory.{thisMonth}.{thisDay}.Habits.{habit.Id}", habit)
                 );
