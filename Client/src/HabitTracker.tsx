@@ -103,13 +103,13 @@ const HabitTracker = ()=>{
                     <Navbar displayMenu={()=>setDisplayMenu(true)} useHamburger={smallScreen} loggedIn={user!==undefined} imageUrl={imageUrl}/>
                     <div className='min-h-[85vh] flex flex-col'>
                         <Routes>
-                            <Route path='' element={user ? <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/> : <HomePage/>}/>
+                            <Route path='' element={user ? <HabitCheckList date={date} fetchMonth={fetchMonth} setDate={setDate}/> : <HomePage setUser={setUser}/>}/>
                             <Route path='CreateAccount' element={<CreateAccount setUser={setUser}/>}/>
                             <Route path='Login' element={<Login setUser={setUser}/>}/>
-                            <Route path='Profile' element={user ? <Profile user={user} setUser={setUser} updateUrl={()=>setImageUrl(PhotoService.getPhotoUrl(user.id))}/> : <HomePage/> }/>
+                            <Route path='Profile' element={user ? <Profile user={user} setUser={setUser} updateUrl={()=>setImageUrl(PhotoService.getPhotoUrl(user.id))}/> : <HomePage setUser={setUser}/> }/>
                             <Route path='@/:username' element={<FriendProfile/> }/>
                             <Route path='Schedule' element={<Schedule setDate={setDate} monthlyHabits={monthlyHabits} date={date}/>}/>
-                            <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth}/>}/>
+                            <Route path='MyHabits' element={<MyHabits fetchMonth={fetchMonth} username={user?.username || ""}/>}/>
                             <Route path='Statistics' element={<Statistics smallScreen={smallScreen}/>}/>
                             <Route path='Friends' element={<Friends user={user} fetchUser={fetchUser}/>}/>
                             <Route path='About' element={<About/>}/>

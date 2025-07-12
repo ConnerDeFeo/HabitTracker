@@ -6,12 +6,14 @@ import DefaultHabitRender from "./DefaultHabitRender";
 
 //Represents the non active habits shown in the myhabits page
 const RenderNonActiveHabits = (props:
-    {habit:Habit, 
+    {
+        habit:Habit, 
         setActiveHabits:React.Dispatch<React.SetStateAction<Habit[]>>,
-        setNonActiveHabits:React.Dispatch<React.SetStateAction<Habit[]>>
+        setNonActiveHabits:React.Dispatch<React.SetStateAction<Habit[]>>,
+        username:string
     }
 )=>{
-    const {habit,setActiveHabits,setNonActiveHabits} = props;
+    const {habit,setActiveHabits,setNonActiveHabits,username} = props;
     const [inReactivateMode,setInReactivateMode] = useState<boolean>(false); //Flag for plus symbol being clicked
     const [inDeletionMode,setInDeletionMode] = useState<boolean>(false); //Flag for minus symbol being clicked
     const [currentDeletionValue,setCurrentDeletionValue] = useState<string>(""); //Holds current typed out deletion name from user
@@ -29,6 +31,12 @@ const RenderNonActiveHabits = (props:
 
     //Handles confirmation of a habit deactivation
     const handleHabitDeletion = async()=>{
+        if(username==="Guest" ){
+            //Checking for the base demo habits
+            if(habit.id==="686f174e5c6dfd39ca6bb206" || habit.id==="686f175e5c6dfd39ca6bb207" || habit.id==="686f17785c6dfd39ca6bb208" || habit.id==="686f17965c6dfd39ca6bb209")
+            alert("No deleting habits on the guest account!");
+            return;
+        }
         const resp = await HabitService.deleteHabit(habit.id!);
 
         if(resp.status===200)

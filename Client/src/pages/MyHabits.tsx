@@ -7,8 +7,8 @@ import RenderActiveHabit from "../components/MyHabits/RenderActiveHabits";
 import RenderNonActiveHabits from "../components/MyHabits/RenderNonActiveHabits";
 
 //MyHabits link leads to this
-const MyHabits = (props:{fetchMonth: ()=>void})=>{
-    const {fetchMonth} = props;
+const MyHabits = (props:{fetchMonth: ()=>void, username:string})=>{
+    const {fetchMonth, username} = props;
 
     const [activeHabits, setActiveHabits] = useState<Habit[]>([]);
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
@@ -87,6 +87,7 @@ const MyHabits = (props:{fetchMonth: ()=>void})=>{
                             habit={habit}
                             setActiveHabits={setActiveHabits}
                             setNonActiveHabits={setNonActiveHabits}
+                            username={username}
                         />
                     )}
                 </div>
