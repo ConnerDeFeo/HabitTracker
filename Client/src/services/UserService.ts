@@ -3,8 +3,8 @@ import API from "./API";
 const url = import.meta.env.VITE_SERVER_URL+"users";
 
 const UserService ={
-    PostUser: async (username: string, password:string,deviceId:string)=>{
-        return await API.post(url,{Username: username, Password: password, DeviceId:deviceId});
+    PostUser: async (username: string, password:string,email:string,deviceId:string)=>{
+        return await API.post(url,{Username: username, Password: password,Email:email, DeviceId:deviceId});
     },
     GetUser: async ()=>{
         return await API.get(url);

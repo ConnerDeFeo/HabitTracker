@@ -1864,6 +1864,19 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
+      "Verifalia/5.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Verifalia.Api.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Verifalia.Api.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "xunit/2.9.3": {
         "type": "package",
         "dependencies": {
@@ -6148,6 +6161,75 @@
         "system.xml.xdocument.nuspec"
       ]
     },
+    "Verifalia/5.0.0": {
+      "sha512": "lXx1kj9T3UQT3FNYImBPmNhcwSFUw9mYp3jPZa9C9SxolzVmC/7Nnze8VDC+Ckf93hI+9VPzcMl2wPCIxOkPJg==",
+      "type": "package",
+      "path": "verifalia/5.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net45/Verifalia.Api.dll",
+        "lib/net45/Verifalia.Api.xml",
+        "lib/net451/Verifalia.Api.dll",
+        "lib/net451/Verifalia.Api.xml",
+        "lib/net452/Verifalia.Api.dll",
+        "lib/net452/Verifalia.Api.xml",
+        "lib/net46/Verifalia.Api.dll",
+        "lib/net46/Verifalia.Api.xml",
+        "lib/net461/Verifalia.Api.dll",
+        "lib/net461/Verifalia.Api.xml",
+        "lib/net462/Verifalia.Api.dll",
+        "lib/net462/Verifalia.Api.xml",
+        "lib/net47/Verifalia.Api.dll",
+        "lib/net47/Verifalia.Api.xml",
+        "lib/net471/Verifalia.Api.dll",
+        "lib/net471/Verifalia.Api.xml",
+        "lib/net472/Verifalia.Api.dll",
+        "lib/net472/Verifalia.Api.xml",
+        "lib/net48/Verifalia.Api.dll",
+        "lib/net48/Verifalia.Api.xml",
+        "lib/net5.0/Verifalia.Api.dll",
+        "lib/net5.0/Verifalia.Api.xml",
+        "lib/net6.0/Verifalia.Api.dll",
+        "lib/net6.0/Verifalia.Api.xml",
+        "lib/net7.0/Verifalia.Api.dll",
+        "lib/net7.0/Verifalia.Api.xml",
+        "lib/net8.0/Verifalia.Api.dll",
+        "lib/net8.0/Verifalia.Api.xml",
+        "lib/net9.0/Verifalia.Api.dll",
+        "lib/net9.0/Verifalia.Api.xml",
+        "lib/netcoreapp1.0/Verifalia.Api.dll",
+        "lib/netcoreapp1.0/Verifalia.Api.xml",
+        "lib/netcoreapp1.1/Verifalia.Api.dll",
+        "lib/netcoreapp1.1/Verifalia.Api.xml",
+        "lib/netcoreapp2.0/Verifalia.Api.dll",
+        "lib/netcoreapp2.0/Verifalia.Api.xml",
+        "lib/netcoreapp2.1/Verifalia.Api.dll",
+        "lib/netcoreapp2.1/Verifalia.Api.xml",
+        "lib/netcoreapp2.2/Verifalia.Api.dll",
+        "lib/netcoreapp2.2/Verifalia.Api.xml",
+        "lib/netcoreapp3.0/Verifalia.Api.dll",
+        "lib/netcoreapp3.0/Verifalia.Api.xml",
+        "lib/netcoreapp3.1/Verifalia.Api.dll",
+        "lib/netcoreapp3.1/Verifalia.Api.xml",
+        "lib/netstandard1.3/Verifalia.Api.dll",
+        "lib/netstandard1.3/Verifalia.Api.xml",
+        "lib/netstandard1.4/Verifalia.Api.dll",
+        "lib/netstandard1.4/Verifalia.Api.xml",
+        "lib/netstandard1.5/Verifalia.Api.dll",
+        "lib/netstandard1.5/Verifalia.Api.xml",
+        "lib/netstandard1.6/Verifalia.Api.dll",
+        "lib/netstandard1.6/Verifalia.Api.xml",
+        "lib/netstandard2.0/Verifalia.Api.dll",
+        "lib/netstandard2.0/Verifalia.Api.xml",
+        "lib/netstandard2.1/Verifalia.Api.dll",
+        "lib/netstandard2.1/Verifalia.Api.xml",
+        "package-icon.png",
+        "verifalia.5.0.0.nupkg.sha512",
+        "verifalia.nuspec"
+      ]
+    },
     "xunit/2.9.3": {
       "sha512": "TlXQBinK35LpOPKHAqbLY4xlEen9TBafjs0V5KnA4wZsoQLQJiirCR4CbIXvOH8NzkW4YeJKP5P/Bnrodm0h9Q==",
       "type": "package",
@@ -6317,6 +6399,7 @@
       "Microsoft.AspNetCore.OpenApi >= 8.0.3",
       "Mongo2Go >= 4.1.0",
       "MongoDB.Driver >= 3.3.0",
+      "Verifalia >= 5.0.0",
       "xUnit >= 2.9.3",
       "xUnit.runner.visualstudio >= 3.0.2"
     ]
@@ -6402,6 +6485,10 @@
           "MongoDB.Driver": {
             "target": "Package",
             "version": "[3.3.0, )"
+          },
+          "Verifalia": {
+            "target": "Package",
+            "version": "[5.0.0, )"
           },
           "xUnit": {
             "target": "Package",

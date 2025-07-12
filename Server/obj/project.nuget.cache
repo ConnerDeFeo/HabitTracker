@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1d+baDUrasE=",
+  "dgSpecHash": "OslRartRxeg=",
   "success": true,
   "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
   "expectedPackageFiles": [
@@ -111,6 +111,7 @@
     "C:\\Users\\cjack\\.nuget\\packages\\system.threading.timer\\4.3.0\\system.threading.timer.4.3.0.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
+    "C:\\Users\\cjack\\.nuget\\packages\\verifalia\\5.0.0\\verifalia.5.0.0.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\xunit\\2.9.3\\xunit.2.9.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\xunit.abstractions\\2.0.3\\xunit.abstractions.2.0.3.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\xunit.analyzers\\1.18.0\\xunit.analyzers.1.18.0.nupkg.sha512",
