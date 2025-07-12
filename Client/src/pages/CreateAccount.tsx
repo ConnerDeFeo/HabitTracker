@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/General/Button";
 import Input from "../components/General/Input";
 import UserDto from "../types/UserDto";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import GoogleJwtPayload from "../types/GoogleJwtPayload";
 
 //Create account page
 const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
@@ -21,7 +24,6 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
     const [email,setEmail] = useState<string>("");
     const [password,setPassword] = useState<string>("");
     const [confirmPassword,setConfirmPassword] = useState<string>("");
-
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //verification of email regex
 
     //On submision of a new user being made
@@ -55,11 +57,22 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
         }
     }
 
-    return(
+    const onGoogleSuccess = (credential:CredentialResponse)=>{
+        const decoded = jwtDecode<GoogleJwtPayload>(credential.credential!);
+
+        console.log(decoded.email)
+        console.log(decoded.name)
+
+    }
+
+    return (
         <Container
             content={
                 <div className={"flex flex-col justify-center w-[85%] max-w-115 mx-auto gap-8"}>
                     <div className="text-center text-red-600 text-2xl">{message}</div>
+                    <div className="mx-auto">
+                        <GoogleLogin onSuccess={(credendtials)=>onGoogleSuccess(credendtials)} onError={()=>setMessage("Unable to sign in")}/>
+                    </div>
                     <Input title={"Email"} value={email} updateValue={setEmail} />
                     <Input title={"Username"} value={username} updateValue={setUsername} />
                     <Input title={"Password"} value={password} updateValue={setPassword} type="password" />
@@ -71,5 +84,6 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
         />
     );
 }
+
 
 export default CreateAccount;

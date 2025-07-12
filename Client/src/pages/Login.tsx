@@ -6,6 +6,9 @@ import Waiting from "../components/General/Waiting";
 import UserService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import UserDto from "../types/UserDto";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import GoogleJwtPayload from "../types/GoogleJwtPayload";
+import { jwtDecode } from "jwt-decode";
 
 //Login page
 const Login = (props: {setUser: (user:UserDto)=>void})=>{
@@ -42,14 +45,22 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
             }
     }
 
+    const onGoogleSuccess = (credential: CredentialResponse)=>{
+        const decoded = jwtDecode<GoogleJwtPayload>(credential.credential!);
+
+    }
+
     return(
         <Container content={
             <div className={"flex flex-col justify-center w-[85%] max-w-115 mx-auto gap-8 mt-2"}>
-                    <div className="text-center text-red-600 text-2xl">{message}</div>
-                    <Input title={"Username"} value={username} updateValue={setUsername} />
-                    <Input title={"Password"} value={password} updateValue={setPassword} type="password"/>
-                    <Button label="Login" onClick={onSubmit} className="ml-auto w-30"/>
-                    {waiting && <Waiting/>}
+                <div className="text-center text-red-600 text-2xl">{message}</div>
+                <div className="mx-auto">
+                    <GoogleLogin onSuccess={(credendtials)=>onGoogleSuccess(credendtials)} onError={()=>setMessage("Unable to sign in")}/>
+                </div>
+                <Input title={"Username"} value={username} updateValue={setUsername} />
+                <Input title={"Password"} value={password} updateValue={setPassword} type="password"/>
+                <Button label="Login" onClick={onSubmit} className="ml-auto w-30"/>
+                {waiting && <Waiting/>}
             </div>
         }/>
     );

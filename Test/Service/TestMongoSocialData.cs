@@ -75,11 +75,11 @@ public class TestMongoSocialData : IAsyncLifetime
     [Fact]
     public async Task TestGetFriendsFaliure()
     {
-        LoginResult? userLoginResult = await utils.CreateUser("Conner11");
-        LoginResult? friendLoginResult = await utils.CreateUser("Friend11");
+        LoginResult userLoginResult = await utils.CreateUser("Conner11");
+        LoginResult friendLoginResult = await utils.CreateUser("Friend11");
 
-        string userSessionKey = userLoginResult!.SessionKey;
-        string friendSessionKey = friendLoginResult!.SessionKey;
+        string userSessionKey = userLoginResult.SessionKey;
+        string friendSessionKey = friendLoginResult.SessionKey;
 
         UserDto? friend = await userService.GetUser(friendSessionKey);
         UserDto? user = await userService.GetUser(userSessionKey);

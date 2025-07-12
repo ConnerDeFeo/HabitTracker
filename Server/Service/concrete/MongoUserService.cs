@@ -73,9 +73,17 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         string password = request.Password;
         string? email = request.Email;
         //username and password valid, User does not exists, password long enough 
-        if (string.IsNullOrEmpty(username) || password is null || password.Length < 8 || email is null || await UserUtils.GetUserByUsername(username, _users) is not null) {
+        if (string.IsNullOrEmpty(username) || password is null || password.Length < 8 || email is null) {
             return new LoginResult { SessionKey = "" };
         }
+        //user should not already exist in terms of email or username
+        var Filter = BuilderUtils.userFilter.Or(
+            BuilderUtils.userFilter.Eq(u => u.Username, username),
+            BuilderUtils.userFilter.Eq(u => u.Email, email)
+        );
+        User? exists =  await _users.Find(Filter).FirstOrDefaultAsync();
+        if (exists is not null)
+            return new LoginResult { SessionKey = "" };
 
         string sessionKey = GenerateSessionKey();
         string id = ObjectId.GenerateNewId().ToString();

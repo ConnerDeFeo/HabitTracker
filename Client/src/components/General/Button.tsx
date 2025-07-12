@@ -2,7 +2,8 @@
 const Button = (props:{label?:string, onClick?: ()=>void, className?:string})=>{
     const {label, onClick, className} = props;
     return(
-        <button className={"color-black border border-black font-hand text-4xl bg-black text-white rounded-2xl cursor-pointer py-1 "+className}
+        <button 
+            className={`color-black border border-black text-4xl font-hand bg-black text-white rounded-2xl cursor-pointer py-1 ${className}`}
         onClick={onClick}>{label}</button>
     );
 }
