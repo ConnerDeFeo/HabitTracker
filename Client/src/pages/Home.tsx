@@ -4,6 +4,7 @@ import Waiting from '../components/General/Waiting';
 import { useState } from 'react';
 import UserService from '../services/UserService';
 import UserDto from '../types/UserDto';
+import AuthUtils from '../services/AuthUtils';
 
 //First page you seen when not loggged in
 const Home = (props:{setUser:React.Dispatch<React.SetStateAction<UserDto | undefined>>})=>{
@@ -14,17 +15,13 @@ const Home = (props:{setUser:React.Dispatch<React.SetStateAction<UserDto | undef
 
     //For a guest feature
     const guestLogin = async ()=>{
-            setWaiting(true);
-            let deviceId = localStorage.getItem("deviceId");
-            if (!deviceId) {
-                deviceId = crypto.randomUUID();
-                localStorage.setItem("deviceId", deviceId);
-            }
-            const response = await UserService.Login("Guest","KaizenHabits",deviceId);
-            setWaiting(false);
-            const loginResult = await response.json();
-            setUser(loginResult.user);
-            navigate('/');
+        setWaiting(true);
+        const deviceId = AuthUtils.getDeviceId();
+        const response = await UserService.Login("Guest","KaizenHabits",deviceId);
+        setWaiting(false);
+        const user:UserDto = await response.json();
+        setUser(user);
+        navigate('/');
             
     }
 
