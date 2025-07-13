@@ -7,8 +7,9 @@ import UserService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import UserDto from "../types/UserDto";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import GoogleJwtPayload from "../types/GoogleJwtPayload";
 import { jwtDecode } from "jwt-decode";
+import AuthUtils from "../services/AuthUtils";
+import GoogleAuthService from "../services/GoogleAuthService";
 
 //Login page
 const Login = (props: {setUser: (user:UserDto)=>void})=>{
@@ -29,24 +30,26 @@ const Login = (props: {setUser: (user:UserDto)=>void})=>{
     //When user attempt login
     const onSubmit = async ()=>{
             setWaiting(true);
-            let deviceId = localStorage.getItem("deviceId");
-            if (!deviceId) {
-                deviceId = crypto.randomUUID();
-                localStorage.setItem("deviceId", deviceId);
-            }
+            const deviceId = AuthUtils.getDeviceId();
             const response = await UserService.Login(username,password,deviceId);
             setWaiting(false);
             if(response.status!=200){
                 setMessage("Invalid Username or Password");
             }else{
-                const loginResult = await response.json();
-                setUser(loginResult.user);
+                const user:UserDto = await response.json();
+                setUser(user);
                 navigate('/');
             }
     }
 
-    const onGoogleSuccess = (credential: CredentialResponse)=>{
-        const decoded = jwtDecode<GoogleJwtPayload>(credential.credential!);
+    const onGoogleSuccess = async (credential:CredentialResponse)=>{
+        const deviceId = AuthUtils.getDeviceId();
+        const resp = await GoogleAuthService.login(credential.credential!,deviceId);
+        if(resp.ok){
+            const user:UserDto = await resp.json();
+            setUser(user);
+            navigate('/');
+        }
 
     }
 

@@ -62,7 +62,7 @@ public class MongoGoogleAuthService(IMongoDatabase database) : IGoogleAuthServic
         string sub = payload.Subject;
         User? user = await _users.Find(u => u.GoogleId == sub).FirstOrDefaultAsync();
         if (user is null)
-            return new LoginResult { SessionKey = "" };
+            return await CreateUser(jwt, deviceId);
 
         await UserUtils.UpdateUserHistory(user, _collection);
         string newSessionKey = await UserUtils.UpdateSessionKeys(user, deviceId, _users);
@@ -89,7 +89,7 @@ public class MongoGoogleAuthService(IMongoDatabase database) : IGoogleAuthServic
     /// <param name="jwtToken">token sent from backend</param>
     /// <param name="deviceId">device sent from</param>
     /// <returns>login result if successful or not</returns>
-    public async Task<LoginResult> CreateUser(string jwt, string deviceId)
+    private async Task<LoginResult> CreateUser(string jwt, string deviceId)
     {
         GoogleJsonWebSignature.Payload? payload = await VerifyGoogleTokenAsync(jwt);
         if (payload is null)

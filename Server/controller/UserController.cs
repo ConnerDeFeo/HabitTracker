@@ -49,7 +49,7 @@ public class UserController(IUserService _userService) : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Secure = true,
             });
-            return Ok(result);
+            return Ok(result.User);
         }
         return Conflict(result);
     }
@@ -67,7 +67,7 @@ public class UserController(IUserService _userService) : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Secure = true,
             });
-            return Ok(result);
+            return Ok(result.User);
         }
         return Unauthorized(result);
     }

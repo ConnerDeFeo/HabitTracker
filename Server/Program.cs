@@ -75,6 +75,7 @@ public class Program
         builder.Services.AddScoped<PhotoService>();
         builder.Services.AddScoped<IFriendModificationService, MongoFriendModificationService>();
         builder.Services.AddScoped<ISocialDataService, MongoSocialDataService>();
+        builder.Services.AddScoped<IGoogleAuthService, MongoGoogleAuthService>();
 
         //Mix everything and haza we have a server
         var app = builder.Build();

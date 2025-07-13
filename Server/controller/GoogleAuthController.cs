@@ -23,23 +23,17 @@ public class GoogleAuthController(IGoogleAuthService googleAuthService) : Contro
         {
             LoginResult result = await _googleAuthService.Login(request.Jwt, request.DeviceId);
             if (result.SessionKey != "")
-                return Ok(result);
+            {
+                Response.Cookies.Append("sessionKey", result.SessionKey, new CookieOptions
+                {
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                    Secure = true,
+                });
+                return Ok(result.User);
+            }
         }
         return Unauthorized();
-    }
-
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateUser([FromBody] GoogleLoginRequest request)
-    {
-        string? sesionKey = Request.Cookies["sessionKey"];
-
-        if (sesionKey != null)
-        {
-            LoginResult result = await _googleAuthService.CreateUser(request.Jwt, request.DeviceId);
-            if (result.SessionKey != "")
-                return Ok(result);
-        }
-        return Unauthorized($"sessionKey invalid, {sesionKey} is null");
-
     }
 }

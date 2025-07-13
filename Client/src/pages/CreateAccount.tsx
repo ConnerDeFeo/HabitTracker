@@ -7,8 +7,8 @@ import Button from "../components/General/Button";
 import Input from "../components/General/Input";
 import UserDto from "../types/UserDto";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
-import GoogleJwtPayload from "../types/GoogleJwtPayload";
+import GoogleAuthService from "../services/GoogleAuthService";
+import AuthUtils from "../services/AuthUtils";
 
 //Create account page
 const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
@@ -40,28 +40,27 @@ const CreateAccount = (props:{setUser: (user:UserDto)=>void})=>{
             setMessage("Invalid Email");
         else{
             setWaiting(true);
-            let deviceId = localStorage.getItem("deviceId");
-            if (!deviceId) {
-                deviceId = crypto.randomUUID();
-                localStorage.setItem("deviceId", deviceId);
-            }
+            const deviceId = AuthUtils.getDeviceId();
             const response = await UserService.PostUser(username,password,email,deviceId);
             setWaiting(false);
             if(response.status!=200){
                 setMessage("Username Taken");
             }else{
-                const loginResult = await response.json();
-                setUser(loginResult.user);
+                const user:UserDto = await response.json();
+                setUser(user);
                 navigate('/');
             }
         }
     }
 
-    const onGoogleSuccess = (credential:CredentialResponse)=>{
-        const decoded = jwtDecode<GoogleJwtPayload>(credential.credential!);
-
-        console.log(decoded.email)
-        console.log(decoded.name)
+    const onGoogleSuccess = async (credential:CredentialResponse)=>{
+        const deviceId = AuthUtils.getDeviceId();
+        const resp = await GoogleAuthService.login(credential.credential!,deviceId);
+        if(resp.ok){
+            const user:UserDto = await resp.json();
+            setUser(user);
+            navigate('/');
+        }
 
     }
 
