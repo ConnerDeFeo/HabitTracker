@@ -17,6 +17,9 @@ const UserService ={
     },
     GetProfile: async ()=>{
         return await API.get(`${url}/profile`);
+    },
+    ChangeUsername: async (username:string)=>{
+        return await API.put(`${url}/${username}`);
     }
 }
 

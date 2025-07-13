@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import UserService from "../services/UserService";
 import UserDto from "../types/UserDto";
 import { useEffect, useState } from "react";
-import AddProfilePic from "../components/Profile/AddProfilePic";
+import EditUser from "../components/Profile/EditUser";
 import ProfileHabit from "../types/ProfileHabit";
 import RenderCurrentMonth from "../components/Profile/RenderCurrentMonth";
 import CurrentHabits from "../components/Profile/CurrentHabits";
@@ -13,7 +13,7 @@ import PhotoService from "../services/PhotoService";
 const Profile =(
     props:{
         user: UserDto, 
-        setUser: (user?:UserDto)=>void,
+        setUser: React.Dispatch<React.SetStateAction<UserDto | undefined>>,
         updateUrl:()=>void
     }
 )=>{
@@ -68,10 +68,13 @@ const Profile =(
                 </div>
             </div>
             {/**Modal for profile pic*/}
-            <AddProfilePic
+            <EditUser
                 onClose={()=>setModalOpen(false)}
                 hidden={!modalOpen}
                 updateUrl={updateUrl}
+                user = {user}
+                setUser={setUser}
+
             />
         </div>
     );

@@ -5,16 +5,20 @@ import Modal from "../General/Modal";
 import ConvertToCanvas from "./ConvertToCanvas";
 import heic2any from "heic2any";
 import UploadProfilePicture from "./UploadProfilePicture";
+import UserDto from "../../types/UserDto";
+import UserService from "../../services/UserService";
 
 //When use gos to upload a new pfp
-const AddProfilePic = (
+const EditUser = (
     props:{ 
         onClose: ()=>void,
         hidden:boolean,
-        updateUrl: ()=>void
+        updateUrl: ()=>void,
+        user:UserDto,
+        setUser:React.Dispatch<React.SetStateAction<UserDto | undefined>>
     }
 ) =>{
-    const {onClose, hidden, updateUrl} = props;
+    const {onClose, hidden, updateUrl,user,setUser} = props;
     const canvas: HTMLCanvasElement = document.createElement("canvas");
     canvas.width=150;
     canvas.height=150;
@@ -23,7 +27,9 @@ const AddProfilePic = (
 
     const imgRef = useRef<HTMLImageElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    
+    const [newUsername,setNewUserName] = useState<string>(user.username);
+    const [message,setMessage] = useState<string>("");
     const [imgSrc,setImgSrc] = useState<string>("");
     const [crop, setCrop] = useState<Crop>({
         unit: '%', // Can be 'px' or '%'
@@ -81,10 +87,48 @@ const AddProfilePic = (
         UploadProfilePicture(canvas,onClose, updateUrl);
     };
 
+    const setUsername = async ()=>{
+        if(newUsername.length >20){
+            setMessage("Username to long");
+            return;
+        }
+        if(user.username==="Guest"){
+            setMessage("You Can't change this username!");
+            return;
+        }
+        const resp = await UserService.ChangeUsername(newUsername);
+        if(resp.ok ){
+            user.username = newUsername;
+            setUser((prevUser)=>{
+                if(!prevUser)
+                    return prevUser;
+                return{
+                    ...prevUser,
+                    username:newUsername
+                }
+            });
+            setMessage("")
+        }
+        else    
+            setMessage("username taken");
+    }
+
+
     return(
         <Modal content={
-            <div className="grid gap-y-5">
-                <img src="/x.webp" alt="exit modal" className="cursor-pointer h-15 w-15" onClick={onClose}/>
+            <div className="grid gap-y-5 relative">
+                <p className="absolute right-35 top-0 text-4xl text-red-500">{message}</p>
+                <div className="flex justify-between items-center mt-10 relative">
+                    <img src="/x.webp" alt="exit modal" className="cursor-pointer h-15 w-15" onClick={onClose}/>
+                    <div className="flex items-center">
+                        <input className="text-2xl p-3 habitBorder mr-30" value={newUsername} onChange={(e)=>setNewUserName(e.target.value)}/>
+                        <img 
+                            src="checkMark.webp" 
+                            alt="change username" 
+                            className="w-12 h-12 border-3 rounded-full p-1 cursor-pointer absolute right-12" 
+                            onClick={setUsername} hidden={user.username===newUsername}/>
+                    </div>
+                </div>
                 <label className="color-black border border-black font-hand text-4xl bg-black text-white rounded-2xl cursor-pointer p-2 w-fit">
                     Choose File
                     <input
@@ -131,4 +175,4 @@ const AddProfilePic = (
     );
 }
 
-export default AddProfilePic;
+export default EditUser;
