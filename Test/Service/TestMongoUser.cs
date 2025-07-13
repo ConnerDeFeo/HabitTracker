@@ -115,9 +115,9 @@ public class TestMongoUser : IAsyncLifetime
         Assert.Equal(2, sessionKeys.Count);
         Assert.True(sessionKeys.ContainsKey(Result.SessionKey));
         Assert.True(sessionKeys.ContainsKey(Result2.SessionKey));
-        Assert.Equal("1234",sessionKeys[Result.SessionKey]);
-        Assert.Equal("1111",sessionKeys[Result2.SessionKey]);
-    
+        Assert.Equal("1234", sessionKeys[Result.SessionKey]);
+        Assert.Equal("1111", sessionKeys[Result2.SessionKey]);
+
 
     }
 
@@ -151,7 +151,7 @@ public class TestMongoUser : IAsyncLifetime
 
         await users.InsertOneAsync(user);
         await collection.InsertOneAsync(habitCollection);
-        LoginResult result = await userService.Login(new LoginRequest { Username = "Jack", Password = "asdfasdf", DeviceId="1234"});
+        LoginResult result = await userService.Login(new LoginRequest { Username = "Jack", Password = "asdfasdf", DeviceId = "1234" });
 
         HabitCollection? habitCollectionUpdated = await GetHabitCollection(result.SessionKey);
 
@@ -170,7 +170,7 @@ public class TestMongoUser : IAsyncLifetime
     {
         await utils.CreateUser("ConnerDeFeo5");
 
-        LoginResult result = await userService.Login(new LoginRequest { Username = "Jack", Password = "suk", DeviceId="1234"});
+        LoginResult result = await userService.Login(new LoginRequest { Username = "Jack", Password = "suk", DeviceId = "1234" });
         Assert.Equal("", result.SessionKey);
     }
 
@@ -217,20 +217,50 @@ public class TestMongoUser : IAsyncLifetime
         habits = await userService.GetProfile(sessionKey);
         Assert.Equal(1, habits!.CurrentHabits[0].CurrentStreak);
     }
-    
+
     [Fact]
     public async Task TestGetprofileFaliure()
-    { 
+    {
         LoginResult result = await utils.CreateUser("ConnerDeFeo9");
         string sessionKey = result.SessionKey;
 
 
-        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit"});
-        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2"});
+        Habit? habit = await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit" });
+        await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit2" });
         await habitService.CreateHabit(sessionKey, new Habit { Name = "TestHabit3" });
 
         Profile? habits = await userService.GetProfile("sessionKey");
         Assert.Null(habits);
+    }
+
+    [Fact]
+    public async Task TestChangeUsername()
+    {
+        LoginResult result = await utils.CreateUser("ConnerDeFeo10");
+        LoginResult result2 = await utils.CreateUser("ConnerDeFeo11");
+        string sessionKey = result.SessionKey;
+
+        bool changed1 = await userService.ChangeUsername(sessionKey, "ConnerDeFeo12");
+        bool changed2 = await userService.ChangeUsername(sessionKey, "ConnerDeFeo12");
+        bool changed3 = await userService.ChangeUsername(sessionKey, "ConnerDeFeo11");
+
+        UserDto? user = await userService.GetUser(sessionKey);
+
+        Assert.True(changed1);
+        Assert.False(changed2);
+        Assert.False(changed3);
+        Assert.Equal("ConnerDeFeo12", user!.Username);
+    }
+
+    [Fact]
+    public async Task TestChangeUsernameFaliure()
+    {
+        LoginResult result = await utils.CreateUser("ConnerDeFeo10");
+        string sessionKey = result.SessionKey;
+
+        bool changed = await userService.ChangeUsername(ObjectId.GenerateNewId().ToString(), "ConnerDeFeo12");
+
+        Assert.False(changed);
     }
 
 }

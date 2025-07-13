@@ -84,7 +84,7 @@ public class UserController(IUserService _userService) : ControllerBase
             return Ok();
         return Unauthorized();
     }
-    
+
     [HttpGet("profile")]
     public async Task<IActionResult> GetUserProfile()
     {
@@ -95,6 +95,20 @@ public class UserController(IUserService _userService) : ControllerBase
 
             if (result != null)
                 return Ok(result);
+        }
+        return Unauthorized();
+    }
+
+    [HttpPut("{username}")]
+    public async Task<IActionResult> ChangeUsername(string username)
+    { 
+        var sesionKey = Request.Cookies["sessionKey"];
+        if (sesionKey != null)
+        {
+            bool changed = await _userService.ChangeUsername(sesionKey, username);
+            if (changed)
+                return Ok();
+            return Conflict();
         }
         return Unauthorized();
     }

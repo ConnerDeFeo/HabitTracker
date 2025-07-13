@@ -39,19 +39,21 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         }
         return null;
     }
-    
+
     /// <summary>
     /// Creates a new username should the username not already exist.
     /// Generates a random sessionKey for the User to user immediately
     /// </summary>
     /// <returns>Login result containing sessionKey if succesful</returns>
-    public async Task<LoginResult> CreateUser(LoginRequest request){
+    public async Task<LoginResult> CreateUser(LoginRequest request)
+    {
 
         string username = request.Username;
         string password = request.Password;
         string? email = request.Email;
         //username and password valid, User does not exists, password long enough 
-        if (string.IsNullOrEmpty(username) || password is null || password.Length < 8 || email is null) {
+        if (string.IsNullOrEmpty(username) || password is null || password.Length < 8 || email is null)
+        {
             return new LoginResult { SessionKey = "" };
         }
         //user should not already exist in terms of email or username
@@ -59,7 +61,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
             BuilderUtils.userFilter.Eq(u => u.Username, username),
             BuilderUtils.userFilter.Eq(u => u.Email, email)
         );
-        User? exists =  await _users.Find(Filter).FirstOrDefaultAsync();
+        User? exists = await _users.Find(Filter).FirstOrDefaultAsync();
         if (exists is not null)
             return new LoginResult { SessionKey = "" };
 
@@ -85,7 +87,7 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
         collection.HabitHistory[thisMonth] = [];
         collection.HabitHistory[thisMonth][thisDay] = new();
         await _habitCollections.InsertOneAsync(collection);
-        return new LoginResult { SessionKey = sessionKey, User=new UserDto { Username = username, DateCreated = today, Id = id } };
+        return new LoginResult { SessionKey = sessionKey, User = new UserDto { Username = username, DateCreated = today, Id = id } };
     }
 
     /// <summary>
@@ -93,13 +95,14 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
     /// Uses PasswordHasher class for password decryption
     /// </summary>
     /// <returns>LoginRefult containing sessionKey if succsesful</returns>
-    public async Task<LoginResult> Login(LoginRequest request){
+    public async Task<LoginResult> Login(LoginRequest request)
+    {
         User? user = await UserUtils.GetUserByUsername(request.Username, _users);
 
         if (user is not null && PasswordHasher.VerifyPassword(request.Password, user.Password))
         {
             string username = request.Username;
-            await UserUtils.UpdateUserHistory(user,_habitCollections);
+            await UserUtils.UpdateUserHistory(user, _habitCollections);
 
             //New sessionKey for device
             string newSessionKey = await UserUtils.UpdateSessionKeys(user, request.DeviceId, _users);
@@ -119,13 +122,15 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 }
             };
         }
-        return new LoginResult{SessionKey = ""};
+        return new LoginResult { SessionKey = "" };
     }
 
-    public async Task<bool> Logout(string sessionKey){
-        User? user = await UserUtils.GetUserBySessionKey(sessionKey,_users);
-        if(user is not null){
-            await _users.UpdateOneAsync(u=>u.Id!.Equals(user.Id),BuilderUtils.userUpdate.Unset($"SessionKeys.{sessionKey}"));
+    public async Task<bool> Logout(string sessionKey)
+    {
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user is not null)
+        {
+            await _users.UpdateOneAsync(u => u.Id!.Equals(user.Id), BuilderUtils.userUpdate.Unset($"SessionKeys.{sessionKey}"));
             return true;
         }
         return false;
@@ -143,18 +148,25 @@ public class MongoUserService(IMongoDatabase _database) : IUserService
                 .FirstOrDefaultAsync();
 
             if (collection is not null)
-                return UserUtils.GetProfile(collection,user);
+                return UserUtils.GetProfile(collection, user);
         }
         return null;
     }
 
-    /// <summary>
-    /// Indexes session keys to make lookup faster, only used on server startup
-    /// </summary>
-    public void CreateSessionKeyIndexes()
-    {
-        var indexKeys = Builders<User>.IndexKeys.Ascending(u => u.SessionKeys);
-        var indexModel = new CreateIndexModel<User>(indexKeys);
-        _users.Indexes.CreateOne(indexModel); // Run once on startup
-    }
+    public async Task<bool> ChangeUsername(string sessionKey, string newUsername)
+    { 
+        User? user = await UserUtils.GetUserBySessionKey(sessionKey, _users);
+        if (user is not null)
+        {
+            User? exists = await _users.Find(u => u.Username == newUsername).FirstOrDefaultAsync();
+            if (exists is not null)
+                return false;
+            await _users.UpdateOneAsync(
+                u => u.Username == user.Username,
+                BuilderUtils.userUpdate.Set(u => u.Username, newUsername)
+            );
+            return true;
+        }
+        return false;
+    } 
 }
