@@ -7,7 +7,6 @@ import UserService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import UserDto from "../types/UserDto";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
 import AuthUtils from "../services/AuthUtils";
 import GoogleAuthService from "../services/GoogleAuthService";
 
