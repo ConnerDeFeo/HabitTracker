@@ -148,9 +148,8 @@ public class TestUser
     {
         IActionResult result = await userController.CreateUser(new LoginRequest { Username = "ConnerDeFeo", Password = "12345678", DeviceId="1234"});
         var OkResult = Assert.IsType<OkObjectResult>(result);
-        var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
+        var LoginResult = Assert.IsType<UserDto>(OkResult.Value);
         Assert.Equal(200, OkResult.StatusCode);
-        Assert.Equal("TestSessionKey", LoginResult.SessionKey);
     }
 
     [Fact]
@@ -167,9 +166,8 @@ public class TestUser
     {
         IActionResult result = await userController.Login(new LoginRequest { Username = "ConnerDeFeo", Password = "12345678", DeviceId="1234"});
         var OkResult = Assert.IsType<OkObjectResult>(result);
-        var LoginResult = Assert.IsType<LoginResult>(OkResult.Value);
+        var LoginResult = Assert.IsType<UserDto>(OkResult.Value);
         Assert.Equal(200, OkResult.StatusCode);
-        Assert.Equal("TestSessionKey", LoginResult.SessionKey);
     }
 
     [Fact]
