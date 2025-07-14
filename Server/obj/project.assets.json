@@ -7101,11 +7101,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
+      "projectUniqueName": "c:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
       "projectName": "Server",
-      "projectPath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
+      "projectPath": "c:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\cjack\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\obj\\",
+      "outputPath": "c:\\Users\\cjack\\Personal\\HabitTracker\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
