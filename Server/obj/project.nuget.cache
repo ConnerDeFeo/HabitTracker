@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "j8QqkTlSMCo=",
+  "dgSpecHash": "r63WSwIQ3dU=",
   "success": true,
-  "projectFilePath": "c:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
+  "projectFilePath": "C:\\Users\\cjack\\Personal\\HabitTracker\\Server\\Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cjack\\.nuget\\packages\\awssdk.core\\4.0.0.13\\awssdk.core.4.0.0.13.nupkg.sha512",
     "C:\\Users\\cjack\\.nuget\\packages\\awssdk.extensions.netcore.setup\\4.0.2\\awssdk.extensions.netcore.setup.4.0.2.nupkg.sha512",
