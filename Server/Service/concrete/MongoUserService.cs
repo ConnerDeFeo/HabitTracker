@@ -2,7 +2,6 @@ namespace Server.service.concrete;
 using MongoDB.Driver;
 using Server.model.user;
 using Server.model.habit;
-using System.Security.Cryptography;
 using MongoDB.Bson;
 using Server.service.interfaces;
 using Server.service.utils;

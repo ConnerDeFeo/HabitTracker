@@ -4,6 +4,9 @@ using Server.service.concrete;
 using Server.service.interfaces;
 using Amazon.S3;
 using Amazon.Runtime;
+using OpenAI;
+using OpenAI.Managers;
+using OpenAI.Interfaces;
 
 public class Program
 {
@@ -65,6 +68,16 @@ public class Program
 
             builder.Services.AddSingleton<IAmazonS3>(s3Client);
         }
+
+        //used for
+        string openAiKey = Environment.GetEnvironmentVariable("OPEN_AI_API_KEY")!;
+        var openAiService = new OpenAIService(new OpenAiOptions
+        { 
+            ApiKey = openAiKey
+        });
+        builder.Services.AddSingleton<IOpenAIService>(openAiService);
+
+
         //all marked controllers are instanciated
         builder.Services.AddControllers();
         //Regenerate Services each time a request is made
@@ -76,6 +89,7 @@ public class Program
         builder.Services.AddScoped<IFriendModificationService, MongoFriendModificationService>();
         builder.Services.AddScoped<ISocialDataService, MongoSocialDataService>();
         builder.Services.AddScoped<IGoogleAuthService, MongoGoogleAuthService>();
+        builder.Services.AddScoped<OpenAiHabitService>();
 
         //Mix everything and haza we have a server
         var app = builder.Build();

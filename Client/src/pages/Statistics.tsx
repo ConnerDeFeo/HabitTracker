@@ -54,16 +54,18 @@ const Statistics = (props:{smallScreen:boolean})=>{
                 const active = existingHabits["ActiveHabits"];
                 const nonActive = existingHabits["NonActiveHabits"];
 
-                setActiveHabits(existingHabits["ActiveHabits"]);
-                setNonActiveHabits(existingHabits["NonActiveHabits"]);
+                setActiveHabits(active);
+                setNonActiveHabits(nonActive);
 
                 if(active.length>0){
-                    await fetchHistoricalData(active[0].id!);
-                    await fetchTotalValueByMonth(active[0].id!,date.year);
+                    const activeId = active[0].id!;
+                    await fetchHistoricalData(activeId);
+                    await fetchTotalValueByMonth(activeId,date.year);
                 }
                 else if(nonActive.length>0){
-                    await fetchHistoricalData(nonActive[0].id!);
-                    await fetchTotalValueByMonth(nonActive[0].id!,date.year);
+                    const nonActiveId = nonActive[0].id!;
+                    await fetchHistoricalData(nonActiveId);
+                    await fetchTotalValueByMonth(nonActiveId,date.year);
                 }
             }
         }
