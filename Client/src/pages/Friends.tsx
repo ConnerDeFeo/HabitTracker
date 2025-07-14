@@ -67,7 +67,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
             </div>
             {/**Modal displayed when minus icon is hit */}
             <Modal content={
-                <div className="h-40 w-75">
+                <div className="h-45 w-75">
                     <p className="text-4xl text-center mt-5 mb-15">Are you sure you want to remove {removeFriendModal}?</p>
                     <div className="flex justify-between">
                         <Button label="Yes" className="w-25" onClick={()=>removeFriend(removeFriendModal)}/>

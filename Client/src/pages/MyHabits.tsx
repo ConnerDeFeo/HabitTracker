@@ -5,7 +5,7 @@ import ImageButton from "../components/General/ImageButton";
 import CreateHabit from "../components/MyHabits/CreateHabit";
 import RenderActiveHabit from "../components/MyHabits/RenderActiveHabits";
 import RenderNonActiveHabits from "../components/MyHabits/RenderNonActiveHabits";
-import OpenAIService from "../services/OpenAiService";
+import OpenAIService from "../services/OpenAIService";
 
 //MyHabits link leads to this
 const MyHabits = (props:{fetchMonth: ()=>void, username:string})=>{
@@ -71,7 +71,9 @@ const MyHabits = (props:{fetchMonth: ()=>void, username:string})=>{
         <div className="grid md:grid-cols-2 w-[80%] mx-auto justify-center mt-7">
             {/** AI reccomendation*/}
             <p className="text-4xl text-center md:col-span-2">AI Reccomendation</p>
-            <div className="font-sans md:col-span-2 mb-10 text-xl text-center habitBorder p-3 max-w-150 mx-auto overflow-y-auto max-h-40">{aiReccomendation}</div>
+            <div className="font-sans md:col-span-2 mb-10 text-xl text-center habitBorder p-3 max-w-150 mx-auto min-w-65 overflow-y-auto max-h-40">
+                {aiReccomendation}
+            </div>
             {/**Active and non active habits */}
             <div className="w-75 md:w-90 mx-auto">
                 <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl text-center w-65 lg:w-85 mx-auto mb-5">Active Habits</h1>
