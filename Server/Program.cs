@@ -89,7 +89,7 @@ public class Program
         builder.Services.AddScoped<IFriendModificationService, MongoFriendModificationService>();
         builder.Services.AddScoped<ISocialDataService, MongoSocialDataService>();
         builder.Services.AddScoped<IGoogleAuthService, MongoGoogleAuthService>();
-        builder.Services.AddScoped<OpenAiHabitService>();
+        builder.Services.AddScoped<IOpenAIHabitService, MongoOpenAIHabitService>();
 
         //Mix everything and haza we have a server
         var app = builder.Build();

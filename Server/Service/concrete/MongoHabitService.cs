@@ -336,6 +336,7 @@ public class MongoHabitService(IMongoDatabase _database) : IHabitService
             .Project<HabitCollection>(habitProjection)
             .FirstOrDefaultAsync();
 
+            List<Habit> activeHabits = collection.ActiveHabits;
             Dictionary<string, List<Habit>> existingHabits = [];
             existingHabits["ActiveHabits"] = collection.ActiveHabits;
             existingHabits["NonActiveHabits"] = collection.NonActiveHabits;

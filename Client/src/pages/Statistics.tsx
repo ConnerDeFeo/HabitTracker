@@ -17,6 +17,7 @@ const Statistics = (props:{smallScreen:boolean})=>{
     const [nonActiveHabits, setNonActiveHabits] = useState<Habit[]>([]);
     const [historicalData, setHistoricalData] = useState<HistoricalData>();
     const [totalValuesByMonth, setTotalValuesByMonth] = useState<Record<string,number>>({});
+
     const [date, setDate] = useState<DateInfo>(() => {
         const now = DateService.getUtcToday();
         return{
@@ -40,6 +41,8 @@ const Statistics = (props:{smallScreen:boolean})=>{
         const resp = await HabitStatisticService.getTotalValueByMonth(habitId,year);
         if(resp.status==200){
             const totalValueByMonth: Record<string,number> = await resp.json();
+            console.log(totalValueByMonth);
+            // fetchAiRecommendation(JSON.stringify(totalValueByMonth));
             setTotalValuesByMonth(totalValueByMonth);
         }
     }

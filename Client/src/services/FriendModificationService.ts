@@ -1,6 +1,6 @@
 import API from "./API";
 
-const url = import.meta.env.VITE_SERVER_URL+"friendModification";
+const url = import.meta.env.VITE_SERVER_URL+"/friendModification";
 
 const FriendModificationService ={
     sendFriendRequest: async (friendUsername:string)=>{

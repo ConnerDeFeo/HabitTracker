@@ -1,6 +1,6 @@
 import API from "./API";
 
-const url = import.meta.env.VITE_SERVER_URL+"users";
+const url = import.meta.env.VITE_SERVER_URL+"/users";
 
 const UserService ={
     PostUser: async (username: string, password:string,email:string,deviceId:string)=>{

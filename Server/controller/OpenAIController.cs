@@ -1,29 +1,23 @@
+using Microsoft.AspNetCore.Mvc;
+using Server.service.interfaces;
+
 namespace Server.controller;
 
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using OpenAI.Interfaces;
-using Server.service.concrete;
-
-/// <summary>
-/// Controles friend interactions
-/// </summary>
-[Route("openAi")]
+[Route("openAI")]
 [ApiController]
-public class OpenAiController(OpenAiHabitService openAiHabitService) : ControllerBase
+public class OpenAiController(IOpenAIHabitService openAIHabitService) : ControllerBase
 {
-    private readonly OpenAiHabitService _openAiHabitService = openAiHabitService;
+    private readonly IOpenAIHabitService _openAIHabitService = openAIHabitService;
 
-    [HttpGet("{query}")]
-    public async Task<IActionResult<string>> GetRecomendation(string query)
+    [HttpGet]
+    public async Task<IActionResult> GetResponse()
     {
         string? sessionKey = Request.Cookies["sessionKey"];
         if (sessionKey is null)
             return Unauthorized();
-
-        string? resp = await _openAiHabitService.GetResponse(sessionKey, query);
-        if (resp is not null)
-            return Ok(resp);
-        return StatusCode(429, "Sorry, I ran out of money for OpenAI requests! :(");
+        string? aiResp = await _openAIHabitService.GetReccomendation(sessionKey);
+        if (aiResp is null)
+            return StatusCode(429);
+        return Ok(aiResp);
     }
 }
