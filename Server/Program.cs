@@ -13,7 +13,7 @@ public class Program
     public static void Main(string[] args)
     {
         DotNetEnv.Env.Load(); // loads .env from root
-
+ 
         //Injects dependencies and set up architecture
         var builder = WebApplication.CreateBuilder(args);
 
