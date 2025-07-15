@@ -23,7 +23,7 @@ const HabitService ={
         return await API.put(url,habit);
     },
     deleteHabit: async (habitId: string)=>{
-        return await API.delete(`${url}${habitId}`);
+        return await API.delete(`${url}/${habitId}`);
     }
 }
 
