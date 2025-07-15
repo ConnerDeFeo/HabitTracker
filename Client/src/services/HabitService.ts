@@ -8,7 +8,7 @@ const HabitService ={
         return await API.get(url);
     },
     getHabits: async (date:string)=>{
-        return await API.get(`${url}${date}`);
+        return await API.get(`${url}/${date}`);
     },
     createHabit: async (habit:Habit)=>{
         return await API.post(url,habit);
