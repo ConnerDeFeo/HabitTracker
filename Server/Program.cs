@@ -94,7 +94,7 @@ public class Program
         //Mix everything and haza we have a server
         var app = builder.Build();
 
-        app.MapGet("/api/", () => "API is running!");
+        app.MapGet("/", () => "API is running!");
 
         //this took me a while to find in stacktrace
         app.UseCors("AllowReactApp");
