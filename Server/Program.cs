@@ -18,7 +18,6 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var mongoConnectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
-        mongoConnectionString ??= builder.Configuration.GetConnectionString("MongoDb");
         var mongoDatabaseName = builder.Configuration["DatabaseName"];
 
         builder.WebHost.ConfigureKestrel(options =>
