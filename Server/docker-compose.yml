@@ -3,15 +3,15 @@ services:
   server:
     build:
       context: .
-      target: development   # change to 'production' for prod build
+      target: development  
     ports:
       - "5000:5000"
     volumes:
-      - .:/app              # mount source for hot reload (dev only)
+      - .:/app  
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - OPEN_AI_API_KEY=${OPEN_AI_API_KEY}
-    command: dotnet watch run --urls=http://0.0.0.0:5000 # live reload in dev
+    command: dotnet watch run --urls=http://0.0.0.0:5000 
