@@ -3,7 +3,9 @@ services:
   mongodb:
     image: mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
   server:
     depends_on:
       - mongodb
@@ -22,3 +24,6 @@ services:
       - OPEN_AI_API_KEY=${OPEN_AI_API_KEY}
       - MONGODB_URI=mongodb://mongodb:27017
     command: dotnet watch run --urls=http://0.0.0.0:5000 
+
+volumes:
+  mongo-data:
