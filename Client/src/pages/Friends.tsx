@@ -34,7 +34,7 @@ const Friends = (props:{user:UserDto | undefined, fetchUser: ()=>void})=>{
         displayFriendRequests ? //friend request button clicked
         <FriendRequests friendRequests={user ? user.friendRequests : {}} fetchUser={fetchUser} setFriendRequests={()=>setSisplayFriendRequests(false)}/>
         : //default
-        <div className="md:w-[80%] mx-auto">
+        <div className="md:w-[80%] min-w-90 mx-auto">
             {/**Header with friend requests and add friends */}
             <div className="flex justify-between w-[85%] mx-auto text-3xl md:text-4xl my-5">
                 <p className="cursor-pointer crossOut" onClick={()=>setSisplayFriendRequests(true)}>Friend Requests ({totalFriendRequests})</p>

@@ -75,7 +75,7 @@ const MyHabits = (props:{fetchMonth: ()=>void, username:string})=>{
                 {aiReccomendation}
             </div>
             {/**Active and non active habits */}
-            <div className="w-75 md:w-90 mx-auto">
+            <div className="w-80 md:w-90 mx-auto">
                 <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl text-center w-65 lg:w-85 mx-auto mb-5">Active Habits</h1>
                 <div className="sm:overflow-y-auto sm:h-[70vh] p-2 flex flex-col gap-y-4">
                     {activeHabits.map((habit)=>
@@ -100,7 +100,7 @@ const MyHabits = (props:{fetchMonth: ()=>void, username:string})=>{
                     }
                 </div>
             </div>
-            <div className="w-75 md:w-90 mx-auto mt-15 md:mt-0">
+            <div className="w-80 md:w-90 mx-auto mt-15 md:mt-0">
                 <h1 className="border-b-4 lg:border-b-6 text-5xl lg:text-7xl w-65 lg:w-85 text-center mb-5 mx-auto">NonActive Habits</h1>
                 <div className="sm:overflow-y-auto sm:h-[70vh] flex flex-col gap-y-4">
                     {nonActiveHabits.map((habit)=>
