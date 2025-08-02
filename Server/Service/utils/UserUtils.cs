@@ -72,8 +72,10 @@ public static class UserUtils
     {
         List<ProfileHabit> currentHabits = GetCurrentHabits(collection);
 
-        Dictionary<string, HistoricalDate> dates = collection.HabitHistory[DateTime.UtcNow.ToString("yyyy-MM")];
-        Dictionary<string, bool> daysCompleted = GetDaysCompleted(dates);
+        if(!collection.HabitHistory.TryGetValue(DateTime.UtcNow.ToString("yyyy-MM"), out var historicalDates))
+            historicalDates = [];
+
+        Dictionary<string, bool> daysCompleted = GetDaysCompleted(historicalDates);
 
         return new dtos.Profile
         {
