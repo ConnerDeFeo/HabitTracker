@@ -10,7 +10,7 @@ const About = ()=>{
             <p className="text-6xl text-center my-10">Hosting Services</p>
             <div className="grid md:flex">
                 <img src="/MongoAtlas.webp" alt="mongo atlas" className="h-40 w-40 m-auto"/>
-                <img src="/beanstalk.webp" alt="beanstalk" className="h-60 w-80 m-auto"/>
+                <img src="/EC2.png" alt="EC2" className="h-60 w-80 m-auto"/>
                 <img src="/amplify.png" alt="amplify" className="h-40 w-40 m-auto"/>
             </div>
         </div>
